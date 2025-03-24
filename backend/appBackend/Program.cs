@@ -12,6 +12,17 @@ builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
+//builder.Services.EstablishAuroraConnection<DrmsDataProcessingDbContext>(Configuration, x =>
+//{
+
+//    x.PartialConnStrKey = DrmsAtRiskContactConstants.DplDbConnectionString;
+//    x.UsrNameConfigKey = DrmsAtRiskContactConstants.ArcDBusername;
+//    x.CredValueConfigKey = DrmsAtRiskContactConstants.ArcDBpword;
+//})
+//.EstablishDatabaseCacheIntegration<Code, Configuration>()
+//.EstablishCodeTable<DrmsDataProcessingDbContext, Code>()
+//.EstablishConfigurationTable<DrmsDataProcessingDbContext, Configuration>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
