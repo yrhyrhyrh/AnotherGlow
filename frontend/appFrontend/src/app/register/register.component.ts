@@ -3,13 +3,13 @@ import { FormsModule } from "@angular/forms"; // ✅ Import FormsModule
 import { User } from "../interfaces/user";
 
 @Component({
-  selector: "app-login",
+  selector: "app-register",
   standalone: true,
   imports: [FormsModule],
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"]
+  templateUrl: "./register.component.html",
+  styleUrls: ["./register.component.css"]
 })
-export class LoginComponent {
+export class RegisterComponent {
   user: User = {
     username: "",
     password: "",
