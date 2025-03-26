@@ -1,5 +1,8 @@
+using appBackend.Repositories;
+using Microsoft.EntityFrameworkCore;
 using MyAppBackend.Repositories;
 using MyAppBackend.Services;
+using System.Data.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,16 +15,18 @@ builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
-//builder.Services.EstablishAuroraConnection<DrmsDataProcessingDbContext>(Configuration, x =>
-//{
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Get from appsettings.json
 
-//    x.PartialConnStrKey = DrmsAtRiskContactConstants.DplDbConnectionString;
-//    x.UsrNameConfigKey = DrmsAtRiskContactConstants.ArcDBusername;
-//    x.CredValueConfigKey = DrmsAtRiskContactConstants.ArcDBpword;
-//})
-//.EstablishDatabaseCacheIntegration<Code, Configuration>()
-//.EstablishCodeTable<DrmsDataProcessingDbContext, Code>()
-//.EstablishConfigurationTable<DrmsDataProcessingDbContext, Configuration>();
+builder.Services.AddDbContext<SocialMediaDbContext>(options =>
+    options.UseNpgsql(connectionString, npgsqlOptionsAction: sqlOptions =>
+    {
+        // Optional: Configure Npgsql options if needed
+        // sqlOptions.EnableRetryOnFailure();
+    })
+    // Optional: Add logging in development
+    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+    .EnableSensitiveDataLogging() // Only in development!
+);
 
 var app = builder.Build();
 
