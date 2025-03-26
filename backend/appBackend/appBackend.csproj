@@ -19,7 +19,8 @@
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.13.0" />
     <PackageReference Include="AWSXRayRecorder.Handlers.EntityFramework" Version="1.6.0" />
     <PackageReference Include="AWSXRayRecorder.Handlers.System.Net" Version="2.12.0" />
-    <!-- <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" /> -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.14" />
