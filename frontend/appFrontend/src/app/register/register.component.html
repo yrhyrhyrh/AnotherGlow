@@ -1,6 +1,9 @@
 <div class="register-container">
   <h2>Register</h2>
   <form (submit)="onSubmit()">
+    <label for="email">Email:</label>
+    <input id="email" type="text" [(ngModel)]="user.email" name="email" required />
+
     <label for="username">Username:</label>
     <input id="username" type="text" [(ngModel)]="user.username" name="username" required />
 

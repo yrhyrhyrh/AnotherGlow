@@ -1,5 +1,11 @@
-﻿-- users Table
-CREATE TABLE users (
+﻿-- Ensure the 'public' schema exists
+CREATE SCHEMA IF NOT EXISTS public;
+
+-- Set search path to use the 'public' schema
+SET search_path TO public;
+
+-- users Table
+CREATE TABLE public.users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -8,54 +14,78 @@ CREATE TABLE users (
     bio TEXT,
     profile_picture_url VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    account_type INTEGER
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-CREATE UNIQUE INDEX users_username_unique ON users (username);
-CREATE UNIQUE INDEX users_email_unique ON users (email);
-CREATE INDEX users_created_at_idx ON users (created_at);
+CREATE UNIQUE INDEX users_username_unique ON public.users (username);
+CREATE UNIQUE INDEX users_email_unique ON public.users (email);
+CREATE INDEX users_created_at_idx ON public.users (created_at);
 
 
 -- posts Table
-CREATE TABLE posts (
+CREATE TABLE public.posts (
     post_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE
 );
 
-CREATE INDEX posts_user_id_idx ON posts (user_id);
-CREATE INDEX posts_created_at_idx ON posts (created_at);
+CREATE INDEX posts_user_id_idx ON public.posts (user_id);
+CREATE INDEX posts_created_at_idx ON public.posts (created_at);
+CREATE INDEX posts_updated_at_idx ON public.posts (updated_at); -- Added for performance
 
 
 -- follows Table
-CREATE TABLE follows (
+CREATE TABLE public.follows (
     follow_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     follower_user_id UUID NOT NULL,
     following_user_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    FOREIGN KEY (follower_user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (following_user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (follower_user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (following_user_id) REFERENCES public.users(user_id) ON DELETE CASCADE
 );
 
-CREATE INDEX follows_follower_user_id_idx ON follows (follower_user_id);
-CREATE INDEX follows_following_user_id_idx ON follows (following_user_id);
+CREATE INDEX follows_follower_user_id_idx ON public.follows (follower_user_id);
+CREATE INDEX follows_following_user_id_idx ON public.follows (following_user_id);
 
 
 -- likes Table
-CREATE TABLE likes (
+CREATE TABLE public.likes (
     like_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
     post_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     UNIQUE (user_id, post_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES public.posts(post_id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX likes_user_id_post_id_unique ON likes (user_id, post_id);
-CREATE INDEX likes_post_id_idx ON likes (post_id);
-CREATE INDEX likes_user_id_idx ON likes (user_id);
+CREATE UNIQUE INDEX likes_user_id_post_id_unique ON public.likes (user_id, post_id);
+CREATE INDEX likes_post_id_idx ON public.likes (post_id);
+CREATE INDEX likes_user_id_idx ON public.likes (user_id);
+
+
+-- groups Table
+CREATE TABLE public.groups (
+    group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,  -- Limited to 100 characters as per model
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+
+-- group_members Table
+CREATE TABLE public.group_members (
+    group_member_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Matches GroupMemberId in C# model
+    user_id UUID NOT NULL,
+    group_id UUID NOT NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,  -- Matches IsAdmin in C# model
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES public.groups(group_id) ON DELETE CASCADE
+);
+
+CREATE INDEX group_members_group_id_idx ON public.group_members (group_id);
+CREATE INDEX group_members_user_id_idx ON public.group_members (user_id);

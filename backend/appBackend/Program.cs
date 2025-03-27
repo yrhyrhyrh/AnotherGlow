@@ -5,6 +5,7 @@ using MyAppBackend.Services;
 using System.Data.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using appBackend.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
 
-var key = "my_secret_key_12345"; // 🔥 Change this to a secure key!
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = jwtSettings["Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
 
-// Add services to the container
+// Register JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -28,6 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
         };
     });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost",
@@ -40,6 +43,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<UserService>(); // Register UserService
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Get from appsettings.json

@@ -34,8 +34,6 @@ namespace appBackend.Models
 
         public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at (TIMESTAMP WITH TIME ZONE)
 
-        public int AccountType { get; set; } // Corresponds to account_type
-
         // --- Navigation Properties ---
 
         // Posts created by this user
