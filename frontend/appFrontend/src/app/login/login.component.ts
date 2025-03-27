@@ -1,13 +1,13 @@
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";  // Import FormsModule
-import { HttpClientModule, HttpClient } from '@angular/common/http'; // Import HttpClient
+import { HttpClient, withFetch } from '@angular/common/http'; // Import HttpClient
 import { RouterModule, Router } from '@angular/router'; // Import RouterModule for routing
 import { User } from "../interfaces/user"; // Your User interface
 
 @Component({
   selector: "app-login",
   standalone: true,
-  imports: [FormsModule, HttpClientModule, RouterModule],  // Add HttpClientModule & RouterModule here
+  imports: [FormsModule, RouterModule],
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"]
 })
@@ -18,7 +18,7 @@ export class LoginComponent {
   };
 
   constructor(private http: HttpClient, private router: Router) {}
-
+  
   // Method to handle login form submission
   onSubmit() {
     const { username, password } = this.user;
@@ -34,7 +34,9 @@ export class LoginComponent {
         next: (response) => {
           console.log("Login successful:", response.token);
           // Store the token in localStorage or sessionStorage
-          localStorage.setItem('jwt_token', response.token);
+          if (typeof window !== "undefined") {
+            localStorage.setItem('jwt_token', response.token);
+          }
           // Redirect to home after successful login
           this.router.navigate(['/']);
         },

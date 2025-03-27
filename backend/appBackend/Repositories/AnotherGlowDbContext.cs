@@ -69,10 +69,6 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("updated_at")
                       .HasDefaultValueSql("now()"); // Use DB function for default
 
-                entity.Property(u => u.AccountType)
-                      .HasColumnName("account_type")
-                      .IsRequired();
-
                 entity.HasIndex(u => u.CreatedAt, "users_created_at_idx"); // Named index
 
                 // Relationships defined after other entities are configured

@@ -9,7 +9,6 @@ CREATE TABLE users (
     profile_picture_url VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    account_type INTEGER
 );
 
 CREATE UNIQUE INDEX users_username_unique ON users (username);
@@ -59,3 +58,8 @@ CREATE TABLE likes (
 CREATE UNIQUE INDEX likes_user_id_post_id_unique ON likes (user_id, post_id);
 CREATE INDEX likes_post_id_idx ON likes (post_id);
 CREATE INDEX likes_user_id_idx ON likes (user_id);
+
+-- -- groups Table
+-- CREATE TABLE group (
+
+-- )
