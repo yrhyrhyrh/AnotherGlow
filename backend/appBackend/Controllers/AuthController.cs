@@ -21,9 +21,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (request.Username == "admin" && request.Password == "password") // Replace with real authentication
+        var validated = await _userService.ValidateUserAsync(request.Username, request.Password);
+        if (validated) // Replace with real authentication
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_key);
@@ -57,6 +58,16 @@ public class AuthController : ControllerBase
             return Conflict(new { message = "Username or Email already exists." });
         }
 
-        return Ok(new { message = "User registered successfully!" });
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_key);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, request.Username) }),
+            Expires = DateTime.UtcNow.AddHours(1),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return Ok(new { token = tokenHandler.WriteToken(token), message = "User registered successfully!" });
     }
 }

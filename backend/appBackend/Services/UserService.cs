@@ -25,24 +25,33 @@ namespace appBackend.Services
             {
                 return null; // User already exists
             }
-            Console.WriteLine("user does not exist yet");
 
             var newUser = new User
             {
                 Username = username,
                 Email = email,
-                PasswordHash = _passwordHasher.HashPassword(null, password), // Hash password
+                PasswordHash = _passwordHasher.HashPassword(new User(), password), // Hash password
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
-            
-            Console.WriteLine("user object created");
 
             _context.Users.Add(newUser);
-            Console.WriteLine("user added");
             await _context.SaveChangesAsync();
-            Console.WriteLine("user added frfr");
             return newUser;
+        }
+
+        public async Task<bool> ValidateUserAsync(string username, string password)
+        {
+            Console.WriteLine("Validating user...");
+
+            var user = await _context.Users
+                .Where(u => u.Username == username)
+                .FirstOrDefaultAsync(); // Fetch the full user object
+
+            if (user == null) return false; // User not found
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            return result == PasswordVerificationResult.Success;
         }
     }
 }
