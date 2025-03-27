@@ -18,11 +18,14 @@ namespace appBackend.Services
 
         public async Task<User?> RegisterUserAsync(string username, string email, string password)
         {
+            Console.WriteLine("registering!");
+            Console.WriteLine(username+email+password);
             // Check if user already exists
             if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == email))
             {
                 return null; // User already exists
             }
+            Console.WriteLine("user does not exist yet");
 
             var newUser = new User
             {
@@ -32,9 +35,13 @@ namespace appBackend.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
+            
+            Console.WriteLine("user object created");
 
             _context.Users.Add(newUser);
+            Console.WriteLine("user added");
             await _context.SaveChangesAsync();
+            Console.WriteLine("user added frfr");
             return newUser;
         }
     }

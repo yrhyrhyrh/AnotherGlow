@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
-import { FormsModule } from "@angular/forms";  // Import FormsModule
-import { HttpClient, withFetch } from '@angular/common/http'; // Import HttpClient
-import { RouterModule, Router } from '@angular/router'; // Import RouterModule for routing
-import { User } from "../interfaces/user"; // Your User interface
+import { FormsModule } from "@angular/forms";
+import { HttpClient } from '@angular/common/http';
+import { RouterModule, Router } from '@angular/router';
+import { User } from "../interfaces/user";
 
 @Component({
   selector: "app-login",
