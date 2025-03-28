@@ -10,6 +10,8 @@ namespace appBackend.Repositories // Adjust namespace as needed
         public DbSet<Post> Posts { get; set; } = null!;
         public DbSet<Follow> Follows { get; set; } = null!;
         public DbSet<Like> Likes { get; set; } = null!;
+        public DbSet<Group> Groups { get; set; } = null!;
+        public DbSet<GroupMember> GroupMembers { get; set; } = null!;
 
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
             : base(options)
@@ -194,6 +196,62 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .WithMany(p => p.Likes) // Navigation property in Post for its likes
                       .HasForeignKey(l => l.PostId)
                       .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
+            });
+
+            // --- Group Configuration ---
+            modelBuilder.Entity<Group>(entity =>
+            {
+                entity.ToTable("groups");
+                entity.HasKey(g => g.GroupId);
+                entity.Property(g => g.GroupId)
+                      .HasColumnName("group_id")
+                      .ValueGeneratedOnAdd();
+                entity.Property(g => g.Name)
+                      .HasColumnName("name")
+                      .IsRequired()
+                      .HasMaxLength(100);
+                entity.Property(g => g.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()");
+                entity.Property(g => g.UpdatedAt)
+                      .HasColumnName("updated_at")
+                      .HasDefaultValueSql("now()");
+            });
+
+            // --- GroupMember Configuration ---
+            modelBuilder.Entity<GroupMember>(entity =>
+            {
+                entity.ToTable("group_members");
+                entity.HasKey(gm => gm.GroupMemberId);
+                entity.Property(gm => gm.GroupMemberId)
+                      .HasColumnName("group_member_id")
+                      .ValueGeneratedOnAdd();
+                entity.Property(gm => gm.UserId)
+                      .HasColumnName("user_id")
+                      .IsRequired();
+                entity.Property(gm => gm.GroupId)
+                      .HasColumnName("group_id")
+                      .IsRequired();
+                entity.Property(gm => gm.IsAdmin)
+                      .HasColumnName("is_admin")
+                      .IsRequired().HasDefaultValue(false);
+                entity.Property(gm => gm.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()");
+                entity.HasIndex(gm => new { gm.UserId, gm.GroupId })
+                      .IsUnique();
+                entity.HasIndex(gm => gm.GroupId);
+                entity.HasIndex(gm => gm.UserId);
+                entity.HasOne(gm => gm.User)
+                      .WithMany(u => u.GroupMemberships)
+                      .HasForeignKey(gm => gm.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(gm => gm.Group)
+                      .WithMany(g => g.Members)
+                      .HasForeignKey(gm => gm.GroupId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

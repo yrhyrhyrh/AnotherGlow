@@ -7,5 +7,5 @@ import { HeaderComponent } from '../header/header.component';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-
+  
 }
