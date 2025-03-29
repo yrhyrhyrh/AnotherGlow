@@ -5,41 +5,34 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using appBackend.Services;
-namespace appBackend.Models;
+using appBackend.Dtos;
+
+namespace appBackend.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly string _key;
-    private readonly UserService _userService;
+    private readonly AuthService _authService;
 
-    public AuthController(IConfiguration configuration, UserService userService)
+    public AuthController(IConfiguration configuration, AuthService userService)
     {
         _key = configuration["JwtSettings:Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
-        _userService = userService;
+        _authService = userService;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var validated = await _userService.ValidateUserAsync(request.Username, request.Password);
-        if (validated) // Replace with real authentication
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_key);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, request.Username) }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+        var validated = await _authService.ValidateUserAsync(request.Username, request.Password);
+        if (!validated)
+            return Unauthorized();
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return Ok(new { token = tokenHandler.WriteToken(token) });
-        }
-        return Unauthorized();
+        var token = _authService.GenerateJwtToken(request.Username);
+        return Ok(new { token });
     }
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -51,23 +44,17 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "All fields are required." });
         }
 
-        var user = await _userService.RegisterUserAsync(request.Username, request.Email, request.Password);
-
+        var user = await _authService.RegisterUserAsync(request);
+        
         if (user == null)
         {
             return Conflict(new { message = "Username or Email already exists." });
         }
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_key);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, request.Username) }),
-            Expires = DateTime.UtcNow.AddHours(1),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
+        // Generate JWT token for the registered user
+        var token = _authService.GenerateJwtToken(user.Username);
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return Ok(new { token = tokenHandler.WriteToken(token), message = "User registered successfully!" });
+        return Ok(new { token, message = "User registered successfully!" });
     }
+
 }
