@@ -1,4 +1,4 @@
-namespace appBackend.Models;
+namespace appBackend.Dtos;
 
 public class LoginRequest
 {

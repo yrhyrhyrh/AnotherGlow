@@ -6,6 +6,9 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using appBackend.Services;
+using appBackend.Adapters;
+using appBackend.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +46,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserAdapter, UserAdapter>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<UserService>(); // Register UserService
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
