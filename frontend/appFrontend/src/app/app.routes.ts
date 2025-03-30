@@ -3,7 +3,8 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { AuthGuard } from './auth.guard';
-// import { PollingComponent } from './polling/polling.component'; // Remove this direct import
+import { PollingComponent } from './polling/polling.component';
+import { PollListComponent } from './poll-list/poll-list.component'; // Import PollListComponent
 
 export const routes: Routes = [
   {
@@ -23,9 +24,15 @@ export const routes: Routes = [
     title: "Registration Page",
   },
   {
-    path: 'polls/create',  // The route for creating polls
-    loadComponent: () => import('./polling/polling.component').then(mod => mod.PollingComponent), // Lazy-load the standalone component
+    path: 'polls/create',
+    component: PollingComponent,
     title: "Create Poll",
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'polls', // Route to display polls
+    component: PollListComponent,
+    title: "Poll List",
     canActivate: [AuthGuard] // Optional auth guard
   }
 ];

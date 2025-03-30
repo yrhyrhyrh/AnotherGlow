@@ -15,7 +15,7 @@ builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
 
 builder.Services.AddScoped<IPollService, PollService>();
-builder.Services.AddScoped<IPollRepository, PollRepository>();  // ✅ Ensure this is registered
+builder.Services.AddScoped<IPollRepository, PollRepository>(); 
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = jwtSettings["Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
@@ -70,7 +70,7 @@ if (app.Environment.IsDevelopment())
 // Enable CORS before Authentication
 app.UseCors("AllowLocalhost");
 
-// ⚠️ Remove if frontend is HTTP only
+// Remove if frontend is HTTP only
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

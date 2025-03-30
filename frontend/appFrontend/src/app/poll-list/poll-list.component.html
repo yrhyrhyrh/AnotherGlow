@@ -1,0 +1,9 @@
+<div class="container">
+  <h1>All Polls</h1>
+  <div *ngFor="let poll of polls" class="poll-item">
+    <h2>{{ poll.question }}</h2>
+    <ul>
+      <li *ngFor="let option of poll.options">{{ option }}</li>
+    </ul>
+  </div>
+</div>
