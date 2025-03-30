@@ -1,21 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object // Inject PLATFORM_ID
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const token = localStorage.getItem('jwt_token');
+    if (isPlatformBrowser(this.platformId)) { // Check if running in the browser
+      const token = localStorage.getItem('jwt_token');
 
-    if (token && this.isTokenValid(token)) {
-      return true;
+      if (token && this.isTokenValid(token)) {
+        return true;
+      }
     }
 
-    this.router.navigate(['/login']); // Redirect to login page if token is invalid
+    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
     return false;
   }
 

@@ -1,4 +1,4 @@
-using appBackend.Repositories;
+﻿using appBackend.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MyAppBackend.Repositories;
 using MyAppBackend.Services;
@@ -13,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Register services and repositories
 builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+
+builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddScoped<IPollRepository, PollRepository>();  // ✅ Ensure this is registered
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = jwtSettings["Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
@@ -31,46 +34,47 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Enable CORS for Angular
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost",
         policy => policy
-            .WithOrigins("http://localhost:4200") // Allow Angular frontend origin
+            .WithOrigins("http://localhost:4200", "https://localhost:4200") // Allow both HTTP and HTTPS
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers(); // Make sure controllers are registered here
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<UserService>(); // Register UserService
-builder.Services.AddSwaggerGen(); // Swagger generation setup
+builder.Services.AddScoped<UserService>();
+builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Get from appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<SocialMediaDbContext>(options =>
-    options.UseNpgsql(connectionString, npgsqlOptionsAction: sqlOptions =>
-    {
-        // Optional: Configure Npgsql options if needed
-        // sqlOptions.EnableRetryOnFailure();
-    })
-    // Optional: Add logging in development
+    options.UseNpgsql(connectionString)
     .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
-    .EnableSensitiveDataLogging() // Only in development!
+    .EnableSensitiveDataLogging()
 );
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Enable Swagger in Development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable CORS before Authentication
+app.UseCors("AllowLocalhost");
+
+// ⚠️ Remove if frontend is HTTP only
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowLocalhost");
-app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();

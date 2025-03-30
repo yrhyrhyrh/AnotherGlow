@@ -1,0 +1,32 @@
+<div class="container">
+  <h1>Create a New Poll</h1>
+  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="question">Question:</label>
+      <input type="text" id="question" class="form-control" formControlName="question">
+      <div *ngIf="pollForm.get('question')?.invalid && (pollForm.get('question')?.dirty || pollForm.get('question')?.touched)" class="alert alert-danger">
+        Question is required.
+      </div>
+    </div>
+
+    <div formArrayName="options">
+      <label>Options:</label>
+      <div *ngFor="let option of options.controls; let i = index" class="option-row">
+        <input type="text" class="form-control" [formControlName]="i">
+        <button type="button" class="btn btn-danger" (click)="removeOption(i)">Remove</button>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="addOption()">Add Option</button>
+    </div>
+
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="isGlobal" formControlName="isGlobal">
+      <label class="form-check-label" for="isGlobal">Share Globally</label>
+    </div>
+
+    <button type="submit" class="btn btn-success" [disabled]="pollForm.invalid">Create Poll</button>
+  </form>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+</div>

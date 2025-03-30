@@ -1,5 +1,8 @@
 ﻿using appBackend.Models;
 using Microsoft.EntityFrameworkCore;
+using System; // Add this line for DateTime
+using System.Collections.Generic; // Add this line for List and Dictionary
+using System.Text.Json; // Add this line for JSON serialization (System.Text.Json)
 
 namespace appBackend.Repositories // Adjust namespace as needed
 {
@@ -10,6 +13,7 @@ namespace appBackend.Repositories // Adjust namespace as needed
         public DbSet<Post> Posts { get; set; } = null!;
         public DbSet<Follow> Follows { get; set; } = null!;
         public DbSet<Like> Likes { get; set; } = null!;
+        public DbSet<Poll> Polls { get; set; } = null!; // Add DbSet for Poll
 
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
             : base(options)
@@ -194,6 +198,49 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .WithMany(p => p.Likes) // Navigation property in Post for its likes
                       .HasForeignKey(l => l.PostId)
                       .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
+            });
+
+            // --- Poll Configuration ---
+            modelBuilder.Entity<Poll>(entity =>
+            {
+                entity.ToTable("polls"); // Explicitly map to the table name
+
+                entity.HasKey(p => p.Id); // Primary Key
+                entity.Property(p => p.Id)
+                      .HasColumnName("poll_id") // Map to specific column name (optional)
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(p => p.Question)
+                      .HasColumnName("question")
+                      .IsRequired()
+                      .HasColumnType("text");
+
+                // Options Configuration (Store as JSON)
+                entity.Property(p => p.Options)
+                    .HasColumnName("options")
+                    .HasColumnType("jsonb") // For PostgreSQL, use "jsonb"
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),  // Serialize the List<string> to JSON
+                        v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions()) ?? new List<string>() // Deserialize the JSON to List<string>
+                    );
+
+                // Votes Configuration (Store as JSON)
+                entity.Property(p => p.Votes)
+                    .HasColumnName("votes")
+                    .HasColumnType("jsonb") // For PostgreSQL, use "jsonb"
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),  // Serialize the Dictionary<int, int> to JSON
+                        v => JsonSerializer.Deserialize<Dictionary<int, int>>(v, new JsonSerializerOptions()) ?? new Dictionary<int, int>() // Deserialize the JSON to Dictionary<int, int>
+                    );
+
+                entity.Property(p => p.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()");
+
+                entity.Property(p => p.IsGlobal)
+                      .HasColumnName("is_global")
+                      .IsRequired();
             });
         }
 
