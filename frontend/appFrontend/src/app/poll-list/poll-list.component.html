@@ -2,8 +2,14 @@
   <h1>All Polls</h1>
   <div *ngFor="let poll of polls" class="poll-item">
     <h2>{{ poll.question }}</h2>
-    <ul>
-      <li *ngFor="let option of poll.options">{{ option }}</li>
-    </ul>
+    <form (ngSubmit)="vote($event, poll.id, selectedOption[poll.id])">
+      <ul>
+        <li *ngFor="let option of poll.options; let i = index">
+          <input type="radio" id="option{{poll.id}}_{{i}}" [name]="'poll' + poll.id" [value]="i" [(ngModel)]="selectedOption[poll.id]" required>
+          <label for="option{{poll.id}}_{{i}}">{{ option }}</label>
+        </li>
+      </ul>
+      <button type="submit" class="btn btn-primary" [disabled]="selectedOption[poll.id] == null">Vote</button>
+    </form>
   </div>
 </div>

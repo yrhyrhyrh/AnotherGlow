@@ -14,7 +14,7 @@
             "dotnetRunMessages": true,
             "launchBrowser": true,
             "launchUrl": "swagger",
-            "applicationUrl": "http://localhost:5181", // Changed to HTTP port 5180
+            "applicationUrl": "http://localhost:5181",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
@@ -24,7 +24,7 @@
             "dotnetRunMessages": true,
             "launchBrowser": true,
             "launchUrl": "swagger",
-            "applicationUrl": "http://localhost:5181", // Kept HTTPS port 5181
+            "applicationUrl": "http://localhost:5181",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
