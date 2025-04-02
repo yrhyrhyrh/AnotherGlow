@@ -48,9 +48,15 @@ builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserAdapter, UserAdapter>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IGroupAdapter, GroupAdapter>();
+builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+builder.Services.AddScoped<IGroupMemberAdapter, GroupMemberAdapter>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddScoped<UserService>(); // Register UserService
+// builder.Services.AddScoped<UserService>(); // Register UserService
+builder.Services.AddScoped<GroupService>(); // Register Group service
+builder.Services.AddScoped<GroupMemberService>(); // Register Group service
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Get from appsettings.json

@@ -16,10 +16,10 @@ public class AuthController : ControllerBase
     private readonly string _key;
     private readonly AuthService _authService;
 
-    public AuthController(IConfiguration configuration, AuthService userService)
+    public AuthController(IConfiguration configuration, AuthService authService)
     {
         _key = configuration["JwtSettings:Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
-        _authService = userService;
+        _authService = authService;
     }
 
     [HttpPost("login")]
