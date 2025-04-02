@@ -10,6 +10,9 @@ using appBackend.Adapters;
 using appBackend.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
+using appBackend.Interfaces.GlobalPostWall;
+using appBackend.Services.GlobalPostWall;
+using appBackend.Repositories.GlobalPostWall;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +46,16 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
+// Register Services
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostSocialActionsService, PostSocialActionsService>();
+
+// Register Repositories
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+
 builder.Services.AddAuthorization();
 builder.Services.AddControllers(); // Make sure controllers are registered here
 builder.Services.AddEndpointsApiExplorer();
@@ -57,6 +70,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 // builder.Services.AddScoped<UserService>(); // Register UserService
 builder.Services.AddScoped<GroupService>(); // Register Group service
 builder.Services.AddScoped<GroupMemberService>(); // Register Group service
+
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); // Get from appsettings.json
