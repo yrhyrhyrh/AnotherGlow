@@ -12,7 +12,7 @@ namespace appBackend.Models
         public Guid UserId { get; set; } // Foreign key to the user who liked
         public Guid PostId { get; set; } // Foreign key to the post that was liked
 
-        public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
+        public DateTime CreatedAt { get; set; } // Corresponds to created_at
 
         // --- Navigation Properties ---
 

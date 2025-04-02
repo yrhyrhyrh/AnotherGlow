@@ -12,9 +12,9 @@ namespace appBackend.Models
         [Required]
         public string Content { get; set; } = string.Empty; // Corresponds to content (TEXT)
 
-        public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
+        public DateTime CreatedAt { get; set; } // Corresponds to created_at
 
-        public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at
+        public DateTime UpdatedAt { get; set; } // Corresponds to updated_at
 
         // --- Navigation Properties ---
 
@@ -24,5 +24,11 @@ namespace appBackend.Models
 
         // Likes received by this post (Join entity)
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
+
+        // Comments received by this post (Join entity)
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        // Attachments on the post (Join entity)
+        public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     }
 }
