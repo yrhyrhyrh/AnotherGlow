@@ -17,6 +17,7 @@ export class CreateNewGroupComponent {
     name: "",
     userId: "",
   }
+
   constructor(private http: HttpClient, private router: Router) {
     const token = localStorage.getItem('jwt_token');
     if (token) {
@@ -41,8 +42,8 @@ export class CreateNewGroupComponent {
       .subscribe({
         next: (response) => {
 
-        this.groupCreated.emit(this.groupRequest.name);
-        console.log(response);
+          this.groupCreated.emit(this.groupRequest.name);
+          console.log(response);
         },
         error: (error) => {
           console.error("Request error:", error);
