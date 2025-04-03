@@ -89,3 +89,54 @@ CREATE TABLE public.group_members (
 
 CREATE INDEX group_members_group_id_idx ON public.group_members (group_id);
 CREATE INDEX group_members_user_id_idx ON public.group_members (user_id);
+
+
+-- Create comments table
+CREATE TABLE IF NOT EXISTS comments (
+    comment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Add indexes for comments table
+CREATE INDEX IF NOT EXISTS comments_post_id_idx ON comments (post_id);
+CREATE INDEX IF NOT EXISTS comments_user_id_idx ON comments (user_id);
+CREATE INDEX IF NOT EXISTS comments_created_at_idx ON comments (created_at);
+
+-- Add foreign key constraints for comments table
+ALTER TABLE comments
+    ADD CONSTRAINT FK_comments_posts
+    FOREIGN KEY (post_id)
+    REFERENCES posts(post_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE comments
+    ADD CONSTRAINT FK_comments_users
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE;
+
+-- Create attachments table
+CREATE TABLE IF NOT EXISTS attachments (
+    attachment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    content_type VARCHAR(100),
+    file_size BIGINT,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Add indexes for attachments table
+CREATE INDEX IF NOT EXISTS attachments_post_id_idx ON attachments (post_id);
+CREATE INDEX IF NOT EXISTS attachments_created_at_idx ON attachments (created_at);
+
+-- Add foreign key constraint for attachments table
+ALTER TABLE attachments
+    ADD CONSTRAINT FK_attachments_posts
+    FOREIGN KEY (post_id)
+    REFERENCES posts(post_id)
+    ON DELETE CASCADE;

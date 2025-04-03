@@ -12,6 +12,8 @@ namespace appBackend.Repositories // Adjust namespace as needed
         public DbSet<Like> Likes { get; set; } = null!;
         public DbSet<Group> Groups { get; set; } = null!;
         public DbSet<GroupMember> GroupMembers { get; set; } = null!;
+        public DbSet<Comment> Comments { get; set; } = null!;
+        public DbSet<Attachment> Attachments { get; set; } = null!;
 
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
             : base(options)
@@ -198,8 +200,105 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
             });
 
-            // --- Group Configuration ---
-            modelBuilder.Entity<Group>(entity =>
+            // --- Comment Configuration ---
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.ToTable("comments"); // Table name
+
+                entity.HasKey(c => c.CommentId); // Primary Key
+                entity.Property(c => c.CommentId)
+                      .HasColumnName("comment_id")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(c => c.PostId)
+                      .HasColumnName("post_id")
+                      .IsRequired();
+
+                entity.Property(c => c.UserId)
+                      .HasColumnName("user_id")
+                      .IsRequired();
+
+                entity.Property(c => c.Content)
+                      .HasColumnName("content")
+                      .IsRequired()
+                      .HasColumnType("text");
+
+                entity.Property(c => c.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()");
+
+                entity.Property(c => c.UpdatedAt)
+                      .HasColumnName("updated_at")
+                      .HasDefaultValueSql("now()");
+
+                // Indexes
+                entity.HasIndex(c => c.PostId, "comments_post_id_idx");
+                entity.HasIndex(c => c.UserId, "comments_user_id_idx");
+                entity.HasIndex(c => c.CreatedAt, "comments_created_at_idx");
+
+                // Relationships
+                entity.HasOne(l => l.User) // Navigation property back to the User
+                      .WithMany(u => u.Comments) // Navigation property in User for their likes
+                      .HasForeignKey(l => l.UserId)
+                      .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
+
+                entity.HasOne(l => l.Post) // Navigation property back to the Post
+                      .WithMany(p => p.Comments) // Navigation property in Post for its likes
+                      .HasForeignKey(l => l.PostId)
+                      .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
+            });
+
+            // --- Attachment Configuration ---
+            modelBuilder.Entity<Attachment>(entity =>
+            {
+                entity.ToTable("attachments"); // Table name
+
+                entity.HasKey(a => a.AttachmentId); // Primary Key
+                entity.Property(a => a.AttachmentId)
+                      .HasColumnName("attachment_id")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(a => a.PostId)
+                      .HasColumnName("post_id")
+                      .IsRequired();
+
+                entity.Property(a => a.FileName)
+                      .HasColumnName("file_name")
+                      .IsRequired()
+                      .HasMaxLength(255);
+
+                entity.Property(a => a.FilePath) // Or FileUrl
+                      .HasColumnName("file_path") // Or file_url
+                      .IsRequired()
+                      .HasMaxLength(255); // Adjust max length as needed
+
+                entity.Property(a => a.ContentType)
+                      .HasColumnName("content_type")
+                      .HasMaxLength(100);
+
+                entity.Property(a => a.FileSize)
+                      .HasColumnName("file_size");
+
+                entity.Property(a => a.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()");
+
+                // Indexes
+                entity.HasIndex(a => a.PostId, "attachments_post_id_idx");
+                entity.HasIndex(a => a.CreatedAt, "attachments_created_at_idx");
+
+                // Relationships
+                entity.HasOne(a => a.Post) // Attachment for Post
+                      .WithMany(p => p.Attachments) // Post can have many attachments
+                      .HasForeignKey(a => a.PostId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+        
+
+        // --- Group Configuration ---
+        modelBuilder.Entity<Group>(entity =>
             {
                 entity.ToTable("groups");
                 entity.HasKey(g => g.GroupId);
