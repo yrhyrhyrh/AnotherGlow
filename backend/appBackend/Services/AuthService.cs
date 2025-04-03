@@ -30,13 +30,16 @@ namespace appBackend.Services
             _jwtSecret = configuration["JwtSettings:Secret"] ?? throw new ArgumentNullException("JWT Secret is missing!");
         }
 
-        public string GenerateJwtToken(string username)
+        public string GenerateJwtToken(string userId)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSecret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username) }),
+                Subject = new ClaimsIdentity(new[] 
+                { 
+                    new Claim("userId", userId) 
+                }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -45,7 +48,7 @@ namespace appBackend.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public async Task<RegisterRequest?> RegisterUserAsync(RegisterRequest registerRequest)
+        public async Task<Guid?> RegisterUserAsync(RegisterRequest registerRequest)
         {
             Console.WriteLine("Registering user: " + registerRequest.Username);
 
@@ -58,21 +61,24 @@ namespace appBackend.Services
             
             if (createdUser == null) return null;
 
-            return registerRequest;
+            return createdUser.UserId;
         }
 
-        public async Task<bool> ValidateUserAsync(string username, string password)
+        public async Task<Guid?> ValidateUserAsync(string username, string password)
         {
             Console.WriteLine("Validating user...");
 
             var user = await _userRepository.GetUserByCredentialsAsync(username);
-            if (user == null) return false;
+            if (user == null) return null;
 
             // Verify password hash
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
             Console.WriteLine("Password result: " + result);
 
-            return result == PasswordVerificationResult.Success;
+            if (result == PasswordVerificationResult.Success)
+                return user.UserId;
+            else
+                return null;
         }
     }
 }
