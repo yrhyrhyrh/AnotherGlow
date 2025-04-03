@@ -8,6 +8,7 @@ namespace appBackend.Services
 
     public interface IGroupRepository
     {
+        Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin);
         Task<Group?> GetGroupAsync(Guid group_id); // Fetch group
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
     }
@@ -20,6 +21,19 @@ namespace appBackend.Services
         {
             _context = context;
         }
+
+        public async Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin)
+        {
+            Console.WriteLine("Getting groups for user: " + userId + " | isAdmin: " + isAdmin);
+
+            var groups = await _context.GroupMembers
+                .Where(gm => gm.UserId == userId && gm.IsAdmin == isAdmin)
+                .Select(gm => gm.Group)
+                .ToListAsync();
+
+            return groups;
+        }
+
 
         public async Task<Group?> GetGroupAsync(Guid group_id)
         {

@@ -22,6 +22,19 @@ public class GroupController : ControllerBase
         _groupMemberService = groupMemberService;
     }
 
+    [HttpPost("getbyuserid")]
+    public async Task<IActionResult> GetGroupsByUserIdAsync([FromBody] GetGroupsByUseridRequest request)
+    {
+        if (request.UserId == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group Owner User id required." });
+        }
+
+        var groups = await _groupService.GetGroupsByUserIdAsync(request);
+        
+        return Ok(new {groups = groups });
+    }
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateNewGroup([FromBody] CreateNewGroupRequest request)
     {
