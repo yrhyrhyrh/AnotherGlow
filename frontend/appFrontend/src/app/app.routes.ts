@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { GroupComponent } from './group/group.component';
 import { AuthGuard } from './auth.guard';
+import { GroupdetailComponent } from './group/groupdetail/groupdetail.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,12 @@ export const routes: Routes = [
     path: 'group',
     component: GroupComponent,
     title: "Group Page",
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'group/detail/:id',
+    component: GroupdetailComponent,
+    title: "Group Details",
     canActivate: [AuthGuard],
   },
 ];

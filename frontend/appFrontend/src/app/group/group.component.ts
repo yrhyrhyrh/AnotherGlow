@@ -19,12 +19,10 @@ export class GroupComponent {
   showDialog = false;
   adminGroups = [
     { name: "Admin Group 1", description: "This is an admin group", groupId: "1" },
-    { name: "Admin Group 2", description: "Another admin group", groupId: "2" }
   ];
 
   nonAdminGroups = [
     { name: "Non-Admin Group 1", description: "Just a regular group", groupId: "3" },
-    { name: "Non-Admin Group 2", description: "Another regular group", groupId: "4" }
   ];
   userId="";
 
@@ -77,8 +75,9 @@ export class GroupComponent {
   }
 
   navigateToGroup(groupId: string) {
-    console.log("Navigating to group:", groupId);
-    // Implement your navigation logic here
+    if (groupId) {
+      this.router.navigate(['/group/detail', groupId]); // Navigate to the group detail page
+    }
   }
 
   openDialog() {

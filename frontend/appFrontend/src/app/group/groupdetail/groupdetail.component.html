@@ -1,0 +1,8 @@
+<div *ngIf="groupData; else loading">
+  <h2>{{ groupData.name }}</h2>
+  <!-- <p>{{ groupData.description }}</p> -->
+</div>
+
+<ng-template #loading>
+  <p>Loading group details...</p>
+</ng-template>
