@@ -1,0 +1,7 @@
+<button (click)="openDialog()">Create Group</button>
+
+<!-- Show the dialog only if showDialog is true -->
+<app-create-new-group *ngIf="showDialog" 
+                      (groupCreated)="handleGroupCreation($event)" 
+                      (close)="closeDialog()">
+</app-create-new-group>
