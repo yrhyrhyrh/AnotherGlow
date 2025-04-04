@@ -28,9 +28,12 @@ export class GroupdetailComponent implements OnInit {
   }
 
   fetchGroupDetails(groupId: string) {
-    this.http.get(`http://localhost:5181/api/group/${groupId}`)
+    this.http.get(`http://localhost:5181/api/group/detail/${groupId}`)
       .subscribe({
-        next: (data) => this.groupData = data,
+        next: (data) => {
+          console.log(data);
+          this.groupData = data;
+        },
         error: (err) => console.error('Error fetching group details:', err)
       });
   }

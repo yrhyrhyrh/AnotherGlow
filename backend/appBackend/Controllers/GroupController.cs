@@ -64,4 +64,23 @@ public class GroupController : ControllerBase
           return StatusCode(500, new { message = "Database error while adding group members"});
     }
 
+    [HttpGet("detail/{group_id}")]
+    public async Task<IActionResult> GetGroupDetailById(Guid group_id)
+    {
+        if (group_id == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group ID is required." });
+        }
+
+        var group = await _groupService.GetGroupAsync(group_id);
+
+        if (group == null)
+        {
+            return NotFound(new { message = "Group not found." });
+        }
+
+        return Ok(group);
+    }
+
+
 }

@@ -31,7 +31,7 @@ namespace appBackend.Services
             return groups;
         }
 
-        public async Task<Group?> GetGroupAsync(Guid group_id)
+        public async Task<GroupDto?> GetGroupAsync(Guid group_id)
         {
             Console.WriteLine("Getting group details");
             Console.WriteLine(group_id);
