@@ -1,4 +1,4 @@
 export interface Group {
-  name: string,
-  userId: string,
+  Name: string,
+  GroupId: string,
 }

@@ -17,7 +17,7 @@
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <app-group-card *ngFor="let group of adminGroups" 
                     [group]="group"
-                    (clicked)="navigateToGroup(group.groupId)">
+                    (clicked)="navigateToGroup($event)">
     </app-group-card>
   </div>
 
@@ -26,7 +26,7 @@
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <app-group-card *ngFor="let group of nonAdminGroups" 
                     [group]="group"
-                    (clicked)="navigateToGroup(group.groupId)">
+                    (clicked)="navigateToGroup($event)">
     </app-group-card>
   </div>
 </div>

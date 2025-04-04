@@ -7,6 +7,7 @@ import { CommonModule } from "@angular/common";
 import { GroupCardComponent } from "./group-card/group-card.component";
 import { jwtDecode } from "jwt-decode";
 import { GetGroups } from '../interfaces/getGroups';
+import { Group } from "../interfaces/group";
 
 @Component({
   selector: "app-group",
@@ -17,13 +18,8 @@ import { GetGroups } from '../interfaces/getGroups';
 })
 export class GroupComponent {
   showDialog = false;
-  adminGroups = [
-    { name: "Admin Group 1", description: "This is an admin group", groupId: "1" },
-  ];
-
-  nonAdminGroups = [
-    { name: "Non-Admin Group 1", description: "Just a regular group", groupId: "3" },
-  ];
+  adminGroups: Group[] = [];
+  nonAdminGroups: Group[] = [];
   userId="";
 
   constructor(private http: HttpClient, private router: Router) {
@@ -41,24 +37,20 @@ export class GroupComponent {
           isAdmin: false,
         }
 
-        this.http.post<{ groups: any[] }>('http://localhost:5181/api/group/getbyuserid', adminGroupsRequest)
+        this.http.post<{ groups: Group[] }>('http://localhost:5181/api/group/getbyuserid', adminGroupsRequest)
         .subscribe({
           next: (response) => {
-
             this.adminGroups = response.groups
-            console.log(response.groups[0]);
           },
           error: (error) => {
             console.error("Request error:", error);
           }
         });
 
-        this.http.post<{ groups: {values:any[]} }>('http://localhost:5181/api/group/getbyuserid', nonAdminGroupsRequest)
+        this.http.post<{ groups: Group[] }>('http://localhost:5181/api/group/getbyuserid', nonAdminGroupsRequest)
         .subscribe({
           next: (response) => {
-
-            this.nonAdminGroups = response.groups.values
-            console.log(response.groups);
+            this.nonAdminGroups = response.groups
           },
           error: (error) => {
             console.error("Request error:", error);

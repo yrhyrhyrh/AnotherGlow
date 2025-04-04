@@ -1,14 +1,16 @@
-<div *ngIf="groupData; else loading">
-  <h2>{{ groupData.name }}</h2>
+<ng-container *ngIf="groupData; else loading">
+  <h2>{{ groupData.Name }}</h2>
+
   <!-- <p>{{ groupData.description }}</p> -->
-</div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <h3>Members:</h3>
+    <app-member *ngFor="let member of groupData.Members" 
+                [member]="member.User">
+    </app-member>
+  </div>
+</ng-container>
 
 <ng-template #loading>
   <p>Loading group details...</p>
 </ng-template>
-
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-  <app-member *ngFor="let member of groupData.members.values" 
-                  [member]="member.user">
-  </app-member>
-</div>
