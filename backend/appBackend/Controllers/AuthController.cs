@@ -25,11 +25,11 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var validated = await _authService.ValidateUserAsync(request.Username, request.Password);
-        if (!validated)
+        var userId = await _authService.ValidateUserAsync(request.Username, request.Password);
+        if (userId==null)
             return Unauthorized();
 
-        var token = _authService.GenerateJwtToken(request.Username);
+        var token = _authService.GenerateJwtToken(userId.Value.ToString());
         return Ok(new { token });
     }
 
@@ -44,15 +44,15 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "All fields are required." });
         }
 
-        var user = await _authService.RegisterUserAsync(request);
+        var userId = await _authService.RegisterUserAsync(request);
         
-        if (user == null)
+        if (userId == null)
         {
             return Conflict(new { message = "Username or Email already exists." });
         }
 
         // Generate JWT token for the registered user
-        var token = _authService.GenerateJwtToken(user.Username);
+        var token = _authService.GenerateJwtToken(userId.Value.ToString());
 
         return Ok(new { token, message = "User registered successfully!" });
     }

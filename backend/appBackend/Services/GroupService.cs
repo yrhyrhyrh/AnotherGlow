@@ -21,7 +21,17 @@ namespace appBackend.Services
             _groupAdapter = groupAdapter;
         }
 
-        public async Task<Group?> GetGroupAsync(Guid group_id)
+        public async Task<List<Group>> GetGroupsByUserIdAsync(GetGroupsByUseridRequest request)
+        {
+            Console.WriteLine("Getting groups where I am"+(!request.IsAdmin?" not":"")+" admin");
+            Console.WriteLine(request.UserId);
+
+            var groups = await _groupRepository.GetGroupsByUserIdAsync(request.UserId, request.IsAdmin);
+
+            return groups;
+        }
+
+        public async Task<GroupDto?> GetGroupAsync(Guid group_id)
         {
             Console.WriteLine("Getting group details");
             Console.WriteLine(group_id);

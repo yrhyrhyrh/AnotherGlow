@@ -22,6 +22,19 @@ public class GroupController : ControllerBase
         _groupMemberService = groupMemberService;
     }
 
+    [HttpPost("getbyuserid")]
+    public async Task<IActionResult> GetGroupsByUserIdAsync([FromBody] GetGroupsByUseridRequest request)
+    {
+        if (request.UserId == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group Owner User id required." });
+        }
+
+        var groups = await _groupService.GetGroupsByUserIdAsync(request);
+        
+        return Ok(new {groups = groups });
+    }
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateNewGroup([FromBody] CreateNewGroupRequest request)
     {
@@ -50,5 +63,24 @@ public class GroupController : ControllerBase
         else
           return StatusCode(500, new { message = "Database error while adding group members"});
     }
+
+    [HttpGet("detail/{group_id}")]
+    public async Task<IActionResult> GetGroupDetailById(Guid group_id)
+    {
+        if (group_id == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group ID is required." });
+        }
+
+        var group = await _groupService.GetGroupAsync(group_id);
+
+        if (group == null)
+        {
+            return NotFound(new { message = "Group not found." });
+        }
+
+        return Ok(group);
+    }
+
 
 }

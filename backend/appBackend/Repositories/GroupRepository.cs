@@ -1,5 +1,6 @@
 using appBackend.Models;
 using appBackend.Repositories;
+using appBackend.Dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,8 @@ namespace appBackend.Services
 
     public interface IGroupRepository
     {
-        Task<Group?> GetGroupAsync(Guid group_id); // Fetch group
+        Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin);
+        Task<GroupDto?> GetGroupAsync(Guid group_id); // Fetch group
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
     }
 
@@ -21,23 +23,46 @@ namespace appBackend.Services
             _context = context;
         }
 
-        public async Task<Group?> GetGroupAsync(Guid group_id)
+        public async Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin)
+        {
+            Console.WriteLine("Getting groups for user: " + userId + " | isAdmin: " + isAdmin);
+
+            var groups = await _context.GroupMembers
+                .Where(gm => gm.UserId == userId && gm.IsAdmin == isAdmin)
+                .Select(gm => gm.Group)
+                .ToListAsync();
+
+            return groups;
+        }
+
+
+        public async Task<GroupDto?> GetGroupAsync(Guid group_id)
         {
             Console.WriteLine("Getting group details");
             Console.WriteLine(group_id);
 
-            // Check if the group exists by its group_id
             var group = await _context.Groups
-                .FirstOrDefaultAsync(g => g.GroupId == group_id);
+                .Where(g => g.GroupId == group_id)
+                .Select(g => new GroupDto
+                {
+                    GroupId = g.GroupId,
+                    Name = g.Name,
+                    Members = g.Members.Select(m => new GroupMemberDto
+                    {
+                        GroupMemberId = m.GroupMemberId,
+                        IsAdmin = m.IsAdmin,
+                        User = new UserDto
+                        {
+                            Username = m.User.Username,
+                            ProfilePictureUrl = m.User.ProfilePictureUrl
+                        }
+                    }).ToList() // Ensures proper materialization
+                })
+                .FirstOrDefaultAsync();
 
-            // If the group is not found, return null
-            if (group == null)
-            {
-                return null; // Group doesn't exist
-            }
-
-            return group; // Return the group details
+            return group;
         }
+
 
         public async Task<Guid> CreateGroupAsync(Group group)
         {
