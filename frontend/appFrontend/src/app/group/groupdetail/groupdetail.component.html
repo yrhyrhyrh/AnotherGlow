@@ -8,7 +8,7 @@
 </ng-template>
 
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-  <app-member *ngFor="let member of groupdata.members" 
-                  [member]="member">
+  <app-member *ngFor="let member of groupData.members.values" 
+                  [member]="member.user">
   </app-member>
 </div>

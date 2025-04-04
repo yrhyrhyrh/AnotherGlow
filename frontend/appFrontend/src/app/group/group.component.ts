@@ -46,19 +46,19 @@ export class GroupComponent {
           next: (response) => {
 
             this.adminGroups = response.groups
-            console.log(response);
+            console.log(response.groups[0]);
           },
           error: (error) => {
             console.error("Request error:", error);
           }
         });
 
-        this.http.post<{ groups: any[] }>('http://localhost:5181/api/group/getbyuserid', nonAdminGroupsRequest)
+        this.http.post<{ groups: {values:any[]} }>('http://localhost:5181/api/group/getbyuserid', nonAdminGroupsRequest)
         .subscribe({
           next: (response) => {
 
-            this.nonAdminGroups = response.groups
-            console.log(response);
+            this.nonAdminGroups = response.groups.values
+            console.log(response.groups);
           },
           error: (error) => {
             console.error("Request error:", error);
