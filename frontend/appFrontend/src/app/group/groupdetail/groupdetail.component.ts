@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { MemberComponent } from './member/member.component';
 
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MemberComponent],
   templateUrl: './groupdetail.component.html',
   styleUrl: './groupdetail.component.css'
 })
