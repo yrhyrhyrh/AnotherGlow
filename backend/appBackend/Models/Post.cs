@@ -12,9 +12,9 @@ namespace appBackend.Models
         [Required]
         public string Content { get; set; } = string.Empty; // Corresponds to content (TEXT)
 
-        public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
+        public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow; // Corresponds to created_at
 
-        public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at
+        public DateTimeOffset UpdatedAt { get; set; } = DateTime.UtcNow; // Corresponds to updated_at
 
         // --- Navigation Properties ---
 

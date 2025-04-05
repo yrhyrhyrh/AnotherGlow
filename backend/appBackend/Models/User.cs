@@ -30,9 +30,9 @@ namespace appBackend.Models
         [MaxLength(255)]
         public string? ProfilePictureUrl { get; set; } // Corresponds to profile_picture_url (nullable)
 
-        public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at (TIMESTAMP WITH TIME ZONE)
+        public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow; // Corresponds to created_at (TIMESTAMP WITH TIME ZONE)
 
-        public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at (TIMESTAMP WITH TIME ZONE)
+        public DateTimeOffset UpdatedAt { get; set; } = DateTime.UtcNow; // Corresponds to updated_at (TIMESTAMP WITH TIME ZONE)
 
         // --- Navigation Properties ---
 

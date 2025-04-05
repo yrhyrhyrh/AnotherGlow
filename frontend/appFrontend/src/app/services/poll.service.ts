@@ -1,57 +1,66 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-// Define a Poll interface to represent the structure of a poll object
 export interface Poll {
-  id: number;
+  pollId: string; // Matches backend property
   question: string;
   options: string[];
   isGlobal: boolean;
-  // Add other properties as needed
+  userId: string; // Add this to match the component’s interface
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PollService {
-  private apiUrl = 'http://localhost:5181/api/polls'; // Base URL (adjust port if different)
+  private apiUrl = 'http://localhost:5181/api/polls';
 
   constructor(private http: HttpClient) { }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+      return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    }
+    return new HttpHeaders();
+  }
+
   createPoll(pollData: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/create`, pollData) // Specify the type
-      .pipe(
-        catchError(this.handleError)  // Use the new handleError method
-      );
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.apiUrl}/create`, pollData, { headers })
+      .pipe(catchError(this.handleError));
   }
 
-  getAllPolls(): Observable<Poll[]> {  // Specify the return type
-    return this.http.get<Poll[]>(`${this.apiUrl}/all`) // Specify the type and use back ticks
-      .pipe(
-        catchError(this.handleError) // Use the new handleError method
-      );
+  getAllPolls(): Observable<Poll[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Poll[]>(`${this.apiUrl}/all`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
-  // Generic error handling method
+  castVote(pollId: string, optionIndex: number, userId: string): Observable<{ message: string }> {
+    console.log('PollService - castVote');
+    console.log('pollId:', pollId);
+    console.log('optionIndex:', optionIndex);
+    console.log('userId:', userId);
+
+    const voteRequest = {
+      userId: userId,
+      optionIndex: optionIndex,
+      retract: false
+    };
+    console.log('voteRequest:', voteRequest);
+    const headers = this.getAuthHeaders();
+    return this.http.post<{ message: string }>(`${this.apiUrl}/${pollId}/vote`, voteRequest);
+  }
+
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
+      console.error('Client-side error:', error.error.message);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+      console.error(`Server returned code ${error.status}, body was:`, error.error);
     }
-    // Return an observable with a user-facing error message.
-    return throwError(() => 'Something bad happened; please try again later.');
-  }
-    castVote(pollId: number, optionIndex: number): Observable<any> {
-    const url = `${this.apiUrl}/${pollId}/vote`;  // Construct the URL
-    return this.http.post(url, optionIndex)  // Send the optionIndex in the body
-      .pipe(catchError(this.handleError));  // Handle errors
+    return throwError(() => new Error('Something went wrong. Please try again later.'));
   }
 }

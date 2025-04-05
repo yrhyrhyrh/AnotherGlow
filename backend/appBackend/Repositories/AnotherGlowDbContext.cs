@@ -14,7 +14,7 @@ namespace appBackend.Repositories // Adjust namespace as needed
         public DbSet<Follow> Follows { get; set; } = null!;
         public DbSet<Like> Likes { get; set; } = null!;
         public DbSet<Poll> Polls { get; set; } = null!; // Add DbSet for Poll
-
+        public DbSet<Vote> Votes { get; set; } = null!;
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
             : base(options)
         {
@@ -205,10 +205,16 @@ namespace appBackend.Repositories // Adjust namespace as needed
             {
                 entity.ToTable("polls"); // Explicitly map to the table name
 
-                entity.HasKey(p => p.Id); // Primary Key
-                entity.Property(p => p.Id)
+                entity.HasKey(p => p.PollId); // Primary Key
+                entity.Property(p => p.PollId)
                       .HasColumnName("poll_id") // Map to specific column name (optional)
                       .ValueGeneratedOnAdd();
+
+                entity.Property(v => v.UserId)
+                      .HasColumnName("user_id")
+                      .IsRequired()
+                      .HasColumnType("uuid");
+
 
                 entity.Property(p => p.Question)
                       .HasColumnName("question")
@@ -242,6 +248,52 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("is_global")
                       .IsRequired();
             });
+
+            // --- Vote Configuration ---
+            modelBuilder.Entity<Vote>(entity =>
+            {
+                entity.ToTable("votes"); // Use snake_case for PostgreSQL table naming
+
+                entity.HasKey(v => v.VoteId); // Primary Key
+                entity.Property(v => v.VoteId)
+                      .HasColumnName("vote_id")
+                      .ValueGeneratedOnAdd(); // Let DB generate UUID
+
+                entity.Property(p => p.UserId)
+                      .HasColumnName("user_id")
+                      .IsRequired()
+                      .HasColumnType("uuid");
+
+                entity.Property(v => v.PollId)
+                      .HasColumnName("poll_id")
+                      .IsRequired();
+
+                entity.Property(v => v.OptionIndex)
+                      .HasColumnName("option_index")
+                      .IsRequired();
+
+                entity.Property(v => v.CreatedAt)
+                      .HasColumnName("created_at")
+                      .IsRequired()
+                      .HasDefaultValueSql("now()"); // Use DB-side default timestamp
+
+                // Unique constraint: one vote per user per poll
+                entity.HasIndex(v => new { v.UserId, v.PollId }, "votes_user_id_poll_id_unique")
+                      .IsUnique();
+
+                // Relationships (if navigation properties exist, you can swap WithMany() appropriately)
+                entity.HasOne<Poll>() // Assumes navigation not defined in Vote
+                      .WithMany()
+                      .HasForeignKey(v => v.PollId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne<User>() // Assumes navigation not defined in Vote
+                      .WithMany()
+                      .HasForeignKey(v => v.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
         }
 
         // Optional: Override OnConfiguring if you're not using dependency injection
