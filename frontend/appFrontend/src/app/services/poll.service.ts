@@ -4,11 +4,11 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export interface Poll {
-  pollId: string; // Matches backend property
-  question: string;
-  options: string[];
-  isGlobal: boolean;
-  userId: string; // Add this to match the component’s interface
+  PollId: string; // Matches backend property
+  Question: string;
+  Options: string[];
+  IsGlobal: boolean;
+  UserId: string; // Add this to match the component’s interface
 }
 
 @Injectable({

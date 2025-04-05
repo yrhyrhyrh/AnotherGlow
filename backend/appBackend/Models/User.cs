@@ -47,5 +47,11 @@ namespace appBackend.Models
 
         // Likes given by this user (Join entity)
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
+
+        // Likes given by this user (Join entity)
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        // Group memberships for this user (Join entity)
+        public virtual ICollection<GroupMember> GroupMemberships { get; set; } = new List<GroupMember>();
     }
 }

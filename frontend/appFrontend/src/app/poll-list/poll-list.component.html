@@ -1,25 +1,25 @@
 <div *ngFor="let poll of polls" class="poll-card">
-  <h3>{{ poll.question }}</h3>
-  <p>Created by: {{ poll.userId }}</p>
-
-  <form (submit)="vote($event, poll.pollId, selectedOption[poll.pollId])">
-    <div *ngFor="let option of poll.options; let i = index">
+  <h3>{{ poll.Question }}</h3>
+  <p>Created by: {{ poll.UserId }}</p>
+  <form (ngSubmit)="vote($event, poll.PollId, selectedOption[poll.PollId])">
+    <div *ngFor="let option of poll.Options; let i = index">
       <label>
         <input type="radio"
-               name="option-{{ poll.pollId }}"
+               id="option-{{ poll.PollId }}-{{ i }}"
+               name="option-{{ poll.PollId }}"
                [value]="i"
-               [(ngModel)]="selectedOption[poll.pollId]"
+               [(ngModel)]="selectedOption[poll.PollId]"
                required />
         {{ option }}
       </label>
     </div>
-
-    <button type="submit" [disabled]="selectedOption[poll.pollId] === null">Vote</button>
+    <button type="submit" [disabled]="selectedOption[poll.PollId] === undefined || selectedOption[poll.PollId] === null">Vote</button>
   </form>
-
   <div *ngIf="feedbackMessage" class="feedback">
     {{ feedbackMessage }}
   </div>
-
   <hr />
+</div>
+<div *ngIf="!polls || polls.length === 0">
+  <p>No polls to display.</p>
 </div>

@@ -1,63 +1,42 @@
-using appBackend.Models;
-using appBackend.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+// using appBackend.Models;
+// using appBackend.Repositories;
+// using Microsoft.AspNetCore.Identity;
+// using Microsoft.EntityFrameworkCore;
 
-namespace appBackend.Services
-{
-    public class UserService
-    {
-        private readonly SocialMediaDbContext _context;
-        private readonly PasswordHasher<User> _passwordHasher;
+// namespace appBackend.Services
+// {
+//     public class UserService
+//     {
+//         private readonly SocialMediaDbContext _context;
 
-        public UserService(SocialMediaDbContext context)
-        {
-            _context = context;
-            _passwordHasher = new PasswordHasher<User>();
-        }
+//         public UserService(SocialMediaDbContext context)
+//         {
+//             _context = context;
+//         }
 
-        public async Task<User?> RegisterUserAsync(string username, string email, string password)
-        {
-            Console.WriteLine("registering!");
-            Console.WriteLine(username+email+password);
-            // Check if user already exists
-            if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == email))
-            {
-                return null; // User already exists
-            }
+//         public async Task<User?> GetUserAsync(Guid user_id)
+//         {
+// 					// Check if the user exists by its user_id
+//             var user = await _context.Users
+//                 .FirstOrDefaultAsync(u => u.UserId == user_id);
 
-            var newUser = new User
-            {
-                Username = username,
-                Email = email,
-                PasswordHash = _passwordHasher.HashPassword(new User(), password), // Hash password
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-            };
+//             // If the group is not found, return null
+//             if (user == null)
+//             {
+//                 return null; // User doesn't exist
+//             }
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-            return newUser;
-        }
+//             return user; // Return the user details
+//         }
 
-        public async Task<bool> ValidateUserAsync(string username, string password)
-        {
-            Console.WriteLine("Validating user...");
+//         public async Task<List<User>> GetAllNonGroupUsersAsync(Guid group_id)
+//         {
+//             var usersNotInGroup = await _context.Users
+//                 .Where(u => !_context.GroupMembers
+//                     .Any(gm => gm.GroupId == group_id && gm.UserId == u.UserId))
+//                 .ToListAsync();
 
-            var user = await _context.Users
-                .Where(u => u.Username == username)
-                .FirstOrDefaultAsync(); // Fetch the full user object
-
-            if (user == null) return false; // User not found
-
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-            return result == PasswordVerificationResult.Success;
-        }
-
-        public async Task<User?> FindUserByUsernameAsync(string username)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-        }
-
-    }
-}
+//             return usersNotInGroup;
+//         }
+//     }
+// }

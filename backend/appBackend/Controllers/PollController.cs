@@ -18,33 +18,36 @@ public class PollController : ControllerBase
     {
         Console.WriteLine("PollController - CreatePoll");
         Console.WriteLine("Poll Question: " + poll.Question);
-        Console.WriteLine("Available Claims:");
-        foreach (var claim in User.Claims)
+
+        // Extract userId from the authenticated user's claims
+        var userIdClaim = User.FindFirst("userId");
+        if (userIdClaim == null)
         {
-            Console.WriteLine($"{claim.Type}: {claim.Value}");
+            Console.WriteLine("Invalid request: UserId is missing.");
+            return Unauthorized("User ID claim is missing.");
         }
 
-        var userIdClaim = User.FindFirst("user_id");
-        if (userIdClaim != null)
+        if (!Guid.TryParse(userIdClaim.Value, out var userId))
         {
-            poll.UserId = Guid.Parse(userIdClaim.Value);
+            Console.WriteLine("Invalid request: UserId claim is not a valid GUID.");
+            return BadRequest("User ID must be a valid GUID.");
         }
-        else
-        {
-            Console.WriteLine("No user ID found in claims.");
-            return BadRequest("User ID not found.");
-        }
-    
+
+        // Set the UserId on the poll object
+        poll.UserId = userId;
+
         _pollService.CreatePoll(poll);
+        Console.WriteLine("Poll created successfully.");
         return Ok(new { message = "Poll created successfully!" });
     }
-
 
     [HttpGet("all")]
     public IActionResult GetAllPolls()
     {
         Console.WriteLine("PollController - GetAllPolls");
-        return Ok(_pollService.GetAllPolls());
+        var polls = _pollService.GetAllPolls();
+        Console.WriteLine($"Retrieved {polls.Count()} polls.");
+        return Ok(polls);
     }
 
     [HttpPost("{pollId:guid}/vote")]
@@ -56,16 +59,24 @@ public class PollController : ControllerBase
         Console.WriteLine("VoteRequest - optionIndex: " + request.OptionIndex);
         Console.WriteLine("VoteRequest - retract: " + request.Retract);
 
+        if (request == null || request.UserId == Guid.Empty)
+        {
+            Console.WriteLine("Invalid request: UserId is missing.");
+            return BadRequest("Invalid request. User ID must be provided.");
+        }
+
         try
         {
             if (request.Retract)
             {
                 _pollService.RetractVote(pollId, request.UserId);
+                Console.WriteLine("Vote retracted successfully.");
                 return Ok(new { message = "Vote retracted successfully!" });
             }
             else
             {
                 _pollService.CastVote(pollId, request.UserId, request.OptionIndex);
+                Console.WriteLine("Vote cast successfully.");
                 return Ok(new { message = "Vote cast successfully!" });
             }
         }

@@ -6,7 +6,13 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using appBackend.Services;
+using appBackend.Adapters;
+using appBackend.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
+using appBackend.Interfaces.GlobalPostWall;
+using appBackend.Services.GlobalPostWall;
+using appBackend.Repositories.GlobalPostWall;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,11 +50,37 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
+// Register Services
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostSocialActionsService, PostSocialActionsService>();
+
+// Register Repositories
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        x.JsonSerializerOptions.PropertyNamingPolicy = null; // optional: keeps PascalCase if you prefer
+    });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserAdapter, UserAdapter>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IGroupAdapter, GroupAdapter>();
+builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+builder.Services.AddScoped<IGroupMemberAdapter, GroupMemberAdapter>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+// builder.Services.AddScoped<UserService>(); // Register UserService
+builder.Services.AddScoped<GroupService>(); // Register Group service
+builder.Services.AddScoped<GroupMemberService>(); // Register Group service
+
+builder.Services.AddSwaggerGen(); // Swagger generation setup
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

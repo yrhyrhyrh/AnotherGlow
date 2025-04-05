@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { PollService } from '../services/poll.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { AuthService } from '../services/auth.service';
 interface Poll {
-  pollId: string;
-  userId: string;
-  question: string;
-  options: string[];
-  isGlobal: boolean;
+  PollId: string;
+  UserId: string;
+  Question: string;
+  Options: string[];
+  IsGlobal: boolean;
 }
 
 @Component({
@@ -23,7 +23,7 @@ export class PollListComponent implements OnInit {
   selectedOption: { [pollId: string]: number | null } = {};
   feedbackMessage: string | null = null;
 
-  constructor(private pollService: PollService) { }
+  constructor(private pollService: PollService, private authService: AuthService) { }
 
   ngOnInit() {
     console.log('PollListComponent - ngOnInit');
@@ -33,27 +33,32 @@ export class PollListComponent implements OnInit {
   vote(event: Event, pollId: string, optionIndex: number | null): void {
     event.preventDefault();
 
+    console.log('PollListComponent - vote: Attempting to vote.');
+    console.log(`Poll ID: ${pollId}, Option Index: ${optionIndex}`);
+
     if (optionIndex === null) {
-      console.warn('No option selected.');
+      console.warn('PollListComponent - vote: No option selected.');
       return;
     }
 
-    const userId = localStorage.getItem('userId');
+    const userId = this.authService.getUserId();
+    console.log(`PollListComponent - vote: User ID: ${userId}`);
 
     if (!userId) {
-      console.error('User ID is missing. Ensure the user is logged in.');
+      console.error('PollListComponent - vote: User ID is missing. Ensure the user is logged in.');
       alert('User ID is missing. Please log in again.');
       return;
     }
 
     this.pollService.castVote(pollId, optionIndex, userId).subscribe({
       next: (response) => {
-        console.log('Vote cast successfully:', response.message);
+        console.log('PollListComponent - vote: Vote cast successfully:', response.message);
         this.feedbackMessage = response.message;
-        this.refreshPolls(); // Optional: Refresh the polls after voting
+        setTimeout(() => { this.feedbackMessage = null; }, 3000); // Clear after 3 seconds
+        this.refreshPolls();
       },
       error: (error) => {
-        console.error('Error casting vote:', error);
+        console.error('PollListComponent - vote: Error casting vote:', error);
         alert('Failed to cast vote. Please try again.');
       }
     });
