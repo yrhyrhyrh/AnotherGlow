@@ -3,8 +3,11 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { GroupComponent } from './group/group.component';
-import { AuthGuard } from './auth.guard';
 import { GroupdetailComponent } from './group/groupdetail/groupdetail.component';
+
+import { AuthGuard } from './auth.guard';
+import { PollingComponent } from './polling/polling.component';
+import { PollListComponent } from './poll-list/poll-list.component'; // Import PollListComponent
 
 export const routes: Routes = [
   {
@@ -35,4 +38,16 @@ export const routes: Routes = [
     title: "Group Details",
     canActivate: [AuthGuard],
   },
+  {
+    path: 'polls/create',
+    component: PollingComponent,
+    title: "Create Poll",
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'polls', // Route to display polls
+    component: PollListComponent,
+    title: "Poll List",
+    canActivate: [AuthGuard] // Optional auth guard
+  }
 ];

@@ -19,7 +19,6 @@ export class LoginComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
   
-  // Method to handle login form submission
   onSubmit() {
     const { username, password } = this.user;
 
@@ -28,21 +27,26 @@ export class LoginComponent {
       return;
     }
 
-    // Send POST request to backend API
-    this.http.post<{ token: string }>('http://localhost:5181/api/auth/login', this.user)
-      .subscribe({
-        next: (response) => {
-          console.log("Login successful:", response.token);
-          // Store the token in localStorage or sessionStorage
-          if (typeof window !== "undefined") {
-            localStorage.setItem('jwt_token', response.token);
+    this.http.post<{ token: string; userId: string; fullName?: string }>(
+      'http://localhost:5181/api/auth/login',
+      this.user
+    ).subscribe({
+      next: (response) => {
+        console.log("Login successful:", response.token);
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem('jwt_token', response.token);
+          localStorage.setItem('userId', response.userId); // ✅ Save userId
+          if (response.fullName) {
+            localStorage.setItem('fullName', response.fullName); // Optional
           }
-          // Redirect to home after successful login
-          this.router.navigate(['/']);
-        },
-        error: (error) => {
-          console.error("Login error:", error);
         }
-      });
+
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error("Login error:", error);
+      }
+    });
   }
 }

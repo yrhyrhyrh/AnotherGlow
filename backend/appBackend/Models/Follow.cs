@@ -12,7 +12,7 @@ namespace appBackend.Models
         public Guid FollowerUserId { get; set; } // Foreign key to the user doing the following
         public Guid FollowingUserId { get; set; } // Foreign key to the user being followed
 
-        public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
+        public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow; // Corresponds to created_at
 
         // --- Navigation Properties ---
 
