@@ -1,5 +1,11 @@
 <ng-container *ngIf="groupData; else loading">
   <h2>{{ groupData.Name }}</h2>
+  <app-search-bar
+    [suggestions]="userSuggestions"
+    [maxSuggestions]="8"
+    (search)="fetchUsersNotInGroup($event)"
+    (suggestionClicked)="handleSelect($event)"
+  ></app-search-bar>
 
   <!-- <p>{{ groupData.description }}</p> -->
 

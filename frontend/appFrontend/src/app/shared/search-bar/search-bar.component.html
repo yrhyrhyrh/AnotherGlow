@@ -1,0 +1,35 @@
+<div class="relative w-full">
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    (keydown.enter)="onSearch()"
+    [placeholder]="placeholder"
+    class="border border-gray-300 rounded-lg px-3 py-2 w-full"
+  />
+  <button
+    (click)="onSearch()"
+    class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+  >
+    Search
+  </button>
+
+
+  <ul *ngIf="filteredSuggestions.length" class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-48 overflow-y-auto z-10 shadow-lg">
+    <li
+      *ngFor="let suggestion of filteredSuggestions"
+      (click)="onSelectSuggestion(suggestion.Username)"
+      class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+    >
+      <ng-container *ngIf="suggestion.ProfilePictureUrl; else initial">
+        <img [src]="suggestion.ProfilePictureUrl" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+      </ng-container>
+      <ng-template #initial>
+        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-white">
+          {{ suggestion.Username[0] | uppercase }}
+        </div>
+      </ng-template>
+
+      <span>{{ suggestion.Username }}</span>
+    </li>
+  </ul>
+</div>

@@ -3,17 +3,20 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { MemberComponent } from './member/member.component';
+import { SearchBarComponent } from '../../shared/search-bar/search-bar.component';
+import { UserSuggestion } from '../../interfaces/userSuggestion';
 
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [CommonModule, MemberComponent],
+  imports: [CommonModule, MemberComponent, SearchBarComponent],
   templateUrl: './groupdetail.component.html',
   styleUrl: './groupdetail.component.css'
 })
 export class GroupdetailComponent implements OnInit {
   groupId: string | null = null;
   groupData: any = null;
+  userSuggestions: UserSuggestion[] = [];
 
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
@@ -23,13 +26,13 @@ export class GroupdetailComponent implements OnInit {
       this.groupId = params.get('id');  // Get ID from the URL
 
       if (this.groupId) {
-        this.fetchGroupDetails(this.groupId);
+        this.fetchGroupDetails();
       }
     });
   }
 
-  fetchGroupDetails(groupId: string) {
-    this.http.get(`http://localhost:5181/api/group/detail/${groupId}`)
+  fetchGroupDetails() {
+    this.http.get(`http://localhost:5181/api/group/detail/${this.groupId}`)
       .subscribe({
         next: (data) => {
           console.log("data is:",data);
@@ -37,5 +40,28 @@ export class GroupdetailComponent implements OnInit {
         },
         error: (err) => console.error('Error fetching group details:', err)
       });
+  }
+
+  fetchUsersNotInGroup(keyword: string) {
+    this.http.get<UserSuggestion[]>(`http://localhost:5181/api/group/getUsersToAdd/${this.groupId}?keyword=${keyword}`)
+      .subscribe({
+        next: (data) => {
+          console.log("users:", data);
+          this.userSuggestions = data;
+        },
+        error: (err) => {
+          console.error("Failed to fetch users:", err);
+          this.userSuggestions = [];
+        }
+      });
+  }  
+
+  onSearch(keyword: string) {
+    // Call your service or filter logic here
+    this.fetchUsersNotInGroup(keyword);
+  };
+
+  handleSelect(username: string) {
+    console.log("Name:",username);
   }
 }
