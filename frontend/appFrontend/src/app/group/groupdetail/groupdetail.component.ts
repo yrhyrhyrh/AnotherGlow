@@ -32,7 +32,7 @@ export class GroupdetailComponent implements OnInit {
     this.http.get(`http://localhost:5181/api/group/detail/${groupId}`)
       .subscribe({
         next: (data) => {
-          console.log(data);
+          console.log("data is:",data);
           this.groupData = data;
         },
         error: (err) => console.error('Error fetching group details:', err)

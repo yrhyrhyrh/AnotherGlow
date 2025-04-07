@@ -8,10 +8,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./group-card.component.css']
 })
 export class GroupCardComponent {
-  @Input() group!: { name: string; description: string; groupId: string };
+  @Input() group!: { Name: string; GroupId: string };
   @Output() clicked = new EventEmitter<string>();
 
   onClick() {
-    this.clicked.emit(this.group.groupId);
+    this.clicked.emit(this.group.GroupId);
   }
 }

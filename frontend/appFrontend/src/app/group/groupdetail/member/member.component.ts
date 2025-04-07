@@ -8,7 +8,9 @@ import { Component, Input } from '@angular/core';
   styleUrl: './member.component.css'
 })
 export class MemberComponent {
-  @Input() member!: { username: string; profilePictureUrl: string; userId: string };
-  
+  @Input() member!: { Username: string; ProfilePictureUrl: string; };
 
+  ngOnInit(): void {
+    console.log("Member received:", this.member);
+  }
 }

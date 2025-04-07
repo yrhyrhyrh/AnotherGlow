@@ -12,6 +12,7 @@ namespace appBackend.Services
         Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin);
         Task<GroupDto?> GetGroupAsync(Guid group_id); // Fetch group
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
+        Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword);
     }
 
     public class GroupRepository : IGroupRepository
@@ -84,6 +85,35 @@ namespace appBackend.Services
             _context.Groups.Add(newGroup);
             await _context.SaveChangesAsync();
             return newGroup.GroupId;
+        }
+
+        public async Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword)
+        {
+            Console.WriteLine($"Getting users to add in: {group_id} with keyword: {keyword}");
+
+            var query = _context.Users
+                .Where(u => !_context.GroupMembers
+                    .Where(gm => gm.GroupId == group_id)
+                    .Select(gm => gm.UserId)
+                    .Contains(u.UserId));
+
+            // Only filter by keyword if it's not null or whitespace
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(u => u.Username.Contains(keyword));
+            }
+
+            var usersNotInGroup = await query
+                .OrderBy(u => u.Username)
+                .Select(u => new UserDto
+                {
+                    Username = u.Username,
+                    ProfilePictureUrl = u.ProfilePictureUrl
+                })
+                .Take(20)
+                .ToListAsync();
+
+            return usersNotInGroup;
         }
     }
 }

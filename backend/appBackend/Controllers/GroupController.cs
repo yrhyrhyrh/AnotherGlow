@@ -82,5 +82,21 @@ public class GroupController : ControllerBase
         return Ok(group);
     }
 
+    [HttpGet("getUsersToAdd/{group_id}")]
+    public async Task<IActionResult> SearchUsersNotInGroupAsync(Guid group_id, [FromQuery] string? keyword)
+    {
+        if (group_id == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group ID is required." });
+        }
 
+        var users = await _groupService.SearchUsersNotInGroupAsync(group_id, keyword ?? string.Empty);
+
+        if (!users.Any())
+        {
+            return NotFound(new { message = "No users to add." });
+        }
+
+        return Ok(users);
+    }
 }

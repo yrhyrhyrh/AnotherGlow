@@ -52,5 +52,12 @@ namespace appBackend.Services
 
             return createdGroup_Id;
         }
+
+        public async Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword)
+        {
+            Console.WriteLine("Searching users not in group");
+            var users = await _groupRepository.SearchUsersNotInGroupAsync(group_id, keyword);
+            return users;
+        }
     }
 }
