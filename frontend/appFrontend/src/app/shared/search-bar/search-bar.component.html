@@ -14,10 +14,10 @@
   </button>
 
 
-  <ul *ngIf="filteredSuggestions.length" class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-48 overflow-y-auto z-10 shadow-lg">
+  <ul *ngIf="suggestions.length" class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-48 overflow-y-auto z-10 shadow-lg">
     <li
-      *ngFor="let suggestion of filteredSuggestions"
-      (click)="onSelectSuggestion(suggestion.Username)"
+      *ngFor="let suggestion of suggestions"
+      (click)="onSelectSuggestion(suggestion)"
       class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
     >
       <ng-container *ngIf="suggestion.ProfilePictureUrl; else initial">

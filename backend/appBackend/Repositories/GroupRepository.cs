@@ -107,6 +107,7 @@ namespace appBackend.Services
                 .OrderBy(u => u.Username)
                 .Select(u => new UserDto
                 {
+                    UserId = u.UserId,
                     Username = u.Username,
                     ProfilePictureUrl = u.ProfilePictureUrl
                 })

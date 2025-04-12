@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MemberComponent } from './member/member.component';
 import { SearchBarComponent } from '../../shared/search-bar/search-bar.component';
 import { UserSuggestion } from '../../interfaces/userSuggestion';
+import { AddNewMemberRequest } from '../../interfaces/addNewMemberRequest';
 
 @Component({
   selector: 'app-group-detail',
@@ -17,7 +18,7 @@ export class GroupdetailComponent implements OnInit {
   groupId: string | null = null;
   groupData: any = null;
   userSuggestions: UserSuggestion[] = [];
-
+  usersToAdd: Set<UserSuggestion> = new Set<UserSuggestion>();
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   ngOnInit() {
@@ -54,14 +55,31 @@ export class GroupdetailComponent implements OnInit {
           this.userSuggestions = [];
         }
       });
-  }  
+  }
+
+  addUsersToGroup() {
+    var request: AddNewMemberRequest = {
+      GroupId: this.groupId!,
+      UserIds: [...this.usersToAdd].map((user)=> user.UserId),
+    }
+    this.http.post<{ token: string }>('http://localhost:5181/api/group/addMembers', request)
+      .subscribe({
+        next: (response) => {
+          location.reload();
+        },
+        error: (error) => {
+          console.error("Request error:", error);
+        }
+      });
+  }
 
   onSearch(keyword: string) {
     // Call your service or filter logic here
     this.fetchUsersNotInGroup(keyword);
   };
 
-  handleSelect(username: string) {
-    console.log("Name:",username);
+  handleSelect(user: UserSuggestion) {
+    console.log("Adding id:",user.UserId);
+    this.usersToAdd.add(user);
   }
 }

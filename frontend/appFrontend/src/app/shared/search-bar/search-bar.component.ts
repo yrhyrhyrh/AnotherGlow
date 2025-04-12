@@ -12,11 +12,11 @@ import { UserSuggestion } from '../../interfaces/userSuggestion';
 })
 export class SearchBarComponent {
   @Input() placeholder: string = 'Search...';
-  @Input() suggestions: UserSuggestion[] = [];
+  @Input() suggestions: any[] = [];
   @Input() maxSuggestions: number = 5;
 
   @Output() search = new EventEmitter<string>();
-  @Output() suggestionClicked = new EventEmitter<string>();
+  @Output() suggestionClicked = new EventEmitter<any>();
 
   searchTerm: string = '';
 
@@ -24,14 +24,7 @@ export class SearchBarComponent {
     this.search.emit(this.searchTerm.trim());
   }
 
-  onSelectSuggestion(suggestion: string) {
+  onSelectSuggestion(suggestion: any) {
     this.suggestionClicked.emit(suggestion);
-    this.search.emit(suggestion);
-  }
-
-  get filteredSuggestions() {
-    return this.suggestions
-      .filter(s => s.Username.toLowerCase().includes(this.searchTerm.toLowerCase()))
-      .slice(0, this.maxSuggestions);
   }
 }
