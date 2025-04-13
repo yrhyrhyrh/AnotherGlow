@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using appBackend.Services;
-using appBackend.Dtos;
+using appBackend.Dtos.Auth;
 
 namespace appBackend.Controllers;
 

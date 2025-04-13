@@ -1,4 +1,4 @@
-namespace appBackend.Dtos;
+namespace appBackend.Dtos.Group;
 
 public class GroupRequest
 {
