@@ -32,6 +32,18 @@ export class AuthService {
     }
   }
 
+  getToken(): string | null {
+    console.log('AuthService - getToken called');
+    const token = localStorage.getItem(this.tokenKey);
+    if (!token) {
+      console.warn('AuthService - No token found in localStorage');
+      return null;
+    }
+    else {
+      return token;
+    }
+  }
+
   // Function to log out the user by removing the token and redirecting to login
   logout(): void {
     console.log('AuthService - logout called');

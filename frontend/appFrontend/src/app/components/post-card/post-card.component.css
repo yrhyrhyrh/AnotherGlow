@@ -1,0 +1,24 @@
+.post-card {
+  margin-bottom: 0;
+  width: 100%;
+  display: block;
+  min-height: auto; /* Ensure card can grow vertically */
+}
+
+.mat-card-content {
+  overflow: visible; /* Allow content to overflow if needed (adjust if you want scrollbars instead) */
+  /* Remove any fixed height that might be here */
+  /* height: ...;  remove any lines like this */
+  /* max-height: ...; remove any lines like this */
+  padding: 16px; /* Keep default padding or adjust as needed */
+}
+
+.mat-card-header {
+  /* Keep header styling, adjust if needed */
+  padding: 16px;
+}
+
+.mat-card-actions {
+  /* Keep actions styling, adjust if needed */
+  padding: 8px 16px 16px; /* Adjust padding for actions */
+}

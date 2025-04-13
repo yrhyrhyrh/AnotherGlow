@@ -3,6 +3,7 @@
     public class CommentDTO
     {
         public Guid CommentId { get; set; }
+        public Guid PostId { get; set; } // Associated Post ID
         public Guid UserId { get; set; } // Comment author ID
         public string AuthorUsername { get; set; } = string.Empty;
         public string AuthorFullName { get; set; } = string.Empty;

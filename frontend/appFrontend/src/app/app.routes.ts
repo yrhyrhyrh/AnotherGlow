@@ -1,13 +1,12 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { GroupComponent } from './group/group.component';
 import { GroupdetailComponent } from './group/groupdetail/groupdetail.component';
-
-import { AuthGuard } from './auth.guard';
 import { PollingComponent } from './polling/polling.component';
-import { PollListComponent } from './poll-list/poll-list.component'; // Import PollListComponent
+import { PollListComponent } from './poll-list/poll-list.component';
+import { PostListComponent } from './components/post-list/post-list.component'; // Import PostListComponent
+import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -22,8 +21,8 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: HomeComponent,
-    title: "Home Page",
+    component: PostListComponent, // Changed to PostListComponent
+    title: "Global Post Wall",     // Updated title
     canActivate: [AuthGuard],
   },
   {

@@ -1,0 +1,32 @@
+<mat-card class="post-card">
+    <mat-card-header>
+      <mat-card-title>{{ post.AuthorFullName }}</mat-card-title>
+      <mat-card-subtitle>{{ post.AuthorUsername }} - {{ post.CreatedAt | date:'medium' }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ post.Content }}</p>
+      <div *ngIf="post.Attachments && post.Attachments.length > 0">
+        <p>Attachments:</p>
+        <ul>
+          <li *ngFor="let attachment of post.Attachments">
+            <a [href]="attachment.FilePath" target="_blank">{{ attachment.FileName }}</a>
+          </li>
+        </ul>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="primary" (click)="likePost()" *ngIf="!isLiked">
+        <mat-icon>thumb_up</mat-icon> Like ({{ post.LikeCount }})
+      </button>
+      <button mat-button color="accent" (click)="unlikePost()" *ngIf="isLiked">
+        <mat-icon>thumb_down</mat-icon> Unlike ({{ post.LikeCount }})
+      </button>
+      <button mat-button (click)="toggleComments()">
+        <mat-icon>comment</mat-icon> Comments ({{ post.CommentCount }})
+      </button>
+    </mat-card-actions>
+    <mat-card-content *ngIf="commentsVisible">
+      <app-comment-list [PostId]="post.PostId"></app-comment-list>
+      <app-comment-create [PostId]="post.PostId" (commentCreated)="onCommentAdded($event)"></app-comment-create>
+    </mat-card-content>
+  </mat-card>

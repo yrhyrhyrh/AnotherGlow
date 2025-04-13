@@ -1,9 +1,11 @@
 ﻿using appBackend.Dtos.GlobalPostWall;
 using appBackend.Interfaces.GlobalPostWall;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace appBackend.Controllers.GlobalPostWall
 {
+    [Authorize]
     [ApiController]
     [Route("api/social-actions")]
     public class SocialActionsController : ControllerBase
@@ -19,7 +21,7 @@ namespace appBackend.Controllers.GlobalPostWall
         public async Task<IActionResult> LikePost(Guid postId)
         {
             // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
 
             var likeDto = await _socialActionsService.LikePostAsync(postId, currentUserId);
             if (likeDto == null) return BadRequest("Post not found or already liked."); // Or return 409 Conflict for already liked
@@ -37,19 +39,28 @@ namespace appBackend.Controllers.GlobalPostWall
         [HttpPost("posts/{postId}/unlike")]
         public async Task<IActionResult> UnlikePost(Guid postId)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
 
             bool unliked = await _socialActionsService.UnlikePostAsync(postId, currentUserId);
             if (!unliked) return NotFound("Like not found or post not found.");
             return NoContent(); // 204 No Content - successful unlike
         }
 
+        [HttpGet("posts/{postId}/comments")] // New controller action
+        public async Task<IActionResult> GetCommentsForPost(Guid postId)
+        {
+            var comments = await _socialActionsService.GetCommentsForPostAsync(postId); // Call service method
+            if (comments == null) // Service might return null if post not found or other issue
+            {
+                return NotFound();
+            }
+            return Ok(comments); // Return the list of CommentDTOs
+        }
+
         [HttpPost("posts/{postId}/comments")]
         public async Task<IActionResult> AddCommentToPost(Guid postId, [FromBody] CreateCommentRequestDTO createCommentDto)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
 
             try
             {
@@ -76,8 +87,7 @@ namespace appBackend.Controllers.GlobalPostWall
         [HttpDelete("comments/{commentId}")]
         public async Task<IActionResult> DeleteComment(Guid commentId)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
 
             try
             {

@@ -1,0 +1,11 @@
+<mat-card class="comment-create-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Add a comment</mat-label>
+        <textarea matInput [(ngModel)]="commentContent" rows="2"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button color="primary" (click)="addComment()">Post Comment</button>
+    </mat-card-actions>
+  </mat-card>

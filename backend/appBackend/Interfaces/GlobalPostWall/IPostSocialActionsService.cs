@@ -8,5 +8,6 @@ namespace appBackend.Interfaces.GlobalPostWall
         Task<bool> UnlikePostAsync(Guid postId, Guid userId);
         Task<CommentDTO> AddCommentToPostAsync(Guid postId, Guid userId, CreateCommentRequestDTO createCommentDto);
         Task<bool> DeleteCommentAsync(Guid commentId, Guid userId); // Author or Admin can delete
+        Task<List<CommentDTO>> GetCommentsForPostAsync(Guid postId); // New method in service interface
     }
 }

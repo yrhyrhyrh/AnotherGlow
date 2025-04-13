@@ -1,0 +1,32 @@
+.container {
+  padding: 20px;
+  max-width: 70%; /* Adjust as needed */
+  margin: 0 auto;
+}
+
+.post-wrapper {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+
+mat-toolbar {
+  margin-bottom: 20px; /* Add some space below the toolbar */
+}
+
+mat-list {
+  display: flex;         /* Use Flexbox for the list */
+  flex-direction: column; /* Arrange items in a column */
+  padding: 0;             /* Remove default padding from mat-list */
+}
+
+mat-list-item {
+  padding: 0;          /* Remove default padding from mat-list-item */
+  margin-bottom: 16px; /* Add space between list items (posts) */
+  width: 100%;         /* Ensure each list item takes full width */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+mat-divider {
+  margin: 10px 0; /* Keep divider margins if you like */
+}

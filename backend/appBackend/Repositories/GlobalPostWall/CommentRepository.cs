@@ -1,5 +1,6 @@
 ﻿using appBackend.Interfaces.GlobalPostWall;
 using appBackend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace appBackend.Repositories.GlobalPostWall
 {
@@ -32,6 +33,14 @@ namespace appBackend.Repositories.GlobalPostWall
             _dbContext.Comments.Remove(comment);
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
+        {
+            return await _dbContext.Comments
+                .Include(c => c.User) // Eager load User for Author details
+                .Where(c => c.PostId == postId)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
         }
     }
 }

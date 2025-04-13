@@ -85,8 +85,21 @@ namespace appBackend.Services.GlobalPostWall
 
             return await _commentRepository.DeleteCommentAsync(commentId);
         }
+
+        public async Task<List<CommentDTO>> GetCommentsForPostAsync(Guid postId) // New service method
+        {
+            var comments = await _commentRepository.GetCommentsByPostIdAsync(postId); // Use Comment Repository to fetch comments
+            return comments.Select(comment => new CommentDTO
+            {
+                CommentId = comment.CommentId,
+                PostId = comment.PostId,
+                UserId = comment.UserId,
+                AuthorUsername = comment.User.Username,
+                AuthorFullName = comment.User.FullName,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt
+            }).ToList();
+        }
     }
-    public class PostSocialActionService
-    {
-    }
+
 }
