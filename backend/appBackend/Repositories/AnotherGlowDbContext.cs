@@ -252,6 +252,11 @@ namespace appBackend.Repositories // Adjust namespace as needed
                 entity.Property(p => p.IsGlobal)
                       .HasColumnName("is_global")
                       .IsRequired();
+
+                entity.Property(p => p.AllowMultipleSelections)
+                      .HasColumnName("allow_multiple_selections")
+                      .IsRequired()
+                      .HasDefaultValue(false); // Default to single selection
             });
 
             // --- Vote Configuration ---
@@ -283,7 +288,7 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasDefaultValueSql("now()"); // Use DB-side default timestamp
 
                 // Unique constraint: one vote per user per poll
-                entity.HasIndex(v => new { v.UserId, v.PollId }, "votes_user_id_poll_id_unique")
+                entity.HasIndex(v => new { v.UserId, v.PollId, v.OptionIndex }, "votes_user_poll_option_unique") // New name
                       .IsUnique();
 
                 // Relationships (if navigation properties exist, you can swap WithMany() appropriately)
@@ -297,8 +302,6 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasForeignKey(v => v.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
-
-
 
             // --- Comment Configuration ---
             modelBuilder.Entity<Comment>(entity =>
@@ -396,27 +399,26 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .OnDelete(DeleteBehavior.Cascade);
             });
         
-
-        // --- Group Configuration ---
-        modelBuilder.Entity<Group>(entity =>
-            {
-                entity.ToTable("groups");
-                entity.HasKey(g => g.GroupId);
-                entity.Property(g => g.GroupId)
-                      .HasColumnName("group_id")
-                      .ValueGeneratedOnAdd();
-                entity.Property(g => g.Name)
-                      .HasColumnName("name")
-                      .IsRequired()
-                      .HasMaxLength(100);
-                entity.Property(g => g.CreatedAt)
-                      .HasColumnName("created_at")
-                      .IsRequired()
-                      .HasDefaultValueSql("now()");
-                entity.Property(g => g.UpdatedAt)
-                      .HasColumnName("updated_at")
-                      .HasDefaultValueSql("now()");
-            });
+            // --- Group Configuration ---
+            modelBuilder.Entity<Group>(entity =>
+                {
+                    entity.ToTable("groups");
+                    entity.HasKey(g => g.GroupId);
+                    entity.Property(g => g.GroupId)
+                          .HasColumnName("group_id")
+                          .ValueGeneratedOnAdd();
+                    entity.Property(g => g.Name)
+                          .HasColumnName("name")
+                          .IsRequired()
+                          .HasMaxLength(100);
+                    entity.Property(g => g.CreatedAt)
+                          .HasColumnName("created_at")
+                          .IsRequired()
+                          .HasDefaultValueSql("now()");
+                    entity.Property(g => g.UpdatedAt)
+                          .HasColumnName("updated_at")
+                          .HasDefaultValueSql("now()");
+                });
 
             // --- GroupMember Configuration ---
             modelBuilder.Entity<GroupMember>(entity =>

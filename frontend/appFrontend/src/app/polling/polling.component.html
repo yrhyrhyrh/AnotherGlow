@@ -1,32 +1,47 @@
 <div class="container">
   <h1>Create a New Poll</h1>
   <form [formGroup]="pollForm" (ngSubmit)="onSubmit()">
+    <!-- Question Input -->
     <div class="form-group">
-      <label for="question">Question:</label>
+      <label for="question">Poll Question:</label>
       <input type="text" id="question" class="form-control" formControlName="question">
-      <div *ngIf="pollForm.get('question')?.invalid && (pollForm.get('question')?.dirty || pollForm.get('question')?.touched)" class="alert alert-danger">
+      <div *ngIf="pollForm.get('question')?.invalid && (pollForm.get('question')?.dirty || pollForm.get('question')?.touched)" class="alert alert-danger mt-1">
         Question is required.
       </div>
     </div>
 
-    <div formArrayName="options">
-      <label>Options:</label>
-      <div *ngFor="let option of options.controls; let i = index" class="option-row">
-        <input type="text" class="form-control" [formControlName]="i">
-        <button type="button" class="btn btn-danger" (click)="removeOption(i)">Remove</button>
+    <!-- Options Section -->
+    <div formArrayName="options" class="form-group">
+      <label>Poll Options (at least 2):</label>
+      <div *ngFor="let option of options.controls; let i = index" class="option-row mb-2">
+        <input type="text" class="form-control me-2" [formControlName]="i" placeholder="Option {{ i + 1 }}">
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeOption(i)" [disabled]="options.controls.length <= 2">Remove</button>
       </div>
-      <button type="button" class="btn btn-primary" (click)="addOption()">Add Option</button>
+      <!-- Validation message for options array -->
+      <div *ngIf="options.invalid && options.touched" class="alert alert-danger mt-1">
+        Please ensure all options are filled and you have at least two options.
+      </div>
+      <button type="button" class="btn btn-sm btn-secondary mt-2" (click)="addOption()">Add Another Option</button>
     </div>
 
-    <div class="form-check">
+    <!-- Global Setting -->
+    <div class="form-check mb-3">
       <input type="checkbox" class="form-check-input" id="isGlobal" formControlName="isGlobal">
-      <label class="form-check-label" for="isGlobal">Share Globally</label>
+      <label class="form-check-label" for="isGlobal">Make Poll Global (visible to everyone)</label>
     </div>
 
+    <!-- Allow Multiple Selections Setting -->
+    <div class="form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="allowMultipleSelections" formControlName="allowMultipleSelections">
+      <label class="form-check-label" for="allowMultipleSelections">Allow voters to select multiple options</label>
+    </div>
+
+    <!-- Submit Button -->
     <button type="submit" class="btn btn-success" [disabled]="pollForm.invalid">Create Poll</button>
   </form>
 
-  <div *ngIf="successMessage" class="alert alert-success">
+  <!-- Feedback Message -->
+  <div *ngIf="successMessage" class="alert mt-3" [ngClass]="{'alert-success': !successMessage.startsWith('Failed'), 'alert-danger': successMessage.startsWith('Failed')}">
     {{ successMessage }}
   </div>
 </div>
