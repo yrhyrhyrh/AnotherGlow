@@ -20,26 +20,27 @@ namespace appBackend.Services.GlobalPostWall
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<List<PostDTO>> GetGlobalPostsAsync()
+        public async Task<List<PostDTO>> GetGlobalPostsAsync(Guid currentUserId)
         {
             var posts = await _postRepository.GetAllPostsAsync();
-            return posts.Select(p => MapPostToDTO(p)).ToList();
+            return posts.Select(p => MapPostToDTO(currentUserId, p)).ToList();
         }
 
-        public async Task<PostDTO?> GetPostByIdAsync(Guid postId)
+        public async Task<PostDTO?> GetPostByIdAsync(Guid currentUserId, Guid postId)
         {
+
             var post = await _postRepository.GetPostByIdAsync(postId);
-            return post == null ? null : MapPostToDTO(post);
+            return post == null ? null : MapPostToDTO(currentUserId, post);
         }
 
-        public async Task<PostDTO> CreatePostAsync(Guid userId, CreatePostRequestDTO createPostDto)
+        public async Task<PostDTO> CreatePostAsync(Guid curentUserId, CreatePostRequestDTO createPostDto)
         {
-            var user = await _dbContext.Users.FindAsync(userId); // Still using DbContext for User lookup
+            var user = await _dbContext.Users.FindAsync(curentUserId); // Still using DbContext for User lookup
             if (user == null) throw new KeyNotFoundException("User not found.");
 
             var post = new Post
             {
-                UserId = userId,
+                UserId = curentUserId,
                 Content = createPostDto.Content
             };
 
@@ -51,15 +52,15 @@ namespace appBackend.Services.GlobalPostWall
                 await SaveAttachmentsAsync(createdPost.PostId, createPostDto.Attachments);
             }
 
-            return MapPostToDTO(createdPost);
+            return MapPostToDTO(curentUserId, createdPost);
         }
 
-        public async Task<PostDTO?> UpdatePostAsync(Guid postId, Guid userId, UpdatePostRequestDTO updatePostDto)
+        public async Task<PostDTO?> UpdatePostAsync(Guid postId, Guid currentUserId, UpdatePostRequestDTO updatePostDto)
         {
             var post = await _postRepository.GetPostByIdAsync(postId);
             if (post == null) return null;
 
-            if (post.UserId != userId)
+            if (post.UserId != currentUserId)
             {
                 throw new UnauthorizedAccessException("You are not authorized to update this post.");
             }
@@ -71,16 +72,16 @@ namespace appBackend.Services.GlobalPostWall
             }
 
             var updatedPost = await _postRepository.UpdatePostAsync(post); // Use repository to update
-            return MapPostToDTO(updatedPost);
+            return MapPostToDTO(currentUserId, updatedPost);
         }
 
 
-        public async Task<bool> DeletePostAsync(Guid postId, Guid userId)
+        public async Task<bool> DeletePostAsync(Guid postId, Guid currentUserId)
         {
             var post = await _postRepository.GetPostByIdAsync(postId);
             if (post == null) return false;
 
-            if (post.UserId != userId)
+            if (post.UserId != currentUserId)
             {
                 throw new UnauthorizedAccessException("You are not authorized to delete this post.");
             }
@@ -89,7 +90,7 @@ namespace appBackend.Services.GlobalPostWall
         }
 
 
-        private PostDTO MapPostToDTO(Post post)
+        private PostDTO MapPostToDTO(Guid currentUserId, Post post)
         {
             return new PostDTO
             {
@@ -101,6 +102,7 @@ namespace appBackend.Services.GlobalPostWall
                 CreatedAt = post.CreatedAt,
                 LikeCount = post.Likes?.Count ?? 0, // Might be better to use repository for counts in real-world, but for now ok.
                 CommentCount = post.Comments?.Count ?? 0, // Same here
+                IsLikedByCurrentUser = post.Likes?.Any(like => like.UserId == currentUserId) ?? false,
                 Attachments = post.Attachments?.Select(a => new AttachmentDTO
                 {
                     AttachmentId = a.AttachmentId,

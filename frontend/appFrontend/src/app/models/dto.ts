@@ -8,6 +8,7 @@ export interface PostDTO {
     CreatedAt: Date;
     LikeCount: number;
     CommentCount: number;
+    IsLikedByCurrentUser: boolean;
     Attachments: AttachmentDTO[];
   }
   

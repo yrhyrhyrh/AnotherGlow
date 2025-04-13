@@ -20,14 +20,16 @@ namespace appBackend.Controllers.GlobalPostWall
         [HttpGet]
         public async Task<IActionResult> GetGlobalPosts()
         {
-            var posts = await _postService.GetGlobalPostsAsync();
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
+            var posts = await _postService.GetGlobalPostsAsync(currentUserId);
             return Ok(posts);
         }
 
         [HttpGet("{postId}")]
         public async Task<IActionResult> GetPostById(Guid postId)
         {
-            var post = await _postService.GetPostByIdAsync(postId);
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
+            var post = await _postService.GetPostByIdAsync(currentUserId, postId);
             if (post == null) return NotFound();
             return Ok(post);
         }
