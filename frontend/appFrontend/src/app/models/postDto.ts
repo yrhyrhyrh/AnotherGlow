@@ -2,6 +2,7 @@
 export interface PostDTO {
     PostId: string;
     UserId: string;
+    GroupId: string;
     AuthorUsername: string;
     AuthorFullName: string;
     Content: string;
@@ -13,6 +14,7 @@ export interface PostDTO {
   }
   
   export interface CreatePostRequestDTO {
+    GroupId: string;
     Content: string;
     Attachments?: File[]; // Assuming File type for Attachments
   }

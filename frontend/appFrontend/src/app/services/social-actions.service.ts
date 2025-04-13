@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LikeDTO, CommentDTO, CreateCommentRequestDTO } from '../models/dto'; // Import DTOs
+import { LikeDTO, CommentDTO, CreateCommentRequestDTO } from '../models/postDto'; // Import DTOs
 import { environment } from '../../environments/environment';
 
 @Injectable({

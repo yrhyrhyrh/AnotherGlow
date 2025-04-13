@@ -26,6 +26,13 @@ namespace appBackend.Services.GlobalPostWall
             return posts.Select(p => MapPostToDTO(currentUserId, p)).ToList();
         }
 
+        public async Task<(List<PostDTO> Posts, int TotalCount)> GetPostsPagedAsync(int pageNumber, int pageSize, Guid currentUserId, Guid? groupId = null)
+        {
+            var pagedResult = await _postRepository.GetPostsPagedAsync(pageNumber, pageSize, currentUserId, groupId); // Call paged repository method
+            var postDTOs = pagedResult.Posts.Select(p => MapPostToDTO(currentUserId, p)).ToList(); // Map to DTOs
+            return (Posts: postDTOs, TotalCount: pagedResult.TotalCount); // Return DTOs and total count
+        }
+
         public async Task<PostDTO?> GetPostByIdAsync(Guid currentUserId, Guid postId)
         {
 
@@ -41,7 +48,8 @@ namespace appBackend.Services.GlobalPostWall
             var post = new Post
             {
                 UserId = curentUserId,
-                Content = createPostDto.Content
+                Content = createPostDto.Content,
+                GroupId = createPostDto.GroupId
             };
 
             var createdPost = await _postRepository.AddPostAsync(post); // Use repository to add post
@@ -96,6 +104,7 @@ namespace appBackend.Services.GlobalPostWall
             {
                 PostId = post.PostId,
                 UserId = post.UserId,
+                GroupId = post.GroupId,
                 AuthorUsername = post.Author?.Username ?? "Unknown",
                 AuthorFullName = post.Author?.FullName ?? "Unknown",
                 Content = post.Content,

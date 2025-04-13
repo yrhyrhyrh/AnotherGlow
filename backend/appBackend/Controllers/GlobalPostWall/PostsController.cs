@@ -2,6 +2,7 @@
 using appBackend.Interfaces.GlobalPostWall;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace appBackend.Controllers.GlobalPostWall
 {
@@ -17,12 +18,39 @@ namespace appBackend.Controllers.GlobalPostWall
             _postService = postService;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetGlobalPosts()
+        //{
+        //    Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
+        //    var posts = await _postService.GetGlobalPostsAsync(currentUserId);
+        //    return Ok(posts);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetGlobalPosts()
+        public async Task<IActionResult> GetPostsPaginated([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, Guid? groupId = null) // Pagination parameters from query
         {
+            if (pageNumber < 1 || pageSize < 1) // Basic validation for pageNumber and pageSize
+            {
+                return BadRequest("Invalid pageNumber or pageSize.");
+            }
+
             Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
-            var posts = await _postService.GetGlobalPostsAsync(currentUserId);
-            return Ok(posts);
+            //if (User.Identity?.IsAuthenticated == true)
+            //{
+            //    var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            //    if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            //    {
+            //        currentUserId = userId;
+            //    }
+            //}
+
+            var pagedResult = await _postService.GetPostsPagedAsync(pageNumber, pageSize, currentUserId, groupId); // Call paged service method
+
+            // Return pagination metadata in headers (optional but good practice)
+            Response.Headers["X-Total-Count"] = pagedResult.TotalCount.ToString();
+            Response.Headers["Access-Control-Expose-Headers"] = "X-Total-Count"; // Expose header for CORS
+
+            return Ok(pagedResult.Posts); // Return only the paginated posts (DTOs) in the body
         }
 
         [HttpGet("{postId}")]

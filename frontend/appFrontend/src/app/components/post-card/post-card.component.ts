@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { PostDTO, CommentDTO } from '../../models/dto';
+import { PostDTO, CommentDTO } from '../../models/postDto';
 import { SocialActionsService } from '../../services/social-actions.service';
 import { MatCardModule } from '@angular/material/card'; // Import MatCardModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import MatFormFieldModule

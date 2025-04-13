@@ -15,8 +15,9 @@ namespace appBackend.Models
 				
 				public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
 
-        public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at
+				public DateTimeOffset UpdatedAt { get; set; } // Corresponds to updated_at
 				// Navigation property for members of the group
 				public virtual ICollection<GroupMember> Members { get; set; } = new List<GroupMember>();
-		}
+				public ICollection<Post> Posts { get; set; } = new List<Post>();
+    }
 }
