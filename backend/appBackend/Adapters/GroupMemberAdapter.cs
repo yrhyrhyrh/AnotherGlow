@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using appBackend.Models;
-using appBackend.Dtos;
+using appBackend.Dtos.Group;
 
 namespace appBackend.Adapters
 {

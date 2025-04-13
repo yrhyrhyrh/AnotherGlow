@@ -1,6 +1,6 @@
 using appBackend.Models;
 using appBackend.Repositories;
-using appBackend.Dtos;
+using appBackend.Dtos.Group;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
