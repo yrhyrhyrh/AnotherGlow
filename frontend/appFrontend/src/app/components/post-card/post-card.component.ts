@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { PostDTO, CommentDTO } from '../../models/dto';
+import { Component, Input, ViewChild } from '@angular/core';
+import { PostDTO, CommentDTO } from '../../models/postDto';
 import { SocialActionsService } from '../../services/social-actions.service';
 import { MatCardModule } from '@angular/material/card'; // Import MatCardModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import MatFormFieldModule
@@ -30,15 +30,15 @@ import { CommentCreateComponent } from '../comment-create/comment-create.compone
 })
 export class PostCardComponent {
   @Input() post!: PostDTO;
-  isLiked = false; // Placeholder - Implement actual like status check later
   commentsVisible = false;
+  @ViewChild(CommentListComponent) commentList!: CommentListComponent; // Get reference to CommentListComponent
 
   constructor(private socialActionsService: SocialActionsService) { }
 
   likePost(): void {
     this.socialActionsService.likePost(this.post.PostId).subscribe(
       (like) => {
-        this.isLiked = true; // Update like status
+        this.post.IsLikedByCurrentUser = true; // Update like status
         this.post.LikeCount++; // Update like count
         // Optionally update LikeId if needed
       },
@@ -52,7 +52,7 @@ export class PostCardComponent {
   unlikePost(): void {
     this.socialActionsService.unlikePost(this.post.PostId).subscribe(
       () => {
-        this.isLiked = false; // Update like status
+        this.post.IsLikedByCurrentUser = false; // Update like status
         this.post.LikeCount--; // Update like count
       },
       (error) => {
@@ -68,7 +68,8 @@ export class PostCardComponent {
 
   onCommentAdded(newComment: CommentDTO): void {
     this.post.CommentCount++;
-    // Optionally update the comments list if you are displaying comments in post-card
-    // For now, we will reload the whole post list in post-list component for simplicity
+    if (this.commentsVisible && this.commentList) { // Check if comments are visible and commentList is loaded
+      this.commentList.loadPostComments(); // Reload comments to display the new one
+   }
   }
 }

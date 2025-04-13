@@ -23,7 +23,29 @@ namespace appBackend.Repositories.GlobalPostWall
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
         }
+        public async Task<(List<Post> Posts, int TotalCount)> GetPostsPagedAsync(int pageNumber, int pageSize, Guid currentUserId, Guid? groupId = null)
+        {
+            IQueryable<Post> query = _dbContext.Posts
+                 .Include(p => p.Author)
+                 .Include(p => p.Likes)
+                 .Include(p => p.Comments)
+                 .Include(p => p.Attachments);
 
+            if (groupId.HasValue) // Filter by groupId if provided
+            {
+                query = query.Where(p => p.GroupId == groupId.Value);
+            }
+
+            var totalCount = await query.CountAsync(); // Count based on filtered query
+
+            var posts = await query
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (Posts: posts, TotalCount: totalCount);
+        }
         public async Task<Post?> GetPostByIdAsync(Guid postId)
         {
             return await _dbContext.Posts

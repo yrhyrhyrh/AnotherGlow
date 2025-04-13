@@ -2,16 +2,19 @@
 export interface PostDTO {
     PostId: string;
     UserId: string;
+    GroupId: string;
     AuthorUsername: string;
     AuthorFullName: string;
     Content: string;
     CreatedAt: Date;
     LikeCount: number;
     CommentCount: number;
+    IsLikedByCurrentUser: boolean;
     Attachments: AttachmentDTO[];
   }
   
   export interface CreatePostRequestDTO {
+    GroupId: string;
     Content: string;
     Attachments?: File[]; // Assuming File type for Attachments
   }

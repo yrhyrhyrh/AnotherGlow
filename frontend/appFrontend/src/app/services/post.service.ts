@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse  } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PostDTO, CreatePostRequestDTO, UpdatePostRequestDTO } from '../models/dto'; // Import DTOs (create these in next step if not already done)
+import { PostDTO, CreatePostRequestDTO, UpdatePostRequestDTO } from '../models/postDto'; // Import DTOs (create these in next step if not already done)
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -13,8 +13,20 @@ export class PostService {
 
   constructor(private http: HttpClient) { }
 
-  getGlobalPosts(): Observable<PostDTO[]> {
-    return this.http.get<PostDTO[]>(this.apiUrl);
+  getGlobalPosts(pageNumber: number, pageSize: number, groupId: string | null): Observable<HttpResponse<PostDTO[]>> { // Accept groupId
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString())
+      .set('_t', Date.now().toString()); // Cache buster
+
+    if (groupId) { // Add groupId parameter if it exists
+      params = params.set('groupId', groupId);
+    }
+
+    return this.http.get<PostDTO[]>(this.apiUrl, { params: params, observe: 'response' })
+      .pipe(
+        // ... pipe operators ...
+      );
   }
 
   getPostById(PostId: string): Observable<PostDTO> {

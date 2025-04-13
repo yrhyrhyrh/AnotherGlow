@@ -16,6 +16,10 @@ namespace appBackend.Models
 
         public DateTime UpdatedAt { get; set; } // Corresponds to updated_at
 
+        [ForeignKey("GroupId")]
+        public Guid GroupId { get; set; }
+        public Group Group { get; set; } = null!; // Navigation property
+
         // --- Navigation Properties ---
 
         // The user who authored this post

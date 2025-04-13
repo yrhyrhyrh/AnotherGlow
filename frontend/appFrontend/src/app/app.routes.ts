@@ -21,8 +21,14 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: PostListComponent, // Changed to PostListComponent
-    title: "Global Post Wall",     // Updated title
+    redirectTo: 'groups/general/posts',
+    pathMatch: 'full',
+    title: "Global Post Wall",     // You can keep the title for documentation, but it's not directly used in redirection
+  },
+  {
+    path: 'groups/:groupId/posts', // Route with groupId parameter
+    component: PostListComponent,
+    title: "Group Post Wall",
     canActivate: [AuthGuard],
   },
   {

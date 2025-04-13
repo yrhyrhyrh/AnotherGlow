@@ -111,6 +111,10 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("updated_at")
                       .HasDefaultValueSql("now()");
 
+                entity.Property(p => p.GroupId) // New GroupId property configuration
+                      .HasColumnName("group_id")
+                      .IsRequired();
+
                 // Indexes (matches SQL)
                 entity.HasIndex(p => p.UserId, "posts_user_id_idx");
                 entity.HasIndex(p => p.CreatedAt, "posts_created_at_idx");
@@ -121,7 +125,11 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .WithMany(u => u.Posts) // The collection navigation property in User
                       .HasForeignKey(p => p.UserId)
                       .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
-
+                                                         // New: One Post belongs to one Group
+                entity.HasOne(p => p.Group)
+                      .WithMany(g => g.Posts) // Navigation property in Group entity (you'll need to add this to Group entity)
+                      .HasForeignKey(p => p.GroupId)
+                      .OnDelete(DeleteBehavior.Cascade); // Or NoAction, or Restrict based on your requirements
                 // One Post has Many Likes (Relationship defined in Like configuration)
             });
 

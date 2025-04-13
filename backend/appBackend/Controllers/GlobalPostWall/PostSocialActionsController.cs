@@ -65,7 +65,7 @@ namespace appBackend.Controllers.GlobalPostWall
             try
             {
                 var commentDto = await _socialActionsService.AddCommentToPostAsync(postId, currentUserId, createCommentDto);
-                return CreatedAtAction(nameof(GetComment), new { commentId = commentDto.CommentId }, commentDto); // Or just Ok(commentDto)
+                return Ok(commentDto); // Or just Ok(commentDto)
             }
             catch (KeyNotFoundException)
             {

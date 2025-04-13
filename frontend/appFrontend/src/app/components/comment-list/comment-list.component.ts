@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SocialActionsService } from '../../services/social-actions.service';
-import { CommentDTO } from '../../models/dto';
+import { CommentDTO } from '../../models/postDto';
 import { MatListModule } from '@angular/material/list'; // Import MatListModule
 import { CommonModule } from '@angular/common';      // Import CommonModule
 

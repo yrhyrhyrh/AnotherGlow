@@ -1,6 +1,6 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { PostService } from '../../services/post.service';
-import { CreatePostRequestDTO, PostDTO } from '../../models/dto';
+import { CreatePostRequestDTO, PostDTO } from '../../models/postDto';
 import { MatCardModule } from '@angular/material/card'; // Import MatCardModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import MatFormFieldModule
 import { MatInputModule } from '@angular/material/input'; // Import MatInputModule
@@ -27,6 +27,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class PostCreateComponent {
   @Output() postCreated = new EventEmitter<void>();
+  @Input() groupId: string | null = null;
   postContent = '';
   selectedFiles: FileList | null = null;
 
@@ -40,6 +41,7 @@ export class PostCreateComponent {
     if (this.postContent.trim()) {
       const formData = new FormData();
       formData.append('Content', this.postContent);
+      formData.append('GroupId', this.groupId ?? '');
       console.log(formData);
 
       if (this.selectedFiles) {

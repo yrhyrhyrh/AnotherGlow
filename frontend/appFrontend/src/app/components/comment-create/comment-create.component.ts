@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { SocialActionsService } from '../../services/social-actions.service';
-import { CreateCommentRequestDTO, CommentDTO } from '../../models/dto';
+import { CreateCommentRequestDTO, CommentDTO } from '../../models/postDto';
 import { MatCardModule } from '@angular/material/card'; // Import MatCardModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import MatFormFieldModule
 import { MatInputModule } from '@angular/material/input'; // Import MatInputModule
