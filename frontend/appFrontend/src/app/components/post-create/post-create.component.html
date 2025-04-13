@@ -1,0 +1,22 @@
+<mat-card class="post-create-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>What's on your mind?</mat-label>
+        <textarea matInput placeholder="Enter your post content here" [(ngModel)]="postContent" rows="3"></textarea>
+      </mat-form-field>
+  
+      <div>
+        <input type="file" multiple (change)="onFileSelected($event)" #fileInput style="display: none;">
+        <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
+          <mat-icon>attach_file</mat-icon> Attach Files
+        </button>
+        <span *ngIf="selectedFiles && selectedFiles.length > 0">
+          {{ selectedFiles.length }} file(s) selected
+        </span>
+      </div>
+  
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary" (click)="createPost()">Post</button>
+    </mat-card-actions>
+  </mat-card>

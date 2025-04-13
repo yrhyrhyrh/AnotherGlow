@@ -1,10 +1,11 @@
 ﻿using appBackend.Dtos.GlobalPostWall;
 using appBackend.Interfaces.GlobalPostWall;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace appBackend.Controllers.GlobalPostWall
 {
-    
+    [Authorize]
     [ApiController]
     [Route("api/posts")]
     public class PostsController : ControllerBase
@@ -36,8 +37,7 @@ namespace appBackend.Controllers.GlobalPostWall
         [DisableRequestSizeLimit] // or configure in web.config/appsettings.json
         public async Task<IActionResult> CreatePost([FromForm] CreatePostRequestDTO createPostDto)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("050b4ef3-acdb-4352-86f1-195e61b0147d"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
 
             try
             {
@@ -57,8 +57,8 @@ namespace appBackend.Controllers.GlobalPostWall
         [HttpPut("{postId}")]
         public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostRequestDTO updatePostDto)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
+
 
             try
             {
@@ -79,8 +79,8 @@ namespace appBackend.Controllers.GlobalPostWall
         [HttpDelete("{postId}")]
         public async Task<IActionResult> DeletePost(Guid postId)
         {
-            // **Important: Replace with actual user authentication to get current UserId**
-            Guid currentUserId = Guid.Parse("YOUR_USER_ID_HERE"); // Replace placeholder
+            Guid currentUserId = Guid.Parse(User.FindFirst("userId")!.Value);
+
 
             try
             {

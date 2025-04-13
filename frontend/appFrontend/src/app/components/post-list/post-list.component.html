@@ -1,0 +1,12 @@
+<mat-toolbar color="primary">
+    <span>Global Post Wall</span>
+  </mat-toolbar>
+  
+  <div class="container">
+    <app-post-create (postCreated)="loadGlobalPosts()"></app-post-create>
+  
+    <div *ngFor="let post of posts" class="post-wrapper">
+      <app-post-card [post]="post"></app-post-card>
+    </div>
+    
+  </div>
