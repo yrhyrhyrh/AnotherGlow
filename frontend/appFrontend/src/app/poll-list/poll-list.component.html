@@ -1,25 +1,84 @@
-<div *ngFor="let poll of polls" class="poll-card">
-  <h3>{{ poll.Question }}</h3>
-  <p>Created by: {{ poll.UserId }}</p>
-  <form (ngSubmit)="vote($event, poll.PollId, selectedOption[poll.PollId])">
-    <div *ngFor="let option of poll.Options; let i = index">
-      <label>
-        <input type="radio"
-               id="option-{{ poll.PollId }}-{{ i }}"
-               name="option-{{ poll.PollId }}"
-               [value]="i"
-               [(ngModel)]="selectedOption[poll.PollId]"
-               required />
-        {{ option }}
-      </label>
+<div class="container mt-4">
+  <h1>Polls</h1>
+  <div *ngIf="polls && polls.length > 0; else noPolls">
+    <div *ngFor="let poll of polls" class="card mb-3 poll-card">
+      <div class="card-body">
+        <h5 class="card-title">{{ poll.Question }}</h5>
+        <p class="card-subtitle mb-2 text-muted">
+          Mode: {{ poll.AllowMultipleSelections ? 'Multiple Choice' : 'Single Choice' }}
+          <span *ngIf="poll.IsGlobal" class="badge bg-info ms-2">Global</span>
+        </p>
+
+        <form #voteForm="ngForm" (submit)="vote($event, poll)">
+
+          <!-- SINGLE SELECTION (Radio Buttons) -->
+          <div *ngIf="!poll.AllowMultipleSelections">
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let option of poll.Options; let i = index" class="list-group-item">
+                <div class="form-check">
+                  <input class="form-check-input"
+                         type="radio"
+                         id="option-{{ poll.PollId }}-{{ i }}"
+                         name="option-{{ poll.PollId }}"
+                         [value]="i"
+                         [(ngModel)]="selectedOption[poll.PollId]"
+                         required>
+                  <label class="form-check-label" for="option-{{ poll.PollId }}-{{ i }}">
+                    {{ option }}
+                  </label>
+                </div>
+              </li>
+            </ul>
+            <button type="submit"
+                    class="btn btn-primary mt-2"
+                    [disabled]="selectedOption[poll.PollId] === undefined || selectedOption[poll.PollId] === null">
+              Vote
+            </button>
+          </div>
+
+          <!-- MULTIPLE SELECTION (Checkboxes) -->
+          <div *ngIf="poll.AllowMultipleSelections">
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let option of poll.Options; let i = index" class="list-group-item">
+                <div class="form-check">
+                  <!-- HTML comment moved OUTSIDE the input tag -->
+                  <!-- Use ngModel for initial state display -->
+                  <input class="form-check-input"
+                         type="checkbox"
+                         id="option-{{ poll.PollId }}-{{ i }}"
+                         name="option-{{ poll.PollId }}-{{ i }}"
+                         [value]="i"
+                         (change)="onCheckboxChange($event, poll.PollId, i)"
+                         [ngModel]="selectedOptionsMulti[poll.PollId]?.[i]">
+                  <label class="form-check-label" for="option-{{ poll.PollId }}-{{ i }}">
+                    {{ option }}
+                  </label>
+                </div>
+              </li>
+            </ul>
+            <button type="submit"
+                    class="btn btn-primary mt-2"
+                    [disabled]="!hasSelectedMulti(poll.PollId)">
+              Vote
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Feedback Message per Poll -->
+        <div *ngIf="feedbackMessage[poll.PollId]"
+             class="alert mt-2"
+             [ngClass]="{
+               'alert-success': !feedbackMessage[poll.PollId]?.startsWith('Failed'),
+               'alert-danger': feedbackMessage[poll.PollId]?.startsWith('Failed')
+             }">
+          {{ feedbackMessage[poll.PollId] }}
+        </div>
+      </div>
     </div>
-    <button type="submit" [disabled]="selectedOption[poll.PollId] === undefined || selectedOption[poll.PollId] === null">Vote</button>
-  </form>
-  <div *ngIf="feedbackMessage" class="feedback">
-    {{ feedbackMessage }}
   </div>
-  <hr />
-</div>
-<div *ngIf="!polls || polls.length === 0">
-  <p>No polls to display.</p>
+
+  <ng-template #noPolls>
+    <p class="text-center mt-3">No polls available yet. Why not create one?</p>
+  </ng-template>
 </div>
