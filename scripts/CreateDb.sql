@@ -140,3 +140,15 @@ ALTER TABLE attachments
     FOREIGN KEY (post_id)
     REFERENCES posts(post_id)
     ON DELETE CASCADE;
+
+
+-- Add the group_id column to the posts table
+ALTER TABLE posts
+ADD COLUMN group_id UUID NOT NULL; -- make NOT NULL after truncating data
+
+-- Add foreign key constraint
+ALTER TABLE posts
+ADD CONSTRAINT FK_posts_groups
+FOREIGN KEY (group_id)
+REFERENCES groups(group_id)
+ON DELETE CASCADE; -- Choose appropriate ON DELETE behavior (CASCADE, NO ACTION, RESTRICT)
