@@ -31,5 +31,5 @@ export class SocialActionsService {
 
   getCommentsForPost(PostId: string): Observable<CommentDTO[]> {
       return this.http.get<CommentDTO[]>(`${this.apiUrl}/posts/${PostId}/comments`);
-    }
+  }
 }
