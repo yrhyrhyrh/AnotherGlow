@@ -37,6 +37,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message); // Log failure reason
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("OnTokenValidated: " + context.SecurityToken); // Log success
+                // You could inspect context.Principal.Claims here
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                Console.WriteLine("OnChallenge: " + context.ErrorDescription); // Log challenge details
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context => {
+                Console.WriteLine("OnMessageReceived: Token received from header: " + (context.Request.Headers.ContainsKey("Authorization") ? "Yes" : "No"));
+                return Task.CompletedTask;
+            }
+        };
+
     });
 
 // Enable CORS for Angular
@@ -98,14 +123,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Enable CORS before Authentication
-app.UseCors("AllowLocalhost");
-
-// Remove if frontend is HTTP only
+app.UseCors("AllowLocalhost"); 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting(); // Often needed before Auth if using endpoints
+app.UseAuthentication(); // <-- Before Authorization
+app.UseAuthorization();  // <-- After Authentication
 app.MapControllers();
 
 app.Run();

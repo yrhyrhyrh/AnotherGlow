@@ -12,19 +12,17 @@ namespace appBackend.Services.GlobalPostWall
         private readonly IPostRepository _postRepository;
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly SocialMediaDbContext _dbContext;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IAmazonS3 _s3Client; // Inject IAmazonS3
 
         // Get S3 Bucket Name from Configuration
         private readonly string _s3BucketName;
         private readonly string _cloudformS3domain;
 
-        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, SocialMediaDbContext dbContext, IWebHostEnvironment webHostEnvironment, IAmazonS3 s3Client, IConfiguration configuration) // Inject IConfiguration
+        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, SocialMediaDbContext dbContext, IAmazonS3 s3Client, IConfiguration configuration) // Inject IConfiguration
         {
             _postRepository = postRepository;
             _attachmentRepository = attachmentRepository;
             _dbContext = dbContext;
-            _webHostEnvironment = webHostEnvironment;
             _s3Client = s3Client;
             _s3BucketName = configuration["Aws:S3BucketName"] ?? throw new InvalidOperationException("S3BucketName is not configured."); // Read from config
             _cloudformS3domain = configuration["Aws:CfDistributionDomainName"] ?? throw new InvalidOperationException("CfDistributionDomainName is not configured."); // Read from config

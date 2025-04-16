@@ -1,4 +1,4 @@
-namespace appBackend.Dtos;
+namespace appBackend.Dtos.Group;
 
 public class GroupDto
 {
@@ -16,6 +16,7 @@ public class GroupMemberDto
 
 public class UserDto
 {
+    public Guid UserId { get; set; }
     public string Username { get; set; } = string.Empty;
     public string? ProfilePictureUrl { get; set; }
 }

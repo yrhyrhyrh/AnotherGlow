@@ -7,7 +7,7 @@ namespace appBackend.Models
 {
     public class User
     {
-        public Guid UserId { get; set; } // Corresponds to user_id (UUID)
+        public Guid UserId { get; set; } // Corresponds to userId (UUID)
 
         [Required]
         [MaxLength(50)]

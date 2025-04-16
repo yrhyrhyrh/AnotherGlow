@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using appBackend.Services;
-using appBackend.Dtos;
+using appBackend.Dtos.Group;
 
 namespace appBackend.Controllers;
 
@@ -99,4 +99,25 @@ public class GroupController : ControllerBase
 
         return Ok(users);
     }
+
+    [HttpPost("addMembers")]
+    public async Task<IActionResult> AddNewMembers([FromBody] AddNewGroupMembersRequest request)
+    {
+        var groupMemberRequests = new List<GroupMemberRequest>();
+        foreach (var userid in request.UserIds)
+        {
+            groupMemberRequests.Add(new GroupMemberRequest{
+                GroupId = request.GroupId,
+                UserId = userid,
+                IsAdmin = false,
+            });
+        }
+        
+        var added = await _groupMemberService.AddGroupMembersAsync(groupMemberRequests);
+
+        if (added)
+          return Ok(new {message = "Member added successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while adding group members"});
+    }    
 }

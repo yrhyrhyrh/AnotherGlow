@@ -1,5 +1,5 @@
 using appBackend.Adapters;
-using appBackend.Dtos;
+using appBackend.Dtos.Group;
 using appBackend.Models;
 using appBackend.Repositories;
 using Microsoft.AspNetCore.Identity;

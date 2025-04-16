@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using appBackend.Adapters;
-using appBackend.Dtos;
+using appBackend.Dtos.Auth;
 using appBackend.Repositories;
 using appBackend.Models;
 

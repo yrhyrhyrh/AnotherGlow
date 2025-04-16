@@ -1,6 +1,6 @@
 using appBackend.Models;
 using appBackend.Repositories;
-using appBackend.Dtos;
+using appBackend.Dtos.Group;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -107,6 +107,7 @@ namespace appBackend.Services
                 .OrderBy(u => u.Username)
                 .Select(u => new UserDto
                 {
+                    UserId = u.UserId,
                     Username = u.Username,
                     ProfilePictureUrl = u.ProfilePictureUrl
                 })
