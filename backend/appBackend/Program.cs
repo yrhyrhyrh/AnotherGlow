@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyAppBackend.Repositories;
 using MyAppBackend.Services;
-using System.Data.Common;
+using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using appBackend.Services;
@@ -17,8 +17,7 @@ using appBackend.Repositories.GlobalPostWall;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services and repositories
-builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
-builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+builder.Services.AddAWSService<IAmazonS3>(); // Register IAmazonS3
 
 builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IPollRepository, PollRepository>(); 

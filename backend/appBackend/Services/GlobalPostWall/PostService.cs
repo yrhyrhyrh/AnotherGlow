@@ -1,4 +1,6 @@
-﻿using appBackend.Dtos.GlobalPostWall;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using appBackend.Dtos.GlobalPostWall;
 using appBackend.Interfaces.GlobalPostWall;
 using appBackend.Models;
 using appBackend.Repositories;
@@ -9,15 +11,21 @@ namespace appBackend.Services.GlobalPostWall
     {
         private readonly IPostRepository _postRepository;
         private readonly IAttachmentRepository _attachmentRepository;
-        private readonly SocialMediaDbContext _dbContext; // Still need DbContext for User lookup and SaveChanges in attachment context
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly SocialMediaDbContext _dbContext;
+        private readonly IAmazonS3 _s3Client; // Inject IAmazonS3
 
-        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, SocialMediaDbContext dbContext, IWebHostEnvironment webHostEnvironment)
+        // Get S3 Bucket Name from Configuration
+        private readonly string _s3BucketName;
+        private readonly string _cloudformS3domain;
+
+        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, SocialMediaDbContext dbContext, IAmazonS3 s3Client, IConfiguration configuration) // Inject IConfiguration
         {
             _postRepository = postRepository;
             _attachmentRepository = attachmentRepository;
-            _dbContext = dbContext; // Keep DbContext for now for User lookup
-            _webHostEnvironment = webHostEnvironment;
+            _dbContext = dbContext;
+            _s3Client = s3Client;
+            _s3BucketName = configuration["Aws:S3BucketName"] ?? throw new InvalidOperationException("S3BucketName is not configured."); // Read from config
+            _cloudformS3domain = configuration["Aws:CfDistributionDomainName"] ?? throw new InvalidOperationException("CfDistributionDomainName is not configured."); // Read from config
         }
 
         public async Task<List<PostDTO>> GetGlobalPostsAsync(Guid currentUserId)
@@ -104,14 +112,12 @@ namespace appBackend.Services.GlobalPostWall
             {
                 PostId = post.PostId,
                 UserId = post.UserId,
-                GroupId = post.GroupId,
                 AuthorUsername = post.Author?.Username ?? "Unknown",
                 AuthorFullName = post.Author?.FullName ?? "Unknown",
                 Content = post.Content,
                 CreatedAt = post.CreatedAt,
-                LikeCount = post.Likes?.Count ?? 0, // Might be better to use repository for counts in real-world, but for now ok.
-                CommentCount = post.Comments?.Count ?? 0, // Same here
-                IsLikedByCurrentUser = post.Likes?.Any(like => like.UserId == currentUserId) ?? false,
+                LikeCount = post.Likes?.Count ?? 0,
+                CommentCount = post.Comments?.Count ?? 0,
                 Attachments = post.Attachments?.Select(a => new AttachmentDTO
                 {
                     AttachmentId = a.AttachmentId,
@@ -127,32 +133,54 @@ namespace appBackend.Services.GlobalPostWall
         {
             if (attachments == null || !attachments.Any()) return;
 
-            string uploadFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "attachments");
-            Directory.CreateDirectory(uploadFolderPath);
-
             foreach (var file in attachments)
             {
                 if (file.Length > 0)
                 {
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-                    string filePath = Path.Combine(uploadFolderPath, uniqueFileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName; // Unique S3 key
+                    string s3ObjectKey = $"attachments/{postId}/{uniqueFileName}"; // Organize files in S3
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    try
                     {
-                        await file.CopyToAsync(fileStream);
+                        var putObjectRequest = new PutObjectRequest
+                        {
+                            BucketName = _s3BucketName,
+                            Key = s3ObjectKey,
+                            InputStream = file.OpenReadStream(), // Stream file content
+                            ContentType = file.ContentType,     // Set Content-Type
+                            AutoCloseStream = true // Ensure stream is closed
+                        };
+
+                        PutObjectResponse response = await _s3Client.PutObjectAsync(putObjectRequest);
+
+                        if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            string s3Url = $"https://{_cloudformS3domain}/{s3ObjectKey}";
+
+                            var attachment = new Attachment
+                            {
+                                PostId = postId,
+                                FileName = file.FileName,
+                                FilePath = s3Url, // Store S3 URL in FilePath (or create a new property FileUrl)
+                                ContentType = file.ContentType,
+                                FileSize = file.Length
+                            };
+                            await _attachmentRepository.AddAttachmentAsync(attachment);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error uploading {file.FileName} to S3. Status Code: {response.HttpStatusCode}");
+                        }
                     }
-
-                    var attachment = new Attachment
+                    catch (AmazonS3Exception ex)
                     {
-                        PostId = postId,
-                        FileName = file.FileName,
-                        FilePath = Path.Combine("uploads", "attachments", uniqueFileName),
-                        ContentType = file.ContentType,
-                        FileSize = file.Length
-                    };
-                    await _attachmentRepository.AddAttachmentAsync(attachment); // Use attachment repository
+                        Console.WriteLine($"S3 Error uploading {file.FileName}: {ex.Message}");
+                        // Handle S3 exception (e.g., retry, throw exception, return error result)
+                        throw new Exception("Error uploading file to S3.", ex); // Re-throw or handle as needed
+                    }
                 }
             }
         }
+
     }
 }
