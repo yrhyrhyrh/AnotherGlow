@@ -1,0 +1,68 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 64px; /* Height of the header */
+  width: 280px;
+  height: calc(100vh - 64px);
+  background-color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebar-title {
+  padding: 20px 16px;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+}
+
+.group-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  padding: 0 16px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+  background-color: white;
+}
+
+mat-nav-list {
+  padding: 0;
+}
+
+a[mat-list-item] {
+  height: 48px;
+  padding: 0 16px;
+}
+
+.admin-icon {
+  color: #1976d2;
+}
+
+mat-icon[matListItemIcon] {
+  margin-right: 16px;
+}
+
+/* Scrollbar styling */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { GroupComponent } from './group/group.component';
 import { GroupdetailComponent } from './group/groupdetail/groupdetail.component';
 import { PollingComponent } from './polling/polling.component';
 import { PollListComponent } from './poll-list/poll-list.component';
-import { PostListComponent } from './components/post-list/post-list.component'; // Import PostListComponent
+import { PostListComponent } from './components/post-list/post-list.component';
 import { AuthGuard } from './auth.guard';
+import { MainLayoutComponent } from './layout/main-layout.component';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
 
 export const routes: Routes = [
   {
@@ -21,38 +22,39 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'groups/general/posts',
-    pathMatch: 'full',
-    title: "Global Post Wall",     // You can keep the title for documentation, but it's not directly used in redirection
-  },
-  {
-    path: 'groups/:groupId/posts', // Route with groupId parameter
-    component: PostListComponent,
-    title: "Group Post Wall",
+    component: MainLayoutComponent,
     canActivate: [AuthGuard],
-  },
-  {
-    path: 'group',
-    component: GroupComponent,
-    title: "Group Page",
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'group/detail/:id',
-    component: GroupdetailComponent,
-    title: "Group Details",
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'polls/create',
-    component: PollingComponent,
-    title: "Create Poll",
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'polls', // Route to display polls
-    component: PollListComponent,
-    title: "Poll List",
-    canActivate: [AuthGuard] // Optional auth guard
+    children: [
+      {
+        path: '',
+        redirectTo: 'groups/general/posts',
+        pathMatch: 'full',
+      },
+      {
+        path: 'groups/:groupId/posts',
+        component: PostListComponent,
+        title: "Group Post Wall",
+      },
+      {
+        path: 'group/create',
+        component: CreateGroupComponent,
+        title: "Create New Group",
+      },
+      {
+        path: 'group/detail/:id',
+        component: GroupdetailComponent,
+        title: "Group Details",
+      },
+      {
+        path: 'polls/create',
+        component: PollingComponent,
+        title: "Create Poll",
+      },
+      {
+        path: 'polls',
+        component: PollListComponent,
+        title: "Poll List",
+      }
+    ]
   }
 ];
