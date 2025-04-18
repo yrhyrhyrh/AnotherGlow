@@ -1,32 +1,35 @@
 <div class="container mx-auto p-6">
   <!-- Create Group Button -->
-  <div class="flex justify-end mb-4">
-    <button (click)="openDialog()" class="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600">
-      + Create Group
+  <div class="flex justify-end mb-6">
+    <button mat-raised-button color="primary" (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      Create Group
     </button>
   </div>
 
   <!-- Group Creation Dialog -->
-  <app-create-new-group *ngIf="showDialog"
-                        (groupCreated)="handleGroupCreation($event)"
-                        (close)="closeDialog()">
+  <app-create-new-group *ngIf="showDialog" (groupCreated)="handleGroupCreation($event)" (close)="closeDialog()">
   </app-create-new-group>
 
   <!-- Admin Groups Section -->
-  <h2 class="text-xl font-semibold mb-2">Groups I am an Admin in:</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <app-group-card *ngFor="let group of adminGroups" 
-                    [group]="group"
-                    (clicked)="navigateToGroup($event)">
-    </app-group-card>
+  <h2 class="text-xl font-semibold mb-6">Groups I am an Admin in:</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <mat-card class="group-card" *ngFor="let group of adminGroups" (click)="navigateToGroup(group.GroupId)">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="admin-icon">admin_panel_settings</mat-icon>
+        <mat-card-title>{{ group.Name }}</mat-card-title>
+      </mat-card-header>
+    </mat-card>
   </div>
 
   <!-- Non-Admin Groups Section -->
-  <h2 class="text-xl font-semibold mt-6 mb-2">Other Groups:</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <app-group-card *ngFor="let group of nonAdminGroups" 
-                    [group]="group"
-                    (clicked)="navigateToGroup($event)">
-    </app-group-card>
+  <h2 class="text-xl font-semibold mt-12 mb-6">Other Groups:</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <mat-card class="group-card" *ngFor="let group of nonAdminGroups" (click)="navigateToGroup(group.GroupId)">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>group</mat-icon>
+        <mat-card-title>{{ group.Name }}</mat-card-title>
+      </mat-card-header>
+    </mat-card>
   </div>
 </div>
