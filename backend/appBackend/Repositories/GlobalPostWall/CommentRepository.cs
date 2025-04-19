@@ -39,7 +39,7 @@ namespace appBackend.Repositories.GlobalPostWall
             return await _dbContext.Comments
                 .Include(c => c.User) // Eager load User for Author details
                 .Where(c => c.PostId == postId)
-                .OrderByDescending(c => c.CreatedAt)
+                .OrderBy(c => c.CreatedAt)
                 .ToListAsync();
         }
     }
