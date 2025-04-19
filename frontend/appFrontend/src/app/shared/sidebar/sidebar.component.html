@@ -6,7 +6,7 @@
   <div class="group-section">
     <h4 class="section-title">Admin Groups</h4>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let group of adminGroups" [routerLink]="['/group/detail', group.GroupId]">
+      <a mat-list-item *ngFor="let group of adminGroups" [routerLink]="['/groups', group.GroupId, 'posts']">
         <mat-icon matListItemIcon class="admin-icon">admin_panel_settings</mat-icon>
         <span matListItemTitle>{{ group.Name }}</span>
       </a>
@@ -17,7 +17,7 @@
   <div class="group-section">
     <h4 class="section-title">Member Groups</h4>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let group of nonAdminGroups" [routerLink]="['/group/detail', group.GroupId]">
+      <a mat-list-item *ngFor="let group of nonAdminGroups" [routerLink]="['/groups', group.GroupId, 'posts']">
         <mat-icon matListItemIcon>group</mat-icon>
         <span matListItemTitle>{{ group.Name }}</span>
       </a>
