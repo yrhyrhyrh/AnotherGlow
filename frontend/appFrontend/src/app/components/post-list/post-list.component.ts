@@ -3,13 +3,15 @@ import { PostService } from '../../services/post.service';
 import { PostDTO } from '../../models/postDto';
 import { CommonModule } from '@angular/common';          // Import CommonModule
 import { MatListModule } from '@angular/material/list'; // Import MatListModule
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatToolbar, MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostCreateComponent } from '../post-create/post-create.component';
 import { PostCardComponent } from '../post-card/post-card.component';
-import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
+import { ActivatedRoute, RouterModule } from '@angular/router'; // Import ActivatedRoute and RouterModule
 import { HttpResponse } from '@angular/common/http'; // Import HttpResponse
-import { PageEvent } from '@angular/material/paginator'; // Import PageEvent
 
 @Component({
   selector: 'app-post-list',
@@ -19,6 +21,10 @@ import { PageEvent } from '@angular/material/paginator'; // Import PageEvent
     MatPaginator,
     CommonModule,
     MatToolbar,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    RouterModule,
     PostCreateComponent,
     PostCardComponent
   ],
@@ -42,7 +48,7 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => { // Subscribe to paramMap
       this.groupId = params.get('groupId');
-      if(this.groupId == "general"){
+      if (this.groupId == "general") {
         //TODO: retrieve from groupservice after ryan create
         this.groupId = '5cfb7a3f-b15d-4089-aae8-d9dafc2202c6';
       }
@@ -51,7 +57,7 @@ export class PostListComponent implements OnInit {
   }
 
   loadGlobalPosts(): void {
-    console.log("fetching posts for "+ `${this.groupId}`)
+    console.log("fetching posts for " + `${this.groupId}`)
     if (!this.groupId) {
       console.error('Group ID is missing.');
       return; // Don't load posts if groupId is missing
@@ -74,9 +80,9 @@ export class PostListComponent implements OnInit {
     });
   }
 
-  handlePageEvent(event: PageEvent) {
+  handlePageEvent(event: PageEvent): void {
+    this.currentPage = event.pageIndex + 1; // Convert 0-based to 1-based
     this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex + 1; // pageIndex is 0-based
     this.loadGlobalPosts();
   }
 

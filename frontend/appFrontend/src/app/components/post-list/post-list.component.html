@@ -1,9 +1,13 @@
 <mat-toolbar color="primary">
-  <span>Global Post Wall</span>
+  <span>Group Posts</span>
+  <span class="spacer"></span>
+  <button mat-icon-button [routerLink]="['/group/detail', groupId]" matTooltip="Group Details">
+    <mat-icon>settings</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="container">
-  <app-post-create (postCreated)="loadGlobalPosts()" [groupId]="groupId"></app-post-create>  <!-- Bind groupId input -->
+  <app-post-create (postCreated)="loadGlobalPosts()" [groupId]="groupId"></app-post-create> <!-- Bind groupId input -->
 
   <div *ngFor="let post of posts" class="post-wrapper">
     <app-post-card [post]="post"></app-post-card>
