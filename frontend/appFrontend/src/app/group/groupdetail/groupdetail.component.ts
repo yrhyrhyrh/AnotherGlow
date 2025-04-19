@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MemberComponent } from './member/member.component';
 import { SearchBarComponent } from '../../shared/search-bar/search-bar.component';
 import { UserSuggestion } from '../../interfaces/userSuggestion';
@@ -12,7 +13,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 
 interface GroupData {
   GroupId: string;
@@ -32,6 +38,7 @@ interface GroupData {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MemberComponent,
     SearchBarComponent,
     MatCardModule,
@@ -39,7 +46,13 @@ interface GroupData {
     MatIconModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSnackBarModule,
+    MatToolbarModule,
+    MatListModule,
+    MatBadgeModule,
+    MatTooltipModule,
+    RouterModule
   ],
   templateUrl: './groupdetail.component.html',
   styleUrl: './groupdetail.component.css'
