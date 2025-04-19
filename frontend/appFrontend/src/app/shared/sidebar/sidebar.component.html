@@ -1,0 +1,26 @@
+<div class="sidebar">
+  <app-create-group-button />
+  <h3 class="sidebar-title">My Groups</h3>
+
+  <!-- Admin Groups -->
+  <div class="group-section">
+    <h4 class="section-title">Admin Groups</h4>
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let group of adminGroups" [routerLink]="['/groups', group.GroupId, 'posts']">
+        <mat-icon matListItemIcon class="admin-icon">admin_panel_settings</mat-icon>
+        <span matListItemTitle>{{ group.Name }}</span>
+      </a>
+    </mat-nav-list>
+  </div>
+
+  <!-- Non-Admin Groups -->
+  <div class="group-section">
+    <h4 class="section-title">Member Groups</h4>
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let group of nonAdminGroups" [routerLink]="['/groups', group.GroupId, 'posts']">
+        <mat-icon matListItemIcon>group</mat-icon>
+        <span matListItemTitle>{{ group.Name }}</span>
+      </a>
+    </mat-nav-list>
+  </div>
+</div>

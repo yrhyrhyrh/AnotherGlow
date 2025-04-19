@@ -7,10 +7,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   logout() {
     localStorage.removeItem('jwt_token'); // Remove token from storage
     this.router.navigate(['/login']); // Redirect to login page
+  }
+
+  goToRoot() {
+    this.router.navigate(['/']);
   }
 }
