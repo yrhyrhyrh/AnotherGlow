@@ -3,7 +3,7 @@ import { PostService } from '../../services/post.service';
 import { PostDTO } from '../../models/postDto';
 import { CommonModule } from '@angular/common';          // Import CommonModule
 import { MatListModule } from '@angular/material/list'; // Import MatListModule
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatToolbar, MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,7 @@ import { HttpResponse } from '@angular/common/http'; // Import HttpResponse
   standalone: true,
   imports: [
     MatListModule,
-    MatPaginator,
+    MatPaginatorModule,
     CommonModule,
     MatToolbar,
     MatIconModule,
@@ -87,6 +87,7 @@ export class PostListComponent implements OnInit {
   }
 
   generatePageNumbers(): void {
+    console.log("total posts", this.totalPosts)
     this.pageNumbers = [];
     for (let i = 1; i <= this.totalPages; i++) {
       this.pageNumbers.push(i);
