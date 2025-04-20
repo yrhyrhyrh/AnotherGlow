@@ -419,6 +419,12 @@ namespace appBackend.Repositories // Adjust namespace as needed
                           .HasColumnName("name")
                           .IsRequired()
                           .HasMaxLength(100);
+                    entity.Property(g => g.Description)
+                          .HasColumnName("description")
+                          .HasColumnType("text");
+                    entity.Property(g => g.GroupPictureUrl)
+                          .HasColumnName("group_picture_url")
+                          .HasColumnType("text");
                     entity.Property(g => g.CreatedAt)
                           .HasColumnName("created_at")
                           .IsRequired()

@@ -41,7 +41,7 @@ namespace appBackend.Services
             return group;
         }
 
-        public async Task<Guid> CreateGroupAsync(GroupRequest groupRequest)
+        public async Task<Guid> CreateGroupAsync(CreateNewGroupRequest groupRequest)
         {
             Console.WriteLine("new group name");
             Console.WriteLine(groupRequest.Name);

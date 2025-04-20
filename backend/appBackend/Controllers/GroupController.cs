@@ -43,8 +43,7 @@ public class GroupController : ControllerBase
             return BadRequest(new { message = "Group Owner User id required." });
         }
 
-        var groupRequest = new GroupRequest{Name=request.Name};
-        var group_id = await _groupService.CreateGroupAsync(groupRequest);
+        var group_id = await _groupService.CreateGroupAsync(request);
         
         if (group_id == Guid.Empty)
         {

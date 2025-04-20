@@ -48,6 +48,8 @@ namespace appBackend.Services
                 {
                     GroupId = g.GroupId,
                     Name = g.Name,
+                    Description = g.Description,
+                    GroupPictureUrl = g.GroupPictureUrl,
                     Members = g.Members.Select(m => new GroupMemberDto
                     {
                         GroupMemberId = m.GroupMemberId,
@@ -78,6 +80,8 @@ namespace appBackend.Services
             var newGroup = new Group
             {
                 Name = group.Name,
+                Description = group.Description,
+                GroupPictureUrl = group.GroupPictureUrl,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };

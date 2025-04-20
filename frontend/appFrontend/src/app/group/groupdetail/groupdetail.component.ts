@@ -24,6 +24,7 @@ interface GroupData {
   GroupId: string;
   Name: string;
   Description: string;
+  IsAdmin: boolean;
   Members: Array<{
     User: {
       UserId: string;
