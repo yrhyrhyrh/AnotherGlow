@@ -7,6 +7,7 @@ public class GroupDto
     public string? Description { get; set; } = string.Empty;
     public string? GroupPictureUrl { get; set; } = string.Empty;
     public List<GroupMemberDto> Members { get; set; } = new();
+    public bool IsAdmin { get; set; }
 }
 
 public class GroupMemberDto

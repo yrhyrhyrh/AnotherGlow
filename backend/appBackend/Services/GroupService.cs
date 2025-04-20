@@ -42,12 +42,12 @@ namespace appBackend.Services
             return groups;
         }
 
-        public async Task<GroupDto?> GetGroupAsync(Guid group_id)
+        public async Task<GroupDto?> GetGroupAsync(Guid group_id, Guid currentUserId)
         {
             Console.WriteLine("Getting group details");
             Console.WriteLine(group_id);
 
-            var group = await _groupRepository.GetGroupAsync(group_id);
+            var group = await _groupRepository.GetGroupAsync(group_id, currentUserId);
 
             return group;
         }

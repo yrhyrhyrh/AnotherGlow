@@ -87,7 +87,14 @@ public class GroupController : ControllerBase
             return BadRequest(new { message = "Group ID is required." });
         }
 
-        var group = await _groupService.GetGroupAsync(group_id);
+        // Extract user ID from JWT token
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid currentUserId))
+        {
+            return Unauthorized(new { message = "Invalid or missing user ID in token." });
+        }
+
+        var group = await _groupService.GetGroupAsync(group_id, currentUserId);
 
         if (group == null)
         {

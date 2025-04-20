@@ -10,7 +10,7 @@ namespace appBackend.Services
     public interface IGroupRepository
     {
         Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin);
-        Task<GroupDto?> GetGroupAsync(Guid group_id); // Fetch group
+        Task<GroupDto?> GetGroupAsync(Guid group_id, Guid currentUserId); // Updated to include currentUserId
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
         Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword);
     }
@@ -37,7 +37,7 @@ namespace appBackend.Services
         }
 
 
-        public async Task<GroupDto?> GetGroupAsync(Guid group_id)
+        public async Task<GroupDto?> GetGroupAsync(Guid group_id, Guid currentUserId)
         {
             Console.WriteLine("Getting group details");
             Console.WriteLine(group_id);
@@ -50,16 +50,18 @@ namespace appBackend.Services
                     Name = g.Name,
                     Description = g.Description,
                     GroupPictureUrl = g.GroupPictureUrl,
+                    IsAdmin = g.Members.Any(m => m.UserId == currentUserId && m.IsAdmin),
                     Members = g.Members.Select(m => new GroupMemberDto
                     {
                         GroupMemberId = m.GroupMemberId,
                         IsAdmin = m.IsAdmin,
                         User = new UserDto
                         {
+                            UserId = m.User.UserId,
                             Username = m.User.Username,
                             ProfilePictureUrl = m.User.ProfilePictureUrl
                         }
-                    }).ToList() // Ensures proper materialization
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
