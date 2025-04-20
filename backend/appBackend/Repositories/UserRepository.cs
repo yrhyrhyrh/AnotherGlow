@@ -30,5 +30,26 @@ namespace appBackend.Repositories
             // Fetch user by username and password
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
+
+        public async Task<User?> UpdateUserAsync(User updatedUser)
+        {
+            try
+            {
+                var toUpdateEntity = await _context.Users.FirstAsync(x => x.UserId == updatedUser.UserId);
+                if (toUpdateEntity != null)
+                {
+                    toUpdateEntity = updatedUser;
+                    toUpdateEntity.UpdatedAt = DateTime.Now;
+
+                    await _context.SaveChangesAsync();
+                }
+                return toUpdateEntity!;
+            }
+            catch (Exception)
+            {
+                // log
+            }
+            return null;
+        }
     }
 }
