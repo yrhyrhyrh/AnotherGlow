@@ -36,11 +36,27 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateNewGroup([FromBody] CreateNewGroupRequest request)
+    public async Task<IActionResult> CreateNewGroup([FromForm] CreateNewGroupRequest request)
     {
         if (request.UserId == Guid.Empty)
         {
             return BadRequest(new { message = "Group Owner User id required." });
+        }
+
+        if (request.GroupPicture != null && request.GroupPicture.Length > 0)
+        {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(request.GroupPicture.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
+            }
+
+            if (request.GroupPicture.Length > 5 * 1024 * 1024) // 5MB limit
+            {
+                return BadRequest(new { message = "File size too large. Maximum size: 5MB" });
+            }
         }
 
         var group_id = await _groupService.CreateGroupAsync(request);

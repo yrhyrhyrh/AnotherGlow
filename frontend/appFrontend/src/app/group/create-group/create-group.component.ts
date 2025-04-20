@@ -13,6 +13,7 @@ interface GroupRequest {
   Name: string;
   Description: string;
   UserId: string;
+  GroupPicture?: File;
 }
 
 @Component({
@@ -29,7 +30,7 @@ interface GroupRequest {
   template: `
     <div class="create-group-container">
       <h2>Create New Group</h2>
-      <form (ngSubmit)="createGroup()" #groupForm="ngForm">
+      <form (ngSubmit)="createGroup()" #groupForm="ngForm" enctype="multipart/form-data">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Group Name</mat-label>
           <input matInput [(ngModel)]="groupRequest.Name" name="name" required>
@@ -39,6 +40,28 @@ interface GroupRequest {
           <mat-label>Description</mat-label>
           <textarea matInput [(ngModel)]="groupRequest.Description" name="description" rows="4"></textarea>
         </mat-form-field>
+
+        <div class="file-upload-container">
+          <input type="file" 
+                 (change)="onFileSelected($event)" 
+                 accept="image/jpeg,image/png,image/gif"
+                 #fileInput
+                 style="display: none">
+          <button type="button" 
+                  mat-stroked-button 
+                  (click)="fileInput.click()"
+                  class="full-width">
+            <mat-icon>add_photo_alternate</mat-icon>
+            {{ groupRequest.GroupPicture ? 'Change Group Picture' : 'Add Group Picture' }}
+          </button>
+          <div *ngIf="groupRequest.GroupPicture" class="selected-file">
+            <mat-icon>image</mat-icon>
+            <span>{{ groupRequest.GroupPicture.name }}</span>
+            <button mat-icon-button (click)="removeFile()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
 
         <div class="button-container">
           <button mat-button type="button" (click)="goBack()">
@@ -82,6 +105,27 @@ interface GroupRequest {
     mat-form-field {
       width: 100%;
     }
+
+    .file-upload-container {
+      margin-bottom: 1rem;
+    }
+
+    .selected-file {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .selected-file span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   `]
 })
 export class CreateGroupComponent implements OnInit {
@@ -107,9 +151,32 @@ export class CreateGroupComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert('File size too large. Maximum size: 5MB');
+        return;
+      }
+      this.groupRequest.GroupPicture = file;
+    }
+  }
+
+  removeFile() {
+    this.groupRequest.GroupPicture = undefined;
+  }
+
   createGroup() {
     if (this.groupRequest.Name.trim()) {
-      this.http.post<{ token: string }>('http://localhost:5181/api/group/create', this.groupRequest)
+      const formData = new FormData();
+      formData.append('Name', this.groupRequest.Name);
+      formData.append('Description', this.groupRequest.Description || '');
+      formData.append('UserId', this.groupRequest.UserId);
+      if (this.groupRequest.GroupPicture) {
+        formData.append('GroupPicture', this.groupRequest.GroupPicture);
+      }
+
+      this.http.post<{ token: string }>('http://localhost:5181/api/group/create', formData)
         .subscribe({
           next: (response) => {
             console.log('Group created successfully:', response);

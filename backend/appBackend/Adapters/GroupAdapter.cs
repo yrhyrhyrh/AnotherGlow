@@ -17,7 +17,6 @@ namespace appBackend.Adapters
             {
                 Name = dto.Name,
                 Description = dto.Description,
-                GroupPictureUrl = dto.GroupPictureUrl,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
