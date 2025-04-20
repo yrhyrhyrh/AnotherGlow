@@ -118,6 +118,7 @@ namespace appBackend.Services.GlobalPostWall
                 CreatedAt = post.CreatedAt,
                 LikeCount = post.Likes?.Count ?? 0,
                 CommentCount = post.Comments?.Count ?? 0,
+                IsLikedByCurrentUser = post.Likes?.Any(like => like.UserId == currentUserId) ?? false,
                 Attachments = post.Attachments?.Select(a => new AttachmentDTO
                 {
                     AttachmentId = a.AttachmentId,
