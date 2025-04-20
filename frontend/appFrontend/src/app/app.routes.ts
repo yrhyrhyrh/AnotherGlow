@@ -8,6 +8,7 @@ import { PostListComponent } from './components/post-list/post-list.component';
 import { AuthGuard } from './auth.guard';
 import { MainLayoutComponent } from './layout/main-layout.component';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { UserConfigComponent } from './userConfig/userConfig.component';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,11 @@ export const routes: Routes = [
         path: 'polls',
         component: PollListComponent,
         title: "Poll List",
+      },
+      {
+        path: 'userSettings',
+        component: UserConfigComponent,
+        title: "User Settings",
       }
     ]
   }

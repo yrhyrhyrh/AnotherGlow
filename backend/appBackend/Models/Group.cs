@@ -12,6 +12,12 @@ namespace appBackend.Models
 				[Required]
 				[MaxLength(100)]
 				public string Name { get; set; } = string.Empty; // Corresponds to name
+
+				[MaxLength(255)]
+				public string? Description { get; set; } = string.Empty;
+
+				[MaxLength(255)]
+				public string? GroupPictureUrl { get; set; } = string.Empty;
 				
 				public DateTimeOffset CreatedAt { get; set; } // Corresponds to created_at
 

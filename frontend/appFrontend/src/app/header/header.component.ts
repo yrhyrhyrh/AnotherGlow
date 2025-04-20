@@ -17,4 +17,8 @@ export class HeaderComponent {
   goToRoot() {
     this.router.navigate(['/']);
   }
+
+  goToSettings() {
+    this.router.navigate(['/userSettings']);
+  }
 }

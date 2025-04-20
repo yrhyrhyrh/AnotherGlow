@@ -107,6 +107,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 // builder.Services.AddScoped<UserService>(); // Register UserService
 builder.Services.AddScoped<GroupService>(); // Register Group service
 builder.Services.AddScoped<GroupMemberService>(); // Register Group service
+builder.Services.AddScoped<UserSettingsService>(); // Register User Settings Service
 
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 

@@ -25,11 +25,14 @@ interface GroupData {
   GroupId: string;
   Name: string;
   Description: string;
+  GroupPictureUrl?: string;
+  IsAdmin: boolean;
   Members: Array<{
     User: {
       UserId: string;
       Username: string;
       ProfilePictureUrl: string;
+      IsAdmin: boolean;
     };
   }>;
 }
@@ -64,6 +67,8 @@ export class GroupdetailComponent implements OnInit {
   userSuggestions: UserSuggestion[] = [];
   usersToAdd: Set<UserSuggestion> = new Set<UserSuggestion>();
   isLoading = true;
+  error: string | null = null;
+  bannerStyle: any = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -85,12 +90,30 @@ export class GroupdetailComponent implements OnInit {
     this.http.get<GroupData>(`${environment.apiUrl}/api/group/detail/${this.groupId}`)
       .subscribe({
         next: (data) => {
+          console.log('Group data received:', data);
+          console.log('Group picture URL:', data.GroupPictureUrl);
           this.groupData = data;
           this.isLoading = false;
+
+          // Set banner background image
+          if (data.GroupPictureUrl) {
+            console.log('Setting banner image to:', data.GroupPictureUrl);
+            this.bannerStyle = {
+              'background-image': `url(${data.GroupPictureUrl})`
+            };
+          } else {
+            console.log('No group picture URL, using default gradient');
+            // Use a default gradient background if no image
+            this.bannerStyle = {
+              'background-image': 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'
+            };
+          }
+          console.log('Final banner style:', this.bannerStyle);
         },
         error: (err) => {
           console.error('Error fetching group details:', err);
           this.isLoading = false;
+          this.error = 'Failed to load group details';
           this.snackBar.open('Failed to load group details', 'Close', {
             duration: 3000
           });
@@ -155,5 +178,26 @@ export class GroupdetailComponent implements OnInit {
 
   removeUser(user: UserSuggestion) {
     this.usersToAdd.delete(user);
+  }
+
+  editGroup() {
+    // TODO: Implement group editing
+    this.snackBar.open('Group editing coming soon!', 'Close', {
+      duration: 3000
+    });
+  }
+
+  makeAdmin(member: any) {
+    // TODO: Implement make admin functionality
+    this.snackBar.open('Make admin functionality coming soon!', 'Close', {
+      duration: 3000
+    });
+  }
+
+  removeMember(member: any) {
+    // TODO: Implement remove member functionality
+    this.snackBar.open('Remove member functionality coming soon!', 'Close', {
+      duration: 3000
+    });
   }
 }

@@ -36,15 +36,30 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateNewGroup([FromBody] CreateNewGroupRequest request)
+    public async Task<IActionResult> CreateNewGroup([FromForm] CreateNewGroupRequest request)
     {
         if (request.UserId == Guid.Empty)
         {
             return BadRequest(new { message = "Group Owner User id required." });
         }
 
-        var groupRequest = new GroupRequest{Name=request.Name};
-        var group_id = await _groupService.CreateGroupAsync(groupRequest);
+        if (request.GroupPicture != null && request.GroupPicture.Length > 0)
+        {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(request.GroupPicture.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
+            }
+
+            if (request.GroupPicture.Length > 5 * 1024 * 1024) // 5MB limit
+            {
+                return BadRequest(new { message = "File size too large. Maximum size: 5MB" });
+            }
+        }
+
+        var group_id = await _groupService.CreateGroupAsync(request);
         
         if (group_id == Guid.Empty)
         {
@@ -72,7 +87,14 @@ public class GroupController : ControllerBase
             return BadRequest(new { message = "Group ID is required." });
         }
 
-        var group = await _groupService.GetGroupAsync(group_id);
+        // Extract user ID from JWT token
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid currentUserId))
+        {
+            return Unauthorized(new { message = "Invalid or missing user ID in token." });
+        }
+
+        var group = await _groupService.GetGroupAsync(group_id, currentUserId);
 
         if (group == null)
         {

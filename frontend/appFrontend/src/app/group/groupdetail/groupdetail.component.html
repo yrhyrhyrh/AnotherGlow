@@ -1,69 +1,83 @@
 <div class="group-detail-container">
-  <ng-container *ngIf="!isLoading && groupData; else loading">
-    <mat-toolbar color="primary" class="group-header">
-      <mat-icon>group</mat-icon>
-      <span class="group-title">{{ groupData.Name }}</span>
-      <span class="spacer"></span>
-      <button mat-icon-button [routerLink]="['/groups', groupData.GroupId, 'posts']" matTooltip="View Posts">
-        <mat-icon>forum</mat-icon>
-      </button>
-    </mat-toolbar>
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+  <div *ngIf="groupData" class="group-content">
+    <!-- Group Banner -->
+    <div class="group-banner" [style.background-image]="'url(\'' + groupData.GroupPictureUrl + '\')'">
+      <div class="banner-overlay">
+        <h1 class="group-name">{{ groupData.Name }}</h1>
+        <p class="group-description">{{ groupData.Description }}</p>
+        <div *ngIf="groupData.IsAdmin" class="admin-badge">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Admin</span>
+        </div>
+      </div>
+    </div>
 
-    <mat-card class="group-card">
-      <mat-card-content>
-        <div class="section">
-          <div class="section-header">
-            <mat-icon>person_add</mat-icon>
-            <h3>Add Members</h3>
+    <!-- Group Header -->
+    <div class="group-header">
+      <div class="group-info">
+      </div>
+      <div *ngIf="groupData.IsAdmin" class="admin-actions">
+        <button mat-icon-button [matTooltip]="'Edit Group'" (click)="editGroup()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Add Members Section (Admin Only) -->
+    <div *ngIf="groupData.IsAdmin" class="add-members-section">
+      <h2>Add Members</h2>
+      <app-search-bar [suggestions]="userSuggestions" [maxSuggestions]="8" (search)="fetchUsersNotInGroup($event)"
+        (suggestionClicked)="handleSelect($event)">
+      </app-search-bar>
+
+      <div class="selected-users" *ngIf="usersToAdd.size > 0">
+        <mat-chip-listbox>
+          <mat-chip *ngFor="let user of usersToAdd" (removed)="removeUser(user)">
+            <mat-icon matChipAvatar>person</mat-icon>
+            {{ user.Username }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-listbox>
+        <button mat-raised-button color="primary" (click)="addUsersToGroup()">
+          <mat-icon>person_add</mat-icon>
+          Add Selected Users
+        </button>
+      </div>
+    </div>
+
+    <div class="members-section">
+      <h2>Members</h2>
+      <div class="members-list">
+        <div *ngFor="let member of groupData.Members" class="member-item">
+          <div *ngIf="member.User.ProfilePictureUrl" class="member-avatar-container">
+            <img [src]="member.User.ProfilePictureUrl" alt="Member avatar" class="member-avatar">
           </div>
-
-          <app-search-bar [suggestions]="userSuggestions" [maxSuggestions]="8" (search)="fetchUsersNotInGroup($event)"
-            (suggestionClicked)="handleSelect($event)">
-          </app-search-bar>
-
-          <div class="selected-users" *ngIf="usersToAdd.size > 0">
-            <mat-chip-listbox>
-              <mat-chip *ngFor="let user of usersToAdd" (removed)="removeUser(user)">
-                <mat-icon matChipAvatar>person</mat-icon>
-                {{ user.Username }}
-                <button matChipRemove>
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip>
-            </mat-chip-listbox>
-            <button mat-raised-button color="primary" (click)="addUsersToGroup()">
-              <mat-icon>person_add</mat-icon>
-              Add Selected Users
+          <div *ngIf="!member.User.ProfilePictureUrl" class="member-avatar-container">
+            <div class="member-avatar-initial">{{ member.User.Username.charAt(0).toUpperCase() }}</div>
+          </div>
+          <div class="member-info">
+            <span class="member-name">{{ member.User.Username }}</span>
+            <span *ngIf="member.User.IsAdmin" class="member-role">Admin</span>
+          </div>
+          <div *ngIf="groupData.IsAdmin && !member.User.IsAdmin" class="member-actions">
+            <button mat-icon-button [matTooltip]="'Make Admin'" (click)="makeAdmin(member)">
+              <mat-icon>admin_panel_settings</mat-icon>
+            </button>
+            <button mat-icon-button [matTooltip]="'Remove Member'" (click)="removeMember(member)">
+              <mat-icon>person_remove</mat-icon>
             </button>
           </div>
         </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="section">
-          <div class="section-header">
-            <mat-icon>people</mat-icon>
-            <h3>Members</h3>
-            <span class="member-count">{{ groupData.Members.length }} members</span>
-          </div>
-
-          <mat-list class="members-list">
-            <mat-list-item *ngFor="let member of groupData.Members">
-              <div matListItemAvatar class="avatar-circle">
-                {{ member.User.ProfilePictureUrl ? '' : member.User.Username[0].toUpperCase() }}
-              </div>
-              <span matListItemTitle>{{ member.User.Username }}</span>
-            </mat-list-item>
-          </mat-list>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </ng-container>
-
-  <ng-template #loading>
-    <div class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p>Loading group details...</p>
+      </div>
     </div>
-  </ng-template>
+  </div>
+
+  <div *ngIf="!groupData && !error" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
 </div>
