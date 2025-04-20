@@ -27,11 +27,12 @@ interface GroupData {
   GroupPictureUrl?: string;
   IsAdmin: boolean;
   Members: Array<{
+    GroupMemberId: string;
+    IsAdmin: boolean;
     User: {
       UserId: string;
       Username: string;
       ProfilePictureUrl: string;
-      IsAdmin: boolean;
     };
   }>;
 }

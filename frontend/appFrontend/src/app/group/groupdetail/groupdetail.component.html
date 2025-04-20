@@ -62,9 +62,9 @@
           </div>
           <div class="member-info">
             <span class="member-name">{{ member.User.Username }}</span>
-            <span *ngIf="member.User.IsAdmin" class="member-role">Admin</span>
+            <span *ngIf="member.IsAdmin" class="member-role">Admin</span>
           </div>
-          <div *ngIf="groupData.IsAdmin && !member.User.IsAdmin" class="member-actions">
+          <div *ngIf="groupData.IsAdmin && !member.IsAdmin" class="member-actions">
             <button mat-icon-button [matTooltip]="'Make Admin'" (click)="makeAdmin(member)">
               <mat-icon>admin_panel_settings</mat-icon>
             </button>
