@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 // Consistent Poll Interface (matches backend casing if backend sends PascalCase)
 export interface Poll {
@@ -34,7 +35,7 @@ interface VoteResponse {
 })
 export class PollService {
   // Use HTTPS and correct port based on your launchSettings.json
-  private apiUrl = 'http://localhost:5181/api/polls'; // <--- ADJUST PORT IF NEEDED
+  private apiUrl = `${environment.apiUrl}/api/polls`; // <--- ADJUST PORT IF NEEDED
 
   constructor(private http: HttpClient) { }
 

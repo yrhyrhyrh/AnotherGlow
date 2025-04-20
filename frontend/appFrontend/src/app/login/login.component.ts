@@ -3,6 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
 import { User } from "../interfaces/user";
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: "app-login",
@@ -17,6 +18,9 @@ export class LoginComponent {
     password: "",
   };
 
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/api/auth/login`;
+
   constructor(private http: HttpClient, private router: Router) {}
   
   onSubmit() {
@@ -28,7 +32,7 @@ export class LoginComponent {
     }
 
     this.http.post<{ token: string; userId: string; fullName?: string }>(
-      'http://localhost:5181/api/auth/login',
+      this.apiUrl,
       this.user
     ).subscribe({
       next: (response) => {

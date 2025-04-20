@@ -19,6 +19,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface GroupData {
   GroupId: string;
@@ -81,7 +82,7 @@ export class GroupdetailComponent implements OnInit {
 
   fetchGroupDetails() {
     this.isLoading = true;
-    this.http.get<GroupData>(`http://localhost:5181/api/group/detail/${this.groupId}`)
+    this.http.get<GroupData>(`${environment.apiUrl}/api/group/detail/${this.groupId}`)
       .subscribe({
         next: (data) => {
           this.groupData = data;
@@ -98,7 +99,7 @@ export class GroupdetailComponent implements OnInit {
   }
 
   fetchUsersNotInGroup(keyword: string) {
-    this.http.get<UserSuggestion[]>(`http://localhost:5181/api/group/getUsersToAdd/${this.groupId}?keyword=${keyword}`)
+    this.http.get<UserSuggestion[]>(`${environment.apiUrl}/api/group/getUsersToAdd/${this.groupId}?keyword=${keyword}`)
       .subscribe({
         next: (data) => {
           this.userSuggestions = data;
@@ -126,7 +127,7 @@ export class GroupdetailComponent implements OnInit {
       UserIds: [...this.usersToAdd].map((user) => user.UserId),
     };
 
-    this.http.post<{ token: string }>('http://localhost:5181/api/group/addMembers', request)
+    this.http.post<{ token: string }>(`${environment.apiUrl}/api/group/addMembers`, request)
       .subscribe({
         next: (response) => {
           this.snackBar.open('Users added successfully', 'Close', {

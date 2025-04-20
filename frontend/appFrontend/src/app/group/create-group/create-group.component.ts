@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
+import { environment } from '../../../environments/environment';
 
 interface GroupRequest {
   Name: string;
@@ -90,6 +91,8 @@ export class CreateGroupComponent implements OnInit {
     Description: '',
     UserId: ''
   };
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/api/group/create`;
 
   constructor(private http: HttpClient, private router: Router) {
     const token = localStorage.getItem('jwt_token');
@@ -109,7 +112,7 @@ export class CreateGroupComponent implements OnInit {
 
   createGroup() {
     if (this.groupRequest.Name.trim()) {
-      this.http.post<{ token: string }>('http://localhost:5181/api/group/create', this.groupRequest)
+      this.http.post<{ token: string }>(this.apiUrl, this.groupRequest)
         .subscribe({
           next: (response) => {
             console.log('Group created successfully:', response);

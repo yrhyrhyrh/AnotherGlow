@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { GetGroups } from '../../interfaces/getGroups';
 import { Group } from "../../interfaces/group";
 import { CreateGroupButtonComponent } from '../../group/create-group-button/create-group-button.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -58,7 +59,7 @@ export class SidebarComponent implements OnInit {
       isAdmin: false,
     }
 
-    this.http.post<{ groups: Group[] }>('http://localhost:5181/api/group/getbyuserid', adminGroupsRequest)
+    this.http.post<{ groups: Group[] }>(`${environment.apiUrl}/api/group/getbyuserid`, adminGroupsRequest)
       .subscribe({
         next: (response) => {
           this.adminGroups = response.groups;
@@ -68,7 +69,7 @@ export class SidebarComponent implements OnInit {
         }
       });
 
-    this.http.post<{ groups: Group[] }>('http://localhost:5181/api/group/getbyuserid', nonAdminGroupsRequest)
+    this.http.post<{ groups: Group[] }>(`${environment.apiUrl}/api/group/getbyuserid`, nonAdminGroupsRequest)
       .subscribe({
         next: (response) => {
           this.nonAdminGroups = response.groups;
