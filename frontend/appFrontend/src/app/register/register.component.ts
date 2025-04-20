@@ -3,6 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { User } from "../interfaces/user";
 import { HttpClient } from "@angular/common/http";
 import { Router, RouterModule } from '@angular/router';
+import { environment } from "../../environments/environment";
 
 @Component({
   selector: "app-register",
@@ -30,7 +31,7 @@ export class RegisterComponent {
     }
 
     // Send POST request to backend API
-    this.http.post<{ token: string }>('http://localhost:5181/api/auth/register', this.user)
+    this.http.post<{ token: string }>(`${environment.apiUrl}/api/auth/register`, this.user)
       .subscribe({
         next: (response) => {
           console.log("Register successful:", response.token);

@@ -35,6 +35,7 @@ export const routes: Routes = [
         path: 'groups/:groupId/posts',
         component: PostListComponent,
         title: "Group Post Wall",
+        data: { renderMode: 'client' }
       },
       {
         path: 'group/create',
@@ -45,6 +46,7 @@ export const routes: Routes = [
         path: 'group/detail/:id',
         component: GroupdetailComponent,
         title: "Group Details",
+        data: { renderMode: 'client' }
       },
       {
         path: 'polls/create',
