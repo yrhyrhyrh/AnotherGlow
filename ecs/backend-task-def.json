@@ -1,0 +1,46 @@
+{
+    "family": "MyAppBackendTask",
+    "containerDefinitions": [
+        {
+            "name": "backend",
+            "image": "650251725962.dkr.ecr.ap-southeast-1.amazonaws.com/myapp-backend:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "backend-5000-tcp",
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "dockerSecurityOptions": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/backend",
+                    "awslogs-region": "ap-southeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": [],
+            "credentialSpecs": []
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::650251725962:role/MyAppEcsTaskRole",
+    "executionRoleArn": "arn:aws:iam::650251725962:role/MyAppEcsTaskRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}
