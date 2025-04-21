@@ -40,5 +40,11 @@ namespace appBackend.Services
             return added;
 
         }
+
+        public async Task<bool> RemoveMemberAsync(Guid groupMemberId)
+        {
+            var removed = await _groupMemberRepository.RemoveMemberAsync(groupMemberId);
+            return removed;
+        }
     }
 }

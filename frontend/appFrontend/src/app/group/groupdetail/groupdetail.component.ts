@@ -20,6 +20,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 
 interface GroupData {
   GroupId: string;
@@ -28,11 +30,12 @@ interface GroupData {
   GroupPictureUrl?: string;
   IsAdmin: boolean;
   Members: Array<{
+    GroupMemberId: string;
+    IsAdmin: boolean;
     User: {
       UserId: string;
       Username: string;
       ProfilePictureUrl: string;
-      IsAdmin: boolean;
     };
   }>;
 }
@@ -56,7 +59,8 @@ interface GroupData {
     MatListModule,
     MatBadgeModule,
     MatTooltipModule,
-    RouterModule
+    RouterModule,
+    MatDialogModule
   ],
   templateUrl: './groupdetail.component.html',
   styleUrl: './groupdetail.component.css'
@@ -73,7 +77,8 @@ export class GroupdetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -195,9 +200,32 @@ export class GroupdetailComponent implements OnInit {
   }
 
   removeMember(member: any) {
-    // TODO: Implement remove member functionality
-    this.snackBar.open('Remove member functionality coming soon!', 'Close', {
-      duration: 3000
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '300px',
+      data: {
+        title: 'Remove Member',
+        message: 'Are you sure you want to remove this member from the group?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.http.post(`http://localhost:5181/api/group/removeMember?groupMemberId=${member.GroupMemberId}`, {})
+          .subscribe({
+            next: () => {
+              this.snackBar.open('Member removed successfully', 'Close', {
+                duration: 3000
+              });
+              this.fetchGroupDetails();
+            },
+            error: (error) => {
+              console.error('Error removing member:', error);
+              this.snackBar.open('Failed to remove member', 'Close', {
+                duration: 3000
+              });
+            }
+          });
+      }
     });
   }
 }
