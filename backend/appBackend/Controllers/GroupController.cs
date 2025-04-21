@@ -142,4 +142,15 @@ public class GroupController : ControllerBase
         else
           return StatusCode(500, new { message = "Database error while adding group members"});
     }    
+
+    [HttpPost("removeMember")]
+    public async Task<IActionResult> RemoveMember(Guid groupMemberId)
+    {
+        var removed = await _groupMemberService.RemoveMemberAsync(groupMemberId);
+        
+        if (removed)
+          return Ok(new {message = "Member removed successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while removing group members"});
+    }
 }
