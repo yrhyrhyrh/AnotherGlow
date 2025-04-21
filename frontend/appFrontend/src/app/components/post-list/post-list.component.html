@@ -13,10 +13,10 @@
     <app-post-card [post]="post"></app-post-card>
   </div>
 
-  <mat-paginator>
+  <mat-paginator
     [length]="totalPosts"
     [pageSize]="pageSize"
-    [pageIndex]="currentPage - 1" <!-- pageIndex is 0-based -->
+    [pageIndex]="currentPage - 1"
     [pageSizeOptions]="[5, 10, 25, 50]"
     (page)="handlePageEvent($event)"
     ariaLabel="Select page">

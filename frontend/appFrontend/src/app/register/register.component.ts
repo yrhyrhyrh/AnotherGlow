@@ -3,6 +3,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { User } from "../interfaces/user";
 import { HttpClient } from "@angular/common/http";
 import { Router, RouterModule } from '@angular/router';
+import { environment } from "../../environments/environment";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -57,7 +58,7 @@ export class RegisterComponent {
     this.isLoading = true;
     const { email, username, password } = this.registerForm.value;
 
-    this.http.post<{ token: string }>('http://localhost:5181/api/auth/register', { email, username, password })
+    this.http.post<{ token: string }>(`${environment.apiUrl}/api/auth/register`, { email, username, password })
       .subscribe({
         next: (response) => {
           console.log("Register successful:", response.token);

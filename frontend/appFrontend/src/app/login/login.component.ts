@@ -3,6 +3,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
 import { User } from "../interfaces/user";
+import { environment } from '../../environments/environment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,6 +37,9 @@ export class LoginComponent {
   hidePassword = true;
   isLoading = false;
 
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/api/auth/login`;
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -57,7 +61,7 @@ export class LoginComponent {
     const { username, password } = this.loginForm.value;
 
     this.http.post<{ token: string; userId: string; fullName?: string }>(
-      'http://localhost:5181/api/auth/login',
+      this.apiUrl,
       { username, password }
     ).subscribe({
       next: (response) => {

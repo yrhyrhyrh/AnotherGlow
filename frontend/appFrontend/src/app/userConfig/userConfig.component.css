@@ -1,0 +1,99 @@
+.user-config-container {
+    max-width: 800px; /* Adjust max-width as needed */
+    margin: 2rem auto; /* Center the container and add vertical space */
+    padding: 1.5rem;
+    /* Optional: Add a border or background */
+    /* border: 1px solid #ccc; */
+    /* background-color: #f9f9f9; */
+    /* border-radius: 8px; */
+  }
+  
+  .spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; /* Ensure spinner has space */
+    text-align: center;
+    color: #555;
+  }
+  
+  .spinner-container p {
+      margin-top: 1rem;
+  }
+  
+  .content-area {
+    margin-top: 1rem;
+  }
+  
+  .settings-form {
+    margin-bottom: 2rem; /* Space below each form */
+  }
+  
+  /* Make form fields take full width within their container */
+  .full-width-field {
+    width: 100%;
+    margin-bottom: 1rem; /* Space below each field */
+  }
+  
+  /* Add space above the form legend/title */
+  legend {
+      font-size: 1.2em;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+  }
+  
+  /* Style the button row */
+  .button-row {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end; /* Align button(s) to the right */
+  }
+  
+  /* Divider styling */
+  .form-divider {
+    margin-top: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  /* Styling for info/error messages if not using snackbar exclusively */
+  .info-message {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: #fff3cd; /* Light yellow */
+      border: 1px solid #ffeeba;
+      border-radius: 4px;
+      color: #856404;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  .error-message {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1.25rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+      color: #721c24; /* Dark red */
+      background-color: #f8d7da; /* Light red */
+      border-color: #f5c6cb;
+  }
+  /* Add similar for .success-message if needed */
+  
+  /* Optional: Style for custom snackbar panels (add to global styles.css) */
+  /*
+  .snackbar-success {
+    background-color: #4CAF50; // Green
+    color: white;
+  }
+  
+  .snackbar-error {
+    background-color: #f44336; // Red
+    color: white;
+  }
+  
+  .snackbar-info {
+    background-color: #2196F3; // Blue
+    color: white;
+  }
+  */

@@ -67,9 +67,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Enable CORS for Angular
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
+    options.AddPolicy("AllowFrontend",
         policy => policy
-            .WithOrigins("http://localhost:4200", "https://localhost:4200") // Allow both HTTP and HTTPS
+            .WithOrigins(
+                "http://localhost:4200",
+                "https://localhost:4200",
+                "http://frontend-lb-755996743.ap-southeast-1.elb.amazonaws.com"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -103,6 +107,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 // builder.Services.AddScoped<UserService>(); // Register UserService
 builder.Services.AddScoped<GroupService>(); // Register Group service
 builder.Services.AddScoped<GroupMemberService>(); // Register Group service
+builder.Services.AddScoped<UserSettingsService>(); // Register User Settings Service
 
 builder.Services.AddSwaggerGen(); // Swagger generation setup
 
@@ -114,6 +119,21 @@ builder.Services.AddDbContext<SocialMediaDbContext>(options =>
     .EnableSensitiveDataLogging()
 );
 
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        // Bind to localhost in development for local testing
+        serverOptions.ListenLocalhost(5181);  // Use localhost:5000
+    }
+    else
+    {
+        // Bind to any IP on AWS or production environments
+        serverOptions.ListenAnyIP(5000);  // Use 0.0.0.0:5000 for external access
+    }
+});
+
 var app = builder.Build();
 
 // Enable Swagger in Development
@@ -123,7 +143,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowLocalhost"); 
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseRouting(); // Often needed before Auth if using endpoints
 app.UseAuthentication(); // <-- Before Authorization

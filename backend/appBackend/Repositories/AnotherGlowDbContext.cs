@@ -69,6 +69,10 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("profile_picture_url")
                       .HasMaxLength(255);
 
+                entity.Property(u => u.JobRole)
+                      .HasColumnName("job_role")
+                      .HasColumnType("text"); // Explicitly map to TEXT
+
                 entity.Property(u => u.CreatedAt)
                       .HasColumnName("created_at")
                       .IsRequired()

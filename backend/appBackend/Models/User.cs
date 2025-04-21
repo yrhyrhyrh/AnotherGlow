@@ -29,6 +29,7 @@ namespace appBackend.Models
 
         [MaxLength(255)]
         public string? ProfilePictureUrl { get; set; } // Corresponds to profile_picture_url (nullable)
+        public string? JobRole { get; set; } // Corresponds to job_role (nullable, TEXT maps well to string)
 
         public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow; // Corresponds to created_at (TIMESTAMP WITH TIME ZONE)
 

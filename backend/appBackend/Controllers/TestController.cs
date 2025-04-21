@@ -4,21 +4,16 @@ using MyAppBackend.Services;
 
 namespace MyAppBackend.Controllers
 {
+    //do not remove! using for aws healthcheck
     [ApiController]
-    [Route("api/[controller]")]
-    public class TestController : ControllerBase
+    [Route("/")]
+    public class RootController : ControllerBase
     {
-        private readonly IWeatherForecastService _weatherForecastService;
-
-        public TestController(IWeatherForecastService weatherForecastService)
-        {
-            _weatherForecastService = weatherForecastService;
-        }
-
         [HttpGet]
-        public IEnumerable<WeatherForecast> GetWeatherForecast()
+        public IActionResult Index()
         {
-            return _weatherForecastService.GetWeatherForecast();
+            return Ok("Backend is running");
         }
     }
+
 }
