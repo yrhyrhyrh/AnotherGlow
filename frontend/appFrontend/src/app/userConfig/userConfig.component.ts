@@ -27,24 +27,11 @@ interface PasswordChangeData {
 /** Custom ErrorStateMatcher for password confirmation */
 export class ConfirmPasswordErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    // Condition 1: The control is invalid (e.g., required validator fails)
     const isControlInvalid = !!(control && control.invalid && (control.dirty || control.touched));
-    // Condition 2: The form has the 'passwordsDoNotMatch' error (we'll set this manually if needed, or rely on component flag)
-    // For simplicity here, we'll rely on a component flag passed or checked externally if needed,
-    // but the most common use is just checking the control and its parent form's state.
-    // In this specific case, we'll check the component's flag directly in the template binding or component logic.
-    // Let's stick to checking the control's own validity state primarily.
-    // The *ngIf for the mismatch error message will handle the visual feedback for mismatch.
-    // If we wanted the field itself to turn red *only* on mismatch, we'd need a cross-field validator.
-    // For now, let's make it turn red if invalid OR if the component flag `passwordsDoNotMatch` is true AND submitted/touched
+    
     const isMismatch = !!(form && form.submitted && (form.form.value.newPassword !== form.form.value.confirmPassword));
 
-    // Turns red if standard validators fail OR if there's a mismatch after submission/touch
-     // We'll use the component's `passwordsDoNotMatch` flag set in `onChangePassword` for simplicity.
-     // The matcher itself often just checks the control's status. The template logic handles the mismatch message.
-     // Let's keep it simple: turn red if the control itself is invalid.
      return isControlInvalid;
-     // We will rely on the separate mat-error display condition for the mismatch text.
   }
 }
 
@@ -190,7 +177,7 @@ export class UserConfigComponent implements OnInit {
 
     console.log('Submitting profile update:', updatePayload);
 
-    this.http.put(`${environment.apiUrl}/api/users/${this.userId}`, updatePayload, { headers })
+    this.http.put(`${environment.apiUrl}/api/users/update/${this.userId}`, updatePayload, { headers })
         .subscribe({
             next: (response) => {
                 console.log('Profile update successful:', response);
