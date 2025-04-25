@@ -55,6 +55,7 @@ namespace appBackend.Services.GlobalPostWall
 
             var post = new Post
             {
+                PostId = Guid.NewGuid(),
                 UserId = curentUserId,
                 Content = createPostDto.Content,
                 GroupId = createPostDto.GroupId
@@ -160,6 +161,7 @@ namespace appBackend.Services.GlobalPostWall
 
                             var attachment = new Attachment
                             {
+                                AttachmentId = Guid.NewGuid(),
                                 PostId = postId,
                                 FileName = file.FileName,
                                 FilePath = s3Url, // Store S3 URL in FilePath (or create a new property FileUrl)

@@ -81,6 +81,7 @@ namespace appBackend.Services
 
             var newGroup = new Group
             {
+                GroupId = Guid.NewGuid(),
                 Name = group.Name,
                 Description = group.Description,
                 GroupPictureUrl = group.GroupPictureUrl,
