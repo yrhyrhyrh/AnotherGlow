@@ -9,16 +9,16 @@ namespace appBackend.Repositories // Adjust namespace as needed
     public class SocialMediaDbContext : DbContext
     {
         // Define DbSets for each entity (representing tables)
-        public DbSet<User> Users { get; set; } = null!;
-        public DbSet<Post> Posts { get; set; } = null!;
-        public DbSet<Follow> Follows { get; set; } = null!;
-        public DbSet<Like> Likes { get; set; } = null!;
-        public DbSet<Poll> Polls { get; set; } = null!; // Add DbSet for Poll
-        public DbSet<Vote> Votes { get; set; } = null!;
-        public DbSet<Group> Groups { get; set; } = null!;
-        public DbSet<GroupMember> GroupMembers { get; set; } = null!;
-        public DbSet<Comment> Comments { get; set; } = null!;
-        public DbSet<Attachment> Attachments { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<Post> Posts { get; set; } = null!;
+        public virtual DbSet<Follow> Follows { get; set; } = null!;
+        public virtual DbSet<Like> Likes { get; set; } = null!;
+        public virtual DbSet<Poll> Polls { get; set; } = null!; // Add DbSet for Poll
+        public virtual DbSet<Vote> Votes { get; set; } = null!;
+        public virtual DbSet<Group> Groups { get; set; } = null!;
+        public virtual DbSet<GroupMember> GroupMembers { get; set; } = null!;
+        public virtual DbSet<Comment> Comments { get; set; } = null!;
+        public virtual DbSet<Attachment> Attachments { get; set; } = null!;
 
         public SocialMediaDbContext(DbContextOptions<SocialMediaDbContext> options)
             : base(options)

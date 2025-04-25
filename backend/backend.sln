@@ -5,18 +5,24 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appBackend", "appBackend\appBackend.csproj", "{B391B657-550E-4E90-92C9-E7A070CF5F8F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherGlow.Tests", "AnotherGlow.Tests\AnotherGlow.Tests.csproj", "{AC9843C6-2238-484B-ADFE-D5BF662C670C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B391B657-550E-4E90-92C9-E7A070CF5F8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B391B657-550E-4E90-92C9-E7A070CF5F8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B391B657-550E-4E90-92C9-E7A070CF5F8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B391B657-550E-4E90-92C9-E7A070CF5F8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9843C6-2238-484B-ADFE-D5BF662C670C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC9843C6-2238-484B-ADFE-D5BF662C670C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC9843C6-2238-484B-ADFE-D5BF662C670C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC9843C6-2238-484B-ADFE-D5BF662C670C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
