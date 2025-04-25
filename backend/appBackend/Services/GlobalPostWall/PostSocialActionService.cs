@@ -29,7 +29,7 @@ namespace appBackend.Services.GlobalPostWall
 
             if (existingLike != null) return null;
 
-            var like = new Like { PostId = postId, UserId = userId };
+            var like = new Like { LikeId = Guid.NewGuid(), PostId = postId, UserId = userId };
             var createdLike = await _likeRepository.AddLikeAsync(like);
 
             return new LikeDTO
@@ -55,6 +55,7 @@ namespace appBackend.Services.GlobalPostWall
 
             var comment = new Comment
             {
+                CommentId = Guid.NewGuid(),
                 PostId = postId,
                 UserId = userId,
                 Content = createCommentDto.Content
