@@ -66,7 +66,9 @@ export const routes: Routes = [
       },
       {
         path: 'group/:id/edit',
-        component: EditGroupComponent
+        component: EditGroupComponent,
+        title: "Edit Community",
+        data: { renderMode: 'client' }
       }
     ]
   }

@@ -6,6 +6,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client  // <- skip prerendering for this
   },
   {
+    path: 'group/:id/edit/',
+    renderMode: RenderMode.Client  // <- skip prerendering for this
+  },
+  {
     path: 'groups/:groupId/posts',
     renderMode: RenderMode.Client  // <- skip prerendering for this
   },
