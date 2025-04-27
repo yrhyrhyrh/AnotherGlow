@@ -40,12 +40,12 @@ export const routes: Routes = [
       {
         path: 'group/create',
         component: CreateGroupComponent,
-        title: "Create New Group",
+        title: "Create New Community",
       },
       {
         path: 'group/detail/:id',
         component: GroupdetailComponent,
-        title: "Group Details",
+        title: "Community Details",
         data: { renderMode: 'client' }
       },
       {
