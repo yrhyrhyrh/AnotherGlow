@@ -153,4 +153,15 @@ public class GroupController : ControllerBase
         else
           return StatusCode(500, new { message = "Database error while removing group members"});
     }
+
+    [HttpPost("makeAdmin")]
+    public async Task<IActionResult> MakeAdmin(Guid groupMemberId)
+    {
+        var madeAdmin = await _groupMemberService.MakeAdminAsync(groupMemberId);
+        
+        if (madeAdmin)
+          return Ok(new {message = "Member made admin successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while making member admin"});
+    }
 }

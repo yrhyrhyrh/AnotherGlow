@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MemberComponent } from './member/member.component';
@@ -19,9 +18,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
+import { GroupService } from '../../services/group.service';
 
 interface GroupData {
   GroupId: string;
@@ -46,7 +45,6 @@ interface GroupData {
   imports: [
     CommonModule,
     FormsModule,
-    MemberComponent,
     SearchBarComponent,
     MatCardModule,
     MatButtonModule,
@@ -76,7 +74,7 @@ export class GroupdetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
+    private groupService: GroupService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) { }
@@ -92,54 +90,52 @@ export class GroupdetailComponent implements OnInit {
 
   fetchGroupDetails() {
     this.isLoading = true;
-    this.http.get<GroupData>(`${environment.apiUrl}/api/group/detail/${this.groupId}`)
-      .subscribe({
-        next: (data) => {
-          console.log('Group data received:', data);
-          console.log('Group picture URL:', data.GroupPictureUrl);
-          this.groupData = data;
-          this.isLoading = false;
+    this.groupService.getGroupDetails(this.groupId!).subscribe({
+      next: (data) => {
+        console.log('Group data received:', data);
+        console.log('Group picture URL:', data.GroupPictureUrl);
+        this.groupData = data;
+        this.isLoading = false;
 
-          // Set banner background image
-          if (data.GroupPictureUrl) {
-            console.log('Setting banner image to:', data.GroupPictureUrl);
-            this.bannerStyle = {
-              'background-image': `url(${data.GroupPictureUrl})`
-            };
-          } else {
-            console.log('No group picture URL, using default gradient');
-            // Use a default gradient background if no image
-            this.bannerStyle = {
-              'background-image': 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'
-            };
-          }
-          console.log('Final banner style:', this.bannerStyle);
-        },
-        error: (err) => {
-          console.error('Error fetching group details:', err);
-          this.isLoading = false;
-          this.error = 'Failed to load group details';
-          this.snackBar.open('Failed to load group details', 'Close', {
-            duration: 3000
-          });
+        // Set banner background image
+        if (data.GroupPictureUrl) {
+          console.log('Setting banner image to:', data.GroupPictureUrl);
+          this.bannerStyle = {
+            'background-image': `url(${data.GroupPictureUrl})`
+          };
+        } else {
+          console.log('No group picture URL, using default gradient');
+          // Use a default gradient background if no image
+          this.bannerStyle = {
+            'background-image': 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'
+          };
         }
-      });
+        console.log('Final banner style:', this.bannerStyle);
+      },
+      error: (err) => {
+        console.error('Error fetching group details:', err);
+        this.isLoading = false;
+        this.error = 'Failed to load group details';
+        this.snackBar.open('Failed to load group details', 'Close', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   fetchUsersNotInGroup(keyword: string) {
-    this.http.get<UserSuggestion[]>(`${environment.apiUrl}/api/group/getUsersToAdd/${this.groupId}?keyword=${keyword}`)
-      .subscribe({
-        next: (data) => {
-          this.userSuggestions = data;
-        },
-        error: (err) => {
-          console.error("Failed to fetch users:", err);
-          this.userSuggestions = [];
-          this.snackBar.open('Failed to fetch users', 'Close', {
-            duration: 3000
-          });
-        }
-      });
+    this.groupService.searchUsersNotInGroup(this.groupId!, keyword).subscribe({
+      next: (data) => {
+        this.userSuggestions = data;
+      },
+      error: (err) => {
+        console.error("Failed to fetch users:", err);
+        this.userSuggestions = [];
+        this.snackBar.open('Failed to fetch users', 'Close', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   addUsersToGroup() {
@@ -155,22 +151,21 @@ export class GroupdetailComponent implements OnInit {
       UserIds: [...this.usersToAdd].map((user) => user.UserId),
     };
 
-    this.http.post<{ token: string }>(`${environment.apiUrl}/api/group/addMembers`, request)
-      .subscribe({
-        next: (response) => {
-          this.snackBar.open('Users added successfully', 'Close', {
-            duration: 3000
-          });
-          this.usersToAdd.clear();
-          this.fetchGroupDetails();
-        },
-        error: (error) => {
-          console.error("Request error:", error);
-          this.snackBar.open('Failed to add users', 'Close', {
-            duration: 3000
-          });
-        }
-      });
+    this.groupService.addMembers(request).subscribe({
+      next: (response) => {
+        this.snackBar.open('Users added successfully', 'Close', {
+          duration: 3000
+        });
+        this.usersToAdd.clear();
+        this.fetchGroupDetails();
+      },
+      error: (error) => {
+        console.error("Request error:", error);
+        this.snackBar.open('Failed to add users', 'Close', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   onSearch(keyword: string) {
@@ -193,9 +188,19 @@ export class GroupdetailComponent implements OnInit {
   }
 
   makeAdmin(member: any) {
-    // TODO: Implement make admin functionality
-    this.snackBar.open('Make admin functionality coming soon!', 'Close', {
-      duration: 3000
+    this.groupService.makeAdmin(member.GroupMemberId).subscribe({
+      next: () => {
+        this.snackBar.open('Member made admin successfully', 'Close', {
+          duration: 3000
+        });
+        this.fetchGroupDetails();
+      },
+      error: (error) => {
+        console.error('Error making member admin:', error);
+        this.snackBar.open('Failed to make member admin', 'Close', {
+          duration: 3000
+        });
+      }
     });
   }
 
@@ -210,21 +215,20 @@ export class GroupdetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.http.post(`http://localhost:5181/api/group/removeMember?groupMemberId=${member.GroupMemberId}`, {})
-          .subscribe({
-            next: () => {
-              this.snackBar.open('Member removed successfully', 'Close', {
-                duration: 3000
-              });
-              this.fetchGroupDetails();
-            },
-            error: (error) => {
-              console.error('Error removing member:', error);
-              this.snackBar.open('Failed to remove member', 'Close', {
-                duration: 3000
-              });
-            }
-          });
+        this.groupService.removeMember(member.GroupMemberId).subscribe({
+          next: () => {
+            this.snackBar.open('Member removed successfully', 'Close', {
+              duration: 3000
+            });
+            this.fetchGroupDetails();
+          },
+          error: (error) => {
+            console.error('Error removing member:', error);
+            this.snackBar.open('Failed to remove member', 'Close', {
+              duration: 3000
+            });
+          }
+        });
       }
     });
   }

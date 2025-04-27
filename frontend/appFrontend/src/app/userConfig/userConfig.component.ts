@@ -28,10 +28,10 @@ interface PasswordChangeData {
 export class ConfirmPasswordErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isControlInvalid = !!(control && control.invalid && (control.dirty || control.touched));
-    
+
     const isMismatch = !!(form && form.submitted && (form.form.value.newPassword !== form.form.value.confirmPassword));
 
-     return isControlInvalid;
+    return isControlInvalid;
   }
 }
 
@@ -41,7 +41,6 @@ export class ConfirmPasswordErrorStateMatcher implements ErrorStateMatcher {
   standalone: true,
   imports: [
     CommonModule,
-    HeaderComponent,
     FormsModule,
     RouterModule,
     // --- Angular Material Modules ---
@@ -113,10 +112,10 @@ export class UserConfigComponent implements OnInit {
 
     this.isLoading = true;
     const token = this.authService.getToken();
-     if (!token) {
-        this.handleAuthError("No authentication token found. Please log in.");
-        return;
-     }
+    if (!token) {
+      this.handleAuthError("No authentication token found. Please log in.");
+      return;
+    }
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
     this.http.get<any>(`${environment.apiUrl}/api/users/${this.userId}`, { headers })
@@ -132,82 +131,82 @@ export class UserConfigComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           console.error('Error loading user profile:', err);
-           if (err.status === 401 || err.status === 403) {
-               this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
-           } else {
-               const message = `Failed to load profile: ${err.statusText} (${err.status})`;
-               this.showSnackbar(message, 'Error');
-               this.isLoading = false;
-           }
+          if (err.status === 401 || err.status === 403) {
+            this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
+          } else {
+            const message = `Failed to load profile: ${err.statusText} (${err.status})`;
+            this.showSnackbar(message, 'Error');
+            this.isLoading = false;
+          }
         }
       });
   }
 
   onUpdateProfile(profileForm: NgForm): void {
     if (profileForm.invalid || !this.userId) {
-        this.showSnackbar('Please correct the errors in the form.', 'Validation');
-        // Mark fields as touched to show errors
-        Object.values(profileForm.controls).forEach(control => {
-          control.markAsTouched();
-        });
-        return;
+      this.showSnackbar('Please correct the errors in the form.', 'Validation');
+      // Mark fields as touched to show errors
+      Object.values(profileForm.controls).forEach(control => {
+        control.markAsTouched();
+      });
+      return;
     }
     if (!this.userId) return;
 
     this.isSavingProfile = true;
     const token = this.authService.getToken();
     if (!token) {
-        this.handleAuthError("No authentication token found. Please log in.");
-        this.isSavingProfile = false;
-        return;
-     }
+      this.handleAuthError("No authentication token found. Please log in.");
+      this.isSavingProfile = false;
+      return;
+    }
     const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
 
     const updatePayload = {
-        userId: this.userId,
-        email: this.user.email,
-        username: this.user.username,
-        fullName: this.user.fullName,
-        bio: this.user.bio,
-        jobRole: this.user.jobRole
+      userId: this.userId,
+      email: this.user.email,
+      username: this.user.username,
+      fullName: this.user.fullName,
+      bio: this.user.bio,
+      jobRole: this.user.jobRole
     };
 
     console.log('Submitting profile update:', updatePayload);
 
     this.http.put(`${environment.apiUrl}/api/users/update/${this.userId}`, updatePayload, { headers })
-        .subscribe({
-            next: (response) => {
-                console.log('Profile update successful:', response);
-                this.showSnackbar('Profile updated successfully!', 'Success');
-                this.isSavingProfile = false;
-                profileForm.form.markAsPristine(); // Reset form state visually
-            },
-            error: (err: HttpErrorResponse) => {
-                console.error('Error updating profile:', err);
-                if (err.status === 401 || err.status === 403) {
-                    this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
-                } else {
-                    const message = `Failed to update profile: ${err.error?.message || err.statusText} (${err.status})`;
-                    this.showSnackbar(message, 'Error');
-                }
-                this.isSavingProfile = false;
-            }
-        });
+      .subscribe({
+        next: (response) => {
+          console.log('Profile update successful:', response);
+          this.showSnackbar('Profile updated successfully!', 'Success');
+          this.isSavingProfile = false;
+          profileForm.form.markAsPristine(); // Reset form state visually
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error updating profile:', err);
+          if (err.status === 401 || err.status === 403) {
+            this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
+          } else {
+            const message = `Failed to update profile: ${err.error?.message || err.statusText} (${err.status})`;
+            this.showSnackbar(message, 'Error');
+          }
+          this.isSavingProfile = false;
+        }
+      });
   }
 
   onChangePassword(passwordForm: NgForm): void {
     this.passwordsDoNotMatch = false; // Reset flag on submit attempt
 
     if (passwordForm.invalid || !this.userId) {
-        this.showSnackbar('Please fill in all password fields correctly.', 'Validation');
-         // Mark fields as touched to show errors
-         Object.values(passwordForm.controls).forEach(control => {
-          control.markAsTouched();
-        });
-        return;
+      this.showSnackbar('Please fill in all password fields correctly.', 'Validation');
+      // Mark fields as touched to show errors
+      Object.values(passwordForm.controls).forEach(control => {
+        control.markAsTouched();
+      });
+      return;
     }
 
     // Check for mismatch *before* submitting to API
@@ -215,64 +214,64 @@ export class UserConfigComponent implements OnInit {
       this.passwordsDoNotMatch = true; // Set flag for template error message display
       this.showSnackbar('New passwords do not match.', 'Validation');
       // Manually trigger error state appearance on confirmPassword field if needed
-      passwordForm.controls['confirmPassword']?.setErrors({'mismatch': true}); // Example of setting manual error
+      passwordForm.controls['confirmPassword']?.setErrors({ 'mismatch': true }); // Example of setting manual error
       passwordForm.controls['confirmPassword']?.markAsTouched(); // Ensure it's checked
       return; // Stop submission
     } else {
-       // Clear manual mismatch error if they now match
-       if (passwordForm.controls['confirmPassword']?.hasError('mismatch')) {
-           delete passwordForm.controls['confirmPassword'].errors?.['mismatch'];
-           passwordForm.controls['confirmPassword'].updateValueAndValidity();
-       }
+      // Clear manual mismatch error if they now match
+      if (passwordForm.controls['confirmPassword']?.hasError('mismatch')) {
+        delete passwordForm.controls['confirmPassword'].errors?.['mismatch'];
+        passwordForm.controls['confirmPassword'].updateValueAndValidity();
+      }
     }
 
     if (!this.userId) return; // Should not happen if validation passes, but safe check
 
     this.isChangingPassword = true;
     const token = this.authService.getToken();
-     if (!token) {
-        this.handleAuthError("No authentication token found. Please log in.");
-        this.isChangingPassword = false;
-        return;
-     }
+    if (!token) {
+      this.handleAuthError("No authentication token found. Please log in.");
+      this.isChangingPassword = false;
+      return;
+    }
     const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
 
     const passwordPayload = {
-        userId: this.userId,
-        oldPassword: this.passwordData.oldPassword,
-        newPassword: this.passwordData.newPassword
+      userId: this.userId,
+      oldPassword: this.passwordData.oldPassword,
+      newPassword: this.passwordData.newPassword
     };
 
     console.log('Submitting password change request...');
 
     this.http.post(`${environment.apiUrl}/api/users/change-password`, passwordPayload, { headers })
-        .subscribe({
-            next: (response) => {
-                console.log('Password change successful:', response);
-                this.showSnackbar('Password changed successfully!', 'Success');
-                passwordForm.resetForm(); // Reset form state and controls
-                this.passwordData = { oldPassword: '', newPassword: '', confirmPassword: '' };
-                this.passwordsDoNotMatch = false; // Reset flag on success
-                this.isChangingPassword = false;
-            },
-            error: (err: HttpErrorResponse) => {
-                console.error('Error changing password:', err);
-                 if (err.status === 401 || err.status === 403) {
-                     this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
-                 } else {
-                     // Try specific backend message first, fallback to generic
-                     const message = `Failed to change password: ${err.error?.message || err.error || err.statusText} (${err.status})`;
-                     this.showSnackbar(message, 'Error', 5000);
-                 }
-                // Clear only old password on error? Or all? Let's clear old.
-                this.passwordData.oldPassword = '';
-                passwordForm.controls['oldPassword'].markAsPristine();
-                this.isChangingPassword = false;
-            }
-        });
+      .subscribe({
+        next: (response) => {
+          console.log('Password change successful:', response);
+          this.showSnackbar('Password changed successfully!', 'Success');
+          passwordForm.resetForm(); // Reset form state and controls
+          this.passwordData = { oldPassword: '', newPassword: '', confirmPassword: '' };
+          this.passwordsDoNotMatch = false; // Reset flag on success
+          this.isChangingPassword = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error changing password:', err);
+          if (err.status === 401 || err.status === 403) {
+            this.handleAuthError(`Session expired or invalid (${err.status}). Logging out.`);
+          } else {
+            // Try specific backend message first, fallback to generic
+            const message = `Failed to change password: ${err.error?.message || err.error || err.statusText} (${err.status})`;
+            this.showSnackbar(message, 'Error', 5000);
+          }
+          // Clear only old password on error? Or all? Let's clear old.
+          this.passwordData.oldPassword = '';
+          passwordForm.controls['oldPassword'].markAsPristine();
+          this.isChangingPassword = false;
+        }
+      });
   }
 
   // Helper to show snackbar messages
@@ -285,17 +284,17 @@ export class UserConfigComponent implements OnInit {
     });
   }
 
-   // Helper to handle Auth Errors consistently
-   private handleAuthError(message: string): void {
-        this.showSnackbar(message, 'Error', 5000);
-        this.isLoading = false; // Ensure loading state is off
-        this.isSavingProfile = false;
-        this.isChangingPassword = false;
-        this.authService.logout(); // Use the AuthService logout method
-   }
+  // Helper to handle Auth Errors consistently
+  private handleAuthError(message: string): void {
+    this.showSnackbar(message, 'Error', 5000);
+    this.isLoading = false; // Ensure loading state is off
+    this.isSavingProfile = false;
+    this.isChangingPassword = false;
+    this.authService.logout(); // Use the AuthService logout method
+  }
 
-   // Method needed for the logout button in the template
-   logout(): void {
-     this.authService.logout();
-   }
+  // Method needed for the logout button in the template
+  logout(): void {
+    this.authService.logout();
+  }
 }

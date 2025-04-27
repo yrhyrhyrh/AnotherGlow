@@ -6,23 +6,19 @@
     <!-- Group Banner -->
     <div class="group-banner" [style.background-image]="'url(\'' + groupData.GroupPictureUrl + '\')'">
       <div class="banner-overlay">
-        <h1 class="group-name">{{ groupData.Name }}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h1 class="group-name">{{ groupData.Name }}</h1>
+          <div *ngIf="groupData.IsAdmin" class="admin-actions">
+            <button mat-icon-button [matTooltip]="'Edit Group'" (click)="editGroup()">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
         <p class="group-description">{{ groupData.Description }}</p>
         <div *ngIf="groupData.IsAdmin" class="admin-badge">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>Admin</span>
         </div>
-      </div>
-    </div>
-
-    <!-- Group Header -->
-    <div class="group-header">
-      <div class="group-info">
-      </div>
-      <div *ngIf="groupData.IsAdmin" class="admin-actions">
-        <button mat-icon-button [matTooltip]="'Edit Group'" (click)="editGroup()">
-          <mat-icon>edit</mat-icon>
-        </button>
       </div>
     </div>
 

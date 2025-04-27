@@ -10,6 +10,7 @@ namespace appBackend.Services
     {
         Task<bool> AddGroupMembersAsync(List<GroupMember> newGroupMembers); // Get group by creds
         Task<bool> RemoveMemberAsync(Guid groupMemberId);
+        Task<bool> MakeAdminAsync(Guid groupMemberId);
     }
 
     public class GroupMemberRepository : IGroupMemberRepository
@@ -52,6 +53,16 @@ namespace appBackend.Services
             if (member == null) return false;
             
             _context.GroupMembers.Remove(member);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> MakeAdminAsync(Guid groupMemberId)
+        {
+            var member = await _context.GroupMembers.FindAsync(groupMemberId);
+            if (member == null) return false;
+
+            member.IsAdmin = true;
             await _context.SaveChangesAsync();
             return true;
         }
