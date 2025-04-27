@@ -71,6 +71,30 @@ namespace appBackend.Services
             return createdGroup_Id;
         }
 
+        public async Task<bool> UpdateGroupAsync(UpdateGroupRequest groupRequest)
+        {
+            var group = await _groupRepository.GetGroupByIdAsync(groupRequest.GroupId);
+            if (group == null)
+            {
+                return false;
+            }
+            string? groupPictureUrl = null;
+            if (groupRequest.GroupPicture != null)
+            {
+                groupPictureUrl = await UploadGroupPictureToS3Async(groupRequest.GroupPicture);
+            }
+
+            group.Name = groupRequest.Name;
+            group.Description = groupRequest.Description;
+            if (groupPictureUrl != null) 
+            {
+                group.GroupPictureUrl = groupPictureUrl;
+            }
+            group.UpdatedAt = DateTimeOffset.UtcNow;
+
+            return await _groupRepository.UpdateGroupAsync(group);
+        }
+
         private async Task<string?> UploadGroupPictureToS3Async(IFormFile file)
         {
             if (file.Length == 0) return null;

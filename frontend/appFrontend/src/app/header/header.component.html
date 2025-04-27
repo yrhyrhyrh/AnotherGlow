@@ -1,8 +1,14 @@
 <header class="sticky-header">
   <div class="logo" (click)="goToRoot()">AnotherGlow</div>
-  
+
   <nav>
-    <button (click)="goToSettings()">Settings</button>
-    <button (click)="logout()">Logout</button>
+    <button mat-stroked-button color="primary" (click)="goToSettings()">
+      <mat-icon>settings</mat-icon>
+      Settings
+    </button>
+    <button mat-stroked-button class="logout-button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
   </nav>
 </header>

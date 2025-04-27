@@ -46,5 +46,11 @@ namespace appBackend.Services
             var removed = await _groupMemberRepository.RemoveMemberAsync(groupMemberId);
             return removed;
         }
+
+        public async Task<bool> MakeAdminAsync(Guid groupMemberId)
+        {
+            var madeAdmin = await _groupMemberRepository.MakeAdminAsync(groupMemberId);
+            return madeAdmin;
+        }
     }
 }
