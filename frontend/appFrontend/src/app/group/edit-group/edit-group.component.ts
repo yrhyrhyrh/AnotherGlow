@@ -121,6 +121,6 @@ export class EditGroupComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/group', this.groupId]);
+    this.router.navigate(['/group/detail', this.groupId]);
   }
 } 
