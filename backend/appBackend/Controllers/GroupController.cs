@@ -164,4 +164,14 @@ public class GroupController : ControllerBase
         else
           return StatusCode(500, new { message = "Database error while making member admin"});
     }
+
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateGroup([FromForm] UpdateGroupRequest request)
+    {
+        var updated = await _groupService.UpdateGroupAsync(request);
+        if (updated)
+          return Ok(new {message = "Group updated successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while updating group"});
+    }
 }

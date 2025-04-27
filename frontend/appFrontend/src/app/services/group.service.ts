@@ -32,4 +32,8 @@ export class GroupService {
   makeAdmin(groupMemberId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/makeAdmin?groupMemberId=${groupMemberId}`, {});
   }
+
+  updateGroup(formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update`, formData);
+  }
 }

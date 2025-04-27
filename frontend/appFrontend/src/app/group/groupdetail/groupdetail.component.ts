@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MemberComponent } from './member/member.component';
 import { SearchBarComponent } from '../../shared/search-bar/search-bar.component';
 import { UserSuggestion } from '../../interfaces/userSuggestion';
 import { AddNewMemberRequest } from '../../interfaces/addNewMemberRequest';
@@ -17,7 +16,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 import { GroupService } from '../../services/group.service';
@@ -77,6 +76,7 @@ export class GroupdetailComponent implements OnInit {
     private groupService: GroupService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -99,7 +99,6 @@ export class GroupdetailComponent implements OnInit {
 
         // Set banner background image
         if (data.GroupPictureUrl) {
-          console.log('Setting banner image to:', data.GroupPictureUrl);
           this.bannerStyle = {
             'background-image': `url(${data.GroupPictureUrl})`
           };
@@ -110,7 +109,6 @@ export class GroupdetailComponent implements OnInit {
             'background-image': 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'
           };
         }
-        console.log('Final banner style:', this.bannerStyle);
       },
       error: (err) => {
         console.error('Error fetching group details:', err);
@@ -181,10 +179,7 @@ export class GroupdetailComponent implements OnInit {
   }
 
   editGroup() {
-    // TODO: Implement group editing
-    this.snackBar.open('Group editing coming soon!', 'Close', {
-      duration: 3000
-    });
+    this.router.navigate(['/group', this.groupId, 'edit']);
   }
 
   makeAdmin(member: any) {
