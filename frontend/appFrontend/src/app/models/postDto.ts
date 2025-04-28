@@ -11,12 +11,14 @@ export interface PostDTO {
     CommentCount: number;
     IsLikedByCurrentUser: boolean;
     Attachments: AttachmentDTO[];
+    Poll: Poll;
   }
   
   export interface CreatePostRequestDTO {
     GroupId: string;
     Content: string;
     Attachments?: File[]; // Assuming File type for Attachments
+    Poll?: Poll;
   }
   
   export interface UpdatePostRequestDTO {
@@ -51,3 +53,11 @@ export interface PostDTO {
     UserId: string;
     CreatedAt: Date;
   }
+
+  export interface Poll {
+    Question: string;
+    Options: string[]; // Array of options
+    IsGlobal: boolean;
+    AllowMultipleSelections: boolean;
+  }
+  

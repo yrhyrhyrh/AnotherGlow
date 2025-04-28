@@ -152,3 +152,18 @@ ADD CONSTRAINT FK_posts_groups
 FOREIGN KEY (group_id)
 REFERENCES groups(group_id)
 ON DELETE CASCADE; -- Choose appropriate ON DELETE behavior (CASCADE, NO ACTION, RESTRICT)
+
+-- Add the post_id column to the posts table
+ALTER TABLE polls
+ADD COLUMN post_id UUID NOT NULL; -- make NOT NULL after truncating data
+
+-- Add foreign key constraint
+ALTER TABLE polls
+ADD CONSTRAINT FK_polls_posts
+FOREIGN KEY (post_id)
+REFERENCES posts(post_id)
+ON DELETE CASCADE; -- Choose appropriate ON DELETE behavior (CASCADE, NO ACTION, RESTRICT)
+
+-- Step 1: Drop the UserId column from the "polls" table
+ALTER TABLE polls
+DROP COLUMN user_id;

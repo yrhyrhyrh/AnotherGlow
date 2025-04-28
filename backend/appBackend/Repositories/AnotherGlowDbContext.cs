@@ -227,16 +227,14 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("poll_id") // Map to specific column name (optional)
                       .ValueGeneratedOnAdd();
 
-                entity.Property(v => v.UserId)
-                      .HasColumnName("user_id")
-                      .IsRequired()
-                      .HasColumnType("uuid");
-
-
                 entity.Property(p => p.Question)
                       .HasColumnName("question")
                       .IsRequired()
                       .HasColumnType("text");
+
+                entity.Property(p => p.PostId) // New PostId property configuration
+                      .HasColumnName("post_id")
+                      .IsRequired();
 
                 // Options Configuration (Store as JSON)
                 entity.Property(p => p.Options)
@@ -269,6 +267,11 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("allow_multiple_selections")
                       .IsRequired()
                       .HasDefaultValue(false); // Default to single selection
+
+                entity.HasOne(p => p.Post)
+                      .WithOne(g => g.Poll)
+                      .HasForeignKey<Poll>(p => p.PostId) // Specify the entity type for the foreign key
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // --- Vote Configuration ---
