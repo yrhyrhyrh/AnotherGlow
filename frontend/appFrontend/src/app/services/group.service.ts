@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { GroupData } from '../interfaces/groupData';
 import { UserSuggestion } from '../interfaces/userSuggestion';
 import { AddNewMemberRequest } from '../interfaces/addNewMemberRequest';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupService {
-  private apiUrl = 'http://localhost:5181/api/group';
+  private apiUrl = `${environment.apiUrl}/api/group`;
 
   constructor(private http: HttpClient) { }
 
