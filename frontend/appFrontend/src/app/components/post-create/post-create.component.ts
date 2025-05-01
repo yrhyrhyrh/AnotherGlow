@@ -77,6 +77,7 @@ export class PostCreateComponent implements AfterViewInit {
         (newPost) => {
           this.postContent = '';
           this.selectedFiles = null;
+          this.isPoll = false;
           this.postCreated.emit(); // Emit event to reload posts
         },
         (error) => {
