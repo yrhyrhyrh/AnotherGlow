@@ -3,7 +3,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { GroupdetailComponent } from './group/groupdetail/groupdetail.component';
 import { PollingComponent } from './polling/polling.component';
-import { PollListComponent } from './poll-list/poll-list.component';
+// import { PollListComponent } from './poll-list/poll-list.component';
 import { PostListComponent } from './components/post-list/post-list.component';
 import { AuthGuard } from './auth.guard';
 import { MainLayoutComponent } from './layout/main-layout.component';
@@ -54,11 +54,11 @@ export const routes: Routes = [
         component: PollingComponent,
         title: "Create Poll",
       },
-      {
-        path: 'polls',
-        component: PollListComponent,
-        title: "Poll List",
-      },
+      // {
+      //   path: 'polls',
+      //   component: PollListComponent,
+      //   title: "Poll List",
+      // },
       {
         path: 'userSettings',
         component: UserConfigComponent,

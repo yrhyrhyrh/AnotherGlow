@@ -11,25 +11,44 @@ public class PollRepository : IPollRepository
         _dbContext = dbContext;
     }
 
-    public IEnumerable<Poll> GetAll()
+    public async Task<IEnumerable<Poll>> GetAllAsync()
     {
-        return _dbContext.Polls.ToList();
+        return await _dbContext.Polls.ToListAsync();
     }
 
-    public Poll GetById(Guid pollId)  // Change the parameter type to Guid
+    public async Task<Poll?> GetByIdAsync(Guid pollId)
     {
-        return _dbContext.Polls.FirstOrDefault(p => p.PollId == pollId);  // Ensure you're using Guid here
+        return await _dbContext.Polls.FirstOrDefaultAsync(p => p.PollId == pollId);
     }
 
-    public void Add(Poll poll)
+    public async Task AddAsync(Poll poll)
     {
-        _dbContext.Polls.Add(poll);
-        _dbContext.SaveChanges();
+        await _dbContext.Polls.AddAsync(poll);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public void Update(Poll poll)
+    public async Task UpdateAsync(Poll poll)
     {
-        _dbContext.Entry(poll).State = EntityState.Modified;  // Flag it for update
-        _dbContext.SaveChanges();
+        _dbContext.Entry(poll).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Vote>> GetVotesByPollAndUserAsync(Guid pollId, Guid userId)
+    {
+        return await _dbContext.Votes
+            .Where(v => v.PollId == pollId && v.UserId == userId)
+            .ToListAsync();
+    }
+
+    public async Task AddVoteAsync(Vote vote)
+    {
+        await _dbContext.Votes.AddAsync(vote);
+    }
+
+    public async Task RemoveVoteAsync(Vote vote)
+    {
+        _dbContext.Votes.Remove(vote);
+    }
+
+
 }

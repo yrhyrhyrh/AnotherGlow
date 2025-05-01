@@ -20,6 +20,7 @@ namespace appBackend.Repositories.GlobalPostWall
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
                 .Include(p => p.Attachments)
+                .Include(p => p.Poll)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
         }
@@ -29,7 +30,8 @@ namespace appBackend.Repositories.GlobalPostWall
                  .Include(p => p.Author)
                  .Include(p => p.Likes)
                  .Include(p => p.Comments)
-                 .Include(p => p.Attachments);
+                 .Include(p => p.Attachments)
+                 .Include(p => p.Poll);
 
             if (groupId.HasValue) // Filter by groupId if provided
             {
@@ -53,6 +55,7 @@ namespace appBackend.Repositories.GlobalPostWall
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
                 .Include(p => p.Attachments)
+                .Include(p => p.Poll)
                 .FirstOrDefaultAsync(p => p.PostId == postId);
         }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PollService } from '../services/poll.service'; // Verify path
@@ -16,6 +16,7 @@ interface PollResponse { // Keep or modify as needed
   styleUrls: ['./polling.component.css'] // Your poll creation CSS
 })
 export class PollingComponent implements OnInit {
+  @Output() pollDataChanged = new EventEmitter<any>();
   pollForm!: FormGroup;
   successMessage: string | null = null;
 
@@ -27,29 +28,35 @@ export class PollingComponent implements OnInit {
 
   ngOnInit() {
     this.pollForm = this.fb.group({
-      question: ['', Validators.required],
-      options: this.fb.array([
+      Question: ['', Validators.required],
+      Options: this.fb.array([
         this.fb.control('', Validators.required),
         this.fb.control('', Validators.required)
       ], Validators.minLength(2)),
-      isGlobal: [false],
-      allowMultipleSelections: [false]
+      IsGlobal: [false],
+      AllowMultipleSelections: [false]
+    });
+  
+    // Emit the initial empty form
+    this.pollForm.valueChanges.subscribe(value => {
+      this.pollDataChanged.emit(value);
     });
   }
+  
 
-  get options() {
-    return this.pollForm.get('options') as FormArray;
+  get Options() {
+    return this.pollForm.get('Options') as FormArray;
   }
 
   addOption() {
-    this.options.push(this.fb.control('', Validators.required));
+    this.Options.push(this.fb.control('', Validators.required));
   }
 
   removeOption(index: number) {
-    if (this.options.length > 2) { // Prevent removing below 2 options
-      this.options.removeAt(index);
+    if (this.Options.length > 2) { // Prevent removing below 2 Options
+      this.Options.removeAt(index);
     } else {
-      alert("A poll must have at least two options.");
+      alert("A poll must have at least two Options.");
     }
   }
 
@@ -64,12 +71,7 @@ export class PollingComponent implements OnInit {
           next: (response: PollResponse) => {
             console.log('Poll created successfully:', response);
             this.successMessage = response.message || "Poll created successfully!";
-            this.resetForm();  // Reset the form after success
-
-            // Optionally navigate away after a delay
-            setTimeout(() => {
-              this.router.navigate(['/polls']); // Navigate to poll list
-            }, 2000);
+            // this.resetForm();  // Reset the form after success
           },
           error: (error: any) => {
             console.error('Error creating poll:', error);
@@ -89,10 +91,10 @@ export class PollingComponent implements OnInit {
 
   // Reset the form
   resetForm() {
-    this.pollForm.reset({ isGlobal: false, allowMultipleSelections: false });
-    this.options.clear();  // Clear options array
+    this.pollForm.reset({ IsGlobal: false, AllowMultipleSelections: false });
+    this.Options.clear();  // Clear Options array
 
-    // Re-add the initial two options
+    // Re-add the initial two Options
     this.addOption();
     this.addOption();
   }

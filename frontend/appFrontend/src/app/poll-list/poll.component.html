@@ -1,0 +1,45 @@
+<div class="poll-container">
+    <h4 class="poll-question">{{ poll.Question }}</h4>
+  
+    <form (submit)="vote($event)" class="poll-form">
+      <!-- Single Selection -->
+      <div *ngIf="!poll.AllowMultipleSelections">
+        <div *ngFor="let option of poll.Options; let i = index" class="poll-option">
+          <label class="option-label">
+            <input type="radio" name="option" [value]="i" [(ngModel)]="selectedOption" required />
+            {{ option }}
+          </label>
+          <div *ngIf="showResults" class="result-bar">
+            <div class="bar-fill" [style.width.%]="getVotePercentage(i)"></div>
+            <span class="vote-count">{{ getVoteCount(i) }} votes ({{ getVotePercentage(i) | number:'1.0-1' }}%)</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Multiple Selection -->
+      <div *ngIf="poll.AllowMultipleSelections">
+        <div *ngFor="let option of poll.Options; let i = index" class="poll-option">
+          <label class="option-label">
+            <input type="checkbox" [checked]="selectedOptionsMulti[i]" (change)="onCheckboxChange($event, i)" />
+            {{ option }}
+          </label>
+          <div *ngIf="showResults" class="result-bar">
+            <div class="bar-fill" [style.width.%]="getVotePercentage(i)"></div>
+            <span class="vote-count">{{ getVoteCount(i) }} votes ({{ getVotePercentage(i) | number:'1.0-1' }}%)</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="poll-actions">
+        <button type="submit" [disabled]="poll.AllowMultipleSelections ? !hasSelectedMulti() : selectedOption === null" class="vote-button">
+          Vote
+        </button>
+        <button type="button" (click)="toggleResults()" *ngIf="poll.Votes" class="toggle-button">
+          {{ showResults ? 'Hide Results' : 'Show Results' }}
+        </button>
+      </div>
+    </form>
+  
+    <div *ngIf="feedbackMessage" class="feedback">{{ feedbackMessage }}</div>
+  </div>
+  

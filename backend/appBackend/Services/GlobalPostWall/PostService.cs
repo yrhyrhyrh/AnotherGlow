@@ -4,6 +4,7 @@ using appBackend.Dtos.GlobalPostWall;
 using appBackend.Interfaces.GlobalPostWall;
 using appBackend.Models;
 using appBackend.Repositories;
+using System.Text.Json;
 
 namespace appBackend.Services.GlobalPostWall
 {
@@ -11,6 +12,7 @@ namespace appBackend.Services.GlobalPostWall
     {
         private readonly IPostRepository _postRepository;
         private readonly IAttachmentRepository _attachmentRepository;
+        private readonly IPollService _pollService;
         private readonly SocialMediaDbContext _dbContext;
         private readonly IAmazonS3 _s3Client; // Inject IAmazonS3
 
@@ -18,10 +20,11 @@ namespace appBackend.Services.GlobalPostWall
         private readonly string _s3BucketName;
         private readonly string _cloudformS3domain;
 
-        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, SocialMediaDbContext dbContext, IAmazonS3 s3Client, IConfiguration configuration) // Inject IConfiguration
+        public PostService(IPostRepository postRepository, IAttachmentRepository attachmentRepository, IPollService pollService, SocialMediaDbContext dbContext, IAmazonS3 s3Client, IConfiguration configuration) // Inject IConfiguration
         {
             _postRepository = postRepository;
             _attachmentRepository = attachmentRepository;
+            _pollService = pollService;
             _dbContext = dbContext;
             _s3Client = s3Client;
             _s3BucketName = configuration["Aws:S3BucketName"] ?? throw new InvalidOperationException("S3BucketName is not configured."); // Read from config
@@ -67,6 +70,13 @@ namespace appBackend.Services.GlobalPostWall
             if (createPostDto.Attachments != null && createPostDto.Attachments.Any())
             {
                 await SaveAttachmentsAsync(createdPost.PostId, createPostDto.Attachments);
+            }
+
+            if (createPostDto.Poll != null)
+            {
+                CreatePollDTO? poll = JsonSerializer.Deserialize<CreatePollDTO>(createPostDto.Poll);
+                poll.PostId = createdPost.PostId; // Set PostId for the poll
+                await _pollService.CreatePollAsync(poll);
             }
 
             return MapPostToDTO(curentUserId, createdPost);
@@ -127,7 +137,8 @@ namespace appBackend.Services.GlobalPostWall
                     FilePath = a.FilePath,
                     ContentType = a.ContentType,
                     FileSize = a.FileSize
-                }).ToList() ?? new List<AttachmentDTO>()
+                }).ToList() ?? new List<AttachmentDTO>(),
+                Poll = post.Poll
             };
         }
 

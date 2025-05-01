@@ -1,47 +1,36 @@
-<div class="container">
-  <h1>Create a New Poll</h1>
-  <form [formGroup]="pollForm" (ngSubmit)="onSubmit()">
-    <!-- Question Input -->
-    <div class="form-group">
-      <label for="question">Poll Question:</label>
-      <input type="text" id="question" class="form-control" formControlName="question">
-      <div *ngIf="pollForm.get('question')?.invalid && (pollForm.get('question')?.dirty || pollForm.get('question')?.touched)" class="alert alert-danger mt-1">
-        Question is required.
-      </div>
+<div [formGroup]="pollForm" class="polling-container">
+  <!-- Poll Question -->
+  <div class="form-group">
+    <label for="Question">Poll Question:</label>
+    <input type="text" id="Question" class="form-control" formControlName="Question" placeholder="Enter your Question">
+    <div *ngIf="pollForm.get('Question')?.invalid && (pollForm.get('Question')?.dirty || pollForm.get('Question')?.touched)" class="alert alert-danger mt-1">
+      Question is required.
     </div>
+  </div>
 
-    <!-- Options Section -->
-    <div formArrayName="options" class="form-group">
-      <label>Poll Options (at least 2):</label>
-      <div *ngFor="let option of options.controls; let i = index" class="option-row mb-2">
-        <input type="text" class="form-control me-2" [formControlName]="i" placeholder="Option {{ i + 1 }}">
-        <button type="button" class="btn btn-sm btn-danger" (click)="removeOption(i)" [disabled]="options.controls.length <= 2">Remove</button>
-      </div>
-      <!-- Validation message for options array -->
-      <div *ngIf="options.invalid && options.touched" class="alert alert-danger mt-1">
-        Please ensure all options are filled and you have at least two options.
-      </div>
-      <button type="button" class="btn btn-sm btn-secondary mt-2" (click)="addOption()">Add Another Option</button>
+  <!-- Poll Options -->
+  <div formArrayName="Options" class="form-group mt-3">
+    <label>Poll Options (at least 2):</label>
+    <div *ngFor="let option of Options.controls; let i = index" class="option-row mb-2 d-flex align-items-center">
+      <input type="text" class="form-control me-2" [formControlName]="i" placeholder="Option {{ i + 1 }}">
+      <button type="button" class="btn btn-sm btn-danger" (click)="removeOption(i)" [disabled]="Options.length <= 2">
+        Remove
+      </button>
     </div>
-
-    <!-- Global Setting -->
-    <div class="form-check mb-3">
-      <input type="checkbox" class="form-check-input" id="isGlobal" formControlName="isGlobal">
-      <label class="form-check-label" for="isGlobal">Make Poll Global (visible to everyone)</label>
+    <div *ngIf="Options.invalid && Options.touched" class="alert alert-danger mt-1">
+      Please ensure all Options are filled and you have at least two Options.
     </div>
+    <button type="button" class="btn btn-sm btn-secondary mt-2" (click)="addOption()">Add Another Option</button>
+  </div>
 
-    <!-- Allow Multiple Selections Setting -->
-    <div class="form-check mb-3">
-      <input type="checkbox" class="form-check-input" id="allowMultipleSelections" formControlName="allowMultipleSelections">
-      <label class="form-check-label" for="allowMultipleSelections">Allow voters to select multiple options</label>
-    </div>
+  <!-- Additional Poll Settings -->
+  <div class="form-check mt-3">
+    <input type="checkbox" class="form-check-input" id="IsGlobal" formControlName="IsGlobal">
+    <label class="form-check-label" for="IsGlobal">Make Poll Global (visible to everyone)</label>
+  </div>
 
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-success" [disabled]="pollForm.invalid">Create Poll</button>
-  </form>
-
-  <!-- Feedback Message -->
-  <div *ngIf="successMessage" class="alert mt-3" [ngClass]="{'alert-success': !successMessage.startsWith('Failed'), 'alert-danger': successMessage.startsWith('Failed')}">
-    {{ successMessage }}
+  <div class="form-check mt-2">
+    <input type="checkbox" class="form-check-input" id="AllowMultipleSelections" formControlName="AllowMultipleSelections">
+    <label class="form-check-label" for="AllowMultipleSelections">Allow voters to select multiple Options</label>
   </div>
 </div>

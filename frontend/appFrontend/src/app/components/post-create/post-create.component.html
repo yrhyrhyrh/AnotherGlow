@@ -1,22 +1,33 @@
 <mat-card class="post-create-card">
-    <mat-card-content>
-      <mat-form-field appearance="outline" style="width: 100%;">
-        <mat-label>What's on your mind?</mat-label>
-        <textarea matInput placeholder="Enter your post content here" [(ngModel)]="postContent" rows="3"></textarea>
-      </mat-form-field>
-  
-      <div>
-        <input type="file" multiple (change)="onFileSelected($event)" #fileInput style="display: none;">
-        <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
-          <mat-icon>attach_file</mat-icon> Attach Files
-        </button>
-        <span *ngIf="selectedFiles && selectedFiles.length > 0">
-          {{ selectedFiles.length }} file(s) selected
-        </span>
-      </div>
-  
-    </mat-card-content>
-    <mat-card-actions align="end">
-      <button mat-raised-button color="primary" (click)="createPost()">Post</button>
-    </mat-card-actions>
-  </mat-card>
+  <mat-card-content>
+    <mat-form-field appearance="outline" style="width: 100%;">
+      <mat-label>What's on your mind?</mat-label>
+      <textarea matInput placeholder="Enter your post content here" [(ngModel)]="postContent" rows="3"></textarea>
+    </mat-form-field>
+
+    <div style="margin-top: 10px;">
+      <input type="file" multiple (change)="onFileSelected($event)" #fileInput style="display: none;">
+      <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
+        <mat-icon>attach_file</mat-icon> Attach Files
+      </button>
+      <button mat-stroked-button color="accent" type="button" (click)="togglePoll()" style="margin-left: 10px;">
+        <mat-icon>poll</mat-icon> Add Poll
+      </button>
+    </div>
+
+    <!-- Show number of selected files -->
+    <div *ngIf="selectedFiles && selectedFiles.length > 0" style="margin-top: 5px;">
+      {{ selectedFiles.length }} file(s) selected
+    </div>
+
+    <!-- Poll creation form -->
+    <div *ngIf="isPoll" style="margin-top: 15px;">
+      <app-polling></app-polling>
+    </div>
+
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-raised-button color="primary" (click)="createPost()">Post</button>
+  </mat-card-actions>
+</mat-card>
