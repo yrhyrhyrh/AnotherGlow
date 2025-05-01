@@ -1,36 +1,59 @@
 <div [formGroup]="pollForm" class="polling-container">
   <!-- Poll Question -->
-  <div class="form-group">
-    <label for="Question">Poll Question:</label>
-    <input type="text" id="Question" class="form-control" formControlName="Question" placeholder="Enter your Question">
-    <div *ngIf="pollForm.get('Question')?.invalid && (pollForm.get('Question')?.dirty || pollForm.get('Question')?.touched)" class="alert alert-danger mt-1">
+  <div class="form-section">
+    <label for="Question" class="section-label">Poll Question</label>
+    <input
+      type="text"
+      id="Question"
+      class="input-field"
+      formControlName="Question"
+      placeholder="Enter your question"
+    />
+    <div
+      *ngIf="pollForm.get('Question')?.invalid && (pollForm.get('Question')?.dirty || pollForm.get('Question')?.touched)"
+      class="error-message"
+    >
       Question is required.
     </div>
   </div>
 
   <!-- Poll Options -->
-  <div formArrayName="Options" class="form-group mt-3">
-    <label>Poll Options (at least 2):</label>
-    <div *ngFor="let option of Options.controls; let i = index" class="option-row mb-2 d-flex align-items-center">
-      <input type="text" class="form-control me-2" [formControlName]="i" placeholder="Option {{ i + 1 }}">
-      <button type="button" class="btn btn-sm btn-danger" (click)="removeOption(i)" [disabled]="Options.length <= 2">
-        Remove
+  <div formArrayName="Options" class="form-section">
+    <label class="section-label">Poll Options (minimum 2)</label>
+    <div
+      *ngFor="let option of Options.controls; let i = index"
+      class="option-row"
+    >
+      <input
+        type="text"
+        class="input-field small"
+        [formControlName]="i"
+        placeholder="Option {{ i + 1 }}"
+      />
+      <button
+        type="button"
+        class="btn remove-btn"
+        (click)="removeOption(i)"
+        [disabled]="Options.length <= 2"
+      >
+        ✕
       </button>
     </div>
-    <div *ngIf="Options.invalid && Options.touched" class="alert alert-danger mt-1">
-      Please ensure all Options are filled and you have at least two Options.
+    <div *ngIf="Options.invalid && Options.touched" class="error-message">
+      All options must be filled and at least 2 provided.
     </div>
-    <button type="button" class="btn btn-sm btn-secondary mt-2" (click)="addOption()">Add Another Option</button>
+    <button type="button" class="btn add-btn" (click)="addOption()">
+      + Add Option
+    </button>
   </div>
 
-  <!-- Additional Poll Settings -->
-  <div class="form-check mt-3">
-    <input type="checkbox" class="form-check-input" id="IsGlobal" formControlName="IsGlobal">
-    <label class="form-check-label" for="IsGlobal">Make Poll Global (visible to everyone)</label>
-  </div>
-
-  <div class="form-check mt-2">
-    <input type="checkbox" class="form-check-input" id="AllowMultipleSelections" formControlName="AllowMultipleSelections">
-    <label class="form-check-label" for="AllowMultipleSelections">Allow voters to select multiple Options</label>
+  <!-- Multiple Selection Toggle -->
+  <div class="form-section checkbox-group">
+    <input
+      type="checkbox"
+      id="AllowMultipleSelections"
+      formControlName="AllowMultipleSelections"
+    />
+    <label for="AllowMultipleSelections">Allow multiple selections</label>
   </div>
 </div>
