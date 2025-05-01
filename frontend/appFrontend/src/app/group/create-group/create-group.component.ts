@@ -30,10 +30,10 @@ interface GroupRequest {
   ],
   template: `
     <div class="create-group-container">
-      <h2>Create New Group</h2>
+      <h2>Create New Community</h2>
       <form (ngSubmit)="createGroup()" #groupForm="ngForm" enctype="multipart/form-data">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Group Name</mat-label>
+          <mat-label>Community Name</mat-label>
           <input matInput [(ngModel)]="groupRequest.Name" name="name" required>
         </mat-form-field>
 
@@ -53,7 +53,7 @@ interface GroupRequest {
                   (click)="fileInput.click()"
                   class="full-width">
             <mat-icon>add_photo_alternate</mat-icon>
-            {{ groupRequest.GroupPicture ? 'Change Group Picture' : 'Add Group Picture' }}
+            {{ groupRequest.GroupPicture ? 'Change Community Picture' : 'Add Community Picture' }}
           </button>
           <div *ngIf="groupRequest.GroupPicture" class="selected-file">
             <mat-icon>image</mat-icon>
@@ -71,7 +71,7 @@ interface GroupRequest {
           </button>
           <button mat-raised-button color="primary" type="submit" [disabled]="!groupRequest.Name.trim()">
             <mat-icon>add</mat-icon>
-            Create Group
+            Create Community
           </button>
         </div>
       </form>

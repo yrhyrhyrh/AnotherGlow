@@ -9,6 +9,7 @@ import { AuthGuard } from './auth.guard';
 import { MainLayoutComponent } from './layout/main-layout.component';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { UserConfigComponent } from './userConfig/userConfig.component';
+import { EditGroupComponent } from './group/edit-group/edit-group.component';
 
 export const routes: Routes = [
   {
@@ -40,12 +41,12 @@ export const routes: Routes = [
       {
         path: 'group/create',
         component: CreateGroupComponent,
-        title: "Create New Group",
+        title: "Create New Community",
       },
       {
         path: 'group/detail/:id',
         component: GroupdetailComponent,
-        title: "Group Details",
+        title: "Community Details",
         data: { renderMode: 'client' }
       },
       {
@@ -62,6 +63,12 @@ export const routes: Routes = [
         path: 'userSettings',
         component: UserConfigComponent,
         title: "User Settings",
+      },
+      {
+        path: 'group/:id/edit',
+        component: EditGroupComponent,
+        title: "Edit Community",
+        data: { renderMode: 'client' }
       }
     ]
   }

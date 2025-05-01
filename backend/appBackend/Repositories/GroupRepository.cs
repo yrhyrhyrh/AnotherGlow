@@ -9,10 +9,12 @@ namespace appBackend.Services
 
     public interface IGroupRepository
     {
+        Task<Group> GetGroupByIdAsync(Guid groupId);
         Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin);
         Task<GroupDto?> GetGroupAsync(Guid group_id, Guid currentUserId); // Updated to include currentUserId
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
         Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword);
+        Task<bool> UpdateGroupAsync(Group group);
     }
 
     public class GroupRepository : IGroupRepository
@@ -22,6 +24,11 @@ namespace appBackend.Services
         public GroupRepository(SocialMediaDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Group> GetGroupByIdAsync(Guid groupId)
+        {
+            return await _context.Groups.FindAsync(groupId);
         }
 
         public async Task<List<Group>> GetGroupsByUserIdAsync(Guid userId, bool isAdmin)
@@ -92,6 +99,13 @@ namespace appBackend.Services
             _context.Groups.Add(newGroup);
             await _context.SaveChangesAsync();
             return newGroup.GroupId;
+        }
+
+        public async Task<bool> UpdateGroupAsync(Group group)
+        {
+            _context.Groups.Update(group);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword)

@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   template: `
     <button mat-raised-button color="primary" (click)="createGroup()" class="create-group-button">
       <mat-icon>add</mat-icon>
-      Create Group
+      Create Community
     </button>
   `,
   styles: [`

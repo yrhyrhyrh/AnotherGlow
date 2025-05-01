@@ -1,0 +1,50 @@
+<div class="edit-group-page">
+  <mat-card class="edit-group-card">
+    <mat-card-header>
+      <mat-card-title>Edit Group</mat-card-title>
+      <mat-card-subtitle>Update your group information</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="editGroupForm" (ngSubmit)="onSubmit()" class="edit-group-form">
+        <div class="group-picture-section">
+          <div class="current-picture" *ngIf="currentImageUrl">
+            <img [src]="currentImageUrl" alt="Current group picture">
+          </div>
+          <div class="upload-section">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput style="display: none">
+            <button mat-raised-button color="primary" (click)="fileInput.click()">
+              <mat-icon>add_photo_alternate</mat-icon>
+              Change Picture
+            </button>
+            <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Group Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter group name">
+          <mat-error *ngIf="editGroupForm.get('name')?.hasError('required')">
+            Group name is required
+          </mat-error>
+          <mat-error *ngIf="editGroupForm.get('name')?.hasError('minlength')">
+            Group name must be at least 3 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" placeholder="Enter group description" rows="4"></textarea>
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-button type="button" (click)="goBack()">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="editGroupForm.invalid || isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
