@@ -1,8 +1,46 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { PollService, Poll } from '../services/poll.service';
 import { AuthService } from '../services/auth.service';
+
+interface VotingStrategy {
+  prepareVoteData(poll: Poll, userId: string, component: PollComponent): any;
+}
+
+class SingleChoiceStrategy implements VotingStrategy {
+  prepareVoteData(poll: Poll, userId: string, component: PollComponent) {
+    if (component.selectedOption === null) {
+      throw new Error('Please select an option.');
+    }
+    return {
+      pollId: poll.PollId ?? '',
+      userId,
+      optionIndex: component.selectedOption,
+      retract: false
+    };
+  }
+}
+
+class MultiChoiceStrategy implements VotingStrategy {
+  prepareVoteData(poll: Poll, userId: string, component: PollComponent) {
+    const selected = Object.entries(component.selectedOptionsMulti)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([index, _]) => parseInt(index, 10));
+
+    if (selected.length === 0) {
+      throw new Error('Please select at least one option.');
+    }
+
+    return {
+      pollId: poll.PollId ?? '',
+      userId,
+      optionIndices: selected,
+      retract: false
+    };
+  }
+}
 
 @Component({
   selector: 'app-poll',
@@ -11,15 +49,37 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './poll.component.html',
   styleUrls: ['./poll.component.css']
 })
-export class PollComponent {
-  @Input() poll!: Poll; // <-- Receive poll from parent component
-
+export class PollComponent implements OnInit, OnDestroy {
+  @Input() poll!: Poll;
   selectedOption: number | null = null;
   selectedOptionsMulti: { [optionIndex: number]: boolean } = {};
   feedbackMessage: string | null = null;
   showResults = false;
+  private pollChangeSub!: Subscription;
 
-  constructor(private pollService: PollService, private authService: AuthService) {}
+  constructor(private pollService: PollService, private authService: AuthService) { }
+
+  ngOnInit(): void {
+    this.pollChangeSub = this.pollService.pollChanged$.subscribe(() => {
+      console.log("🔁 PollComponent received change signal, refreshing poll");
+      if (this.poll?.PollId) {
+        this.pollService.getPollById(this.poll.PollId).subscribe({
+          next: (updatedPoll) => {
+            this.poll = updatedPoll;
+          },
+          error: (err) => {
+            console.error('Error refreshing poll after notification:', err);
+          }
+        });
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollChangeSub) {
+      this.pollChangeSub.unsubscribe();
+    }
+  }
 
   onCheckboxChange(event: Event, optionIndex: number) {
     const input = event.target as HTMLInputElement;
@@ -40,52 +100,40 @@ export class PollComponent {
       return;
     }
 
-    let voteData: { pollId: string; userId: string; optionIndex?: number; optionIndices?: number[]; retract: boolean };
+    try {
+      const strategy: VotingStrategy = this.poll.AllowMultipleSelections
+        ? new MultiChoiceStrategy()
+        : new SingleChoiceStrategy();
 
-    if (this.poll.AllowMultipleSelections) {
-      const selectedIndices = Object.entries(this.selectedOptionsMulti)
-        .filter(([_, isSelected]) => isSelected)
-        .map(([index, _]) => parseInt(index, 10));
+      const voteData = strategy.prepareVoteData(this.poll, userId, this);
 
-      if (selectedIndices.length === 0) {
-        this.feedbackMessage = 'Please select at least one option.';
-        return;
-      }
-
-      voteData = { pollId: this.poll.PollId?? "" , userId, optionIndices: selectedIndices, retract: false };
-    } else {
-      if (this.selectedOption === null || this.selectedOption === undefined) {
-        this.feedbackMessage = 'Please select an option.';
-        return;
-      }
-      voteData = { pollId: this.poll.PollId??"", userId, optionIndex: this.selectedOption, retract: false };
-    }
-
-    this.pollService.castVote(voteData).subscribe({
-      next: (response) => {
-        this.feedbackMessage = response.message || 'Vote cast successfully!';
-        this.showResults = true;
-        if (this.poll.AllowMultipleSelections) {
+      this.pollService.castVote(voteData).subscribe({
+        next: (response) => {
+          this.feedbackMessage = response.message || 'Vote cast successfully!';
+          this.showResults = true;
           this.selectedOptionsMulti = {};
-        } else {
           this.selectedOption = null;
-        }
-        // 🔄 Refresh poll from backend to get updated votes
-        this.pollService.getPollById(this.poll.PollId!).subscribe({
+
+          this.pollService.getPollById(this.poll.PollId!).subscribe({
             next: (updatedPoll) => {
-            this.poll = updatedPoll; // 🟢 Update local poll with latest data
+              this.poll = updatedPoll;
             },
             error: (err) => {
-            console.error('Failed to refresh poll:', err);
+              console.error('Failed to refresh poll:', err);
             }
-        });
-        setTimeout(() => { this.feedbackMessage = null; }, 3000);
-        // Optionally: emit event to parent to refresh post?
-      },
-      error: (error) => {
-        this.feedbackMessage = error.message || 'Failed to cast vote. Please try again.';
-      }
-    });
+          });
+
+          setTimeout(() => {
+            this.feedbackMessage = null;
+          }, 3000);
+        },
+        error: (error) => {
+          this.feedbackMessage = error.message || 'Failed to cast vote. Please try again.';
+        }
+      });
+    } catch (error: any) {
+      this.feedbackMessage = error.message;
+    }
   }
 
   getVoteCount(optionIndex: number): number {
