@@ -284,13 +284,13 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("vote_id")
                       .ValueGeneratedOnAdd(); // Let DB generate UUID
 
-                entity.Property(p => p.UserId)
-                      .HasColumnName("user_id")
-                      .IsRequired()
-                      .HasColumnType("uuid");
-
                 entity.Property(v => v.PollId)
                       .HasColumnName("poll_id")
+                      .IsRequired();
+
+
+                entity.Property(v => v.UserId)
+                      .HasColumnName("user_id")
                       .IsRequired();
 
                 entity.Property(v => v.OptionIndex)
@@ -302,17 +302,13 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .IsRequired()
                       .HasDefaultValueSql("now()"); // Use DB-side default timestamp
 
-                // Unique constraint: one vote per user per poll
-                entity.HasIndex(v => new { v.UserId, v.PollId, v.OptionIndex }, "votes_user_poll_option_unique") // New name
-                      .IsUnique();
-
                 // Relationships (if navigation properties exist, you can swap WithMany() appropriately)
                 entity.HasOne<Poll>() // Assumes navigation not defined in Vote
                       .WithMany()
                       .HasForeignKey(v => v.PollId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne<User>() // Assumes navigation not defined in Vote
+                entity.HasOne<User>() // optional
                       .WithMany()
                       .HasForeignKey(v => v.UserId)
                       .OnDelete(DeleteBehavior.Cascade);

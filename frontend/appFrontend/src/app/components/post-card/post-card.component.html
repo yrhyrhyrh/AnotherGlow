@@ -6,6 +6,7 @@
     </mat-card-header>
     <mat-card-content>
       <p>{{ post.Content }}</p>
+      <app-poll *ngIf="post.Poll" [poll]="post.Poll"></app-poll>
       <div *ngIf="post.Attachments && post.Attachments.length > 0">
         <div *ngFor="let attachment of post.Attachments">
           <ng-container *ngIf="isImage(attachment.ContentType)">

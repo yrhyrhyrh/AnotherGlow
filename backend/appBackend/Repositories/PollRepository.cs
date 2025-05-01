@@ -16,7 +16,7 @@ public class PollRepository : IPollRepository
         return await _dbContext.Polls.ToListAsync();
     }
 
-    public async Task<Poll> GetByIdAsync(Guid pollId)
+    public async Task<Poll?> GetByIdAsync(Guid pollId)
     {
         return await _dbContext.Polls.FirstOrDefaultAsync(p => p.PollId == pollId);
     }
@@ -32,4 +32,23 @@ public class PollRepository : IPollRepository
         _dbContext.Entry(poll).State = EntityState.Modified;
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Vote>> GetVotesByPollAndUserAsync(Guid pollId, Guid userId)
+    {
+        return await _dbContext.Votes
+            .Where(v => v.PollId == pollId && v.UserId == userId)
+            .ToListAsync();
+    }
+
+    public async Task AddVoteAsync(Vote vote)
+    {
+        await _dbContext.Votes.AddAsync(vote);
+    }
+
+    public async Task RemoveVoteAsync(Vote vote)
+    {
+        _dbContext.Votes.Remove(vote);
+    }
+
+
 }

@@ -11,7 +11,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostCreateComponent } from '../post-create/post-create.component';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { ActivatedRoute, RouterModule } from '@angular/router'; // Import ActivatedRoute and RouterModule
-import { HttpResponse } from '@angular/common/http'; // Import HttpResponse
 
 @Component({
   selector: 'app-post-list',

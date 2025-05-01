@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CommentListComponent } from '../comment-list/comment-list.component';
 import { CommentCreateComponent } from '../comment-create/comment-create.component';
+import { PollComponent } from '../../poll-list/poll.component';
 
 @Component({
   selector: 'app-post-card',
@@ -24,7 +25,8 @@ import { CommentCreateComponent } from '../comment-create/comment-create.compone
     FormsModule,
     CommonModule,
     CommentListComponent,
-    CommentCreateComponent
+    CommentCreateComponent,
+    PollComponent
   ],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.css']

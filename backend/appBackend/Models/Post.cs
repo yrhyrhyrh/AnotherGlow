@@ -34,6 +34,6 @@ namespace appBackend.Models
 
         // Attachments on the post (Join entity)
         public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
-        public virtual Poll Poll { get; set; } = new Poll();
+        public virtual Poll? Poll { get; set; }
     }
 }

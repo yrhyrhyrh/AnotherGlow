@@ -153,7 +153,7 @@ FOREIGN KEY (group_id)
 REFERENCES groups(group_id)
 ON DELETE CASCADE; -- Choose appropriate ON DELETE behavior (CASCADE, NO ACTION, RESTRICT)
 
--- Add the post_id column to the posts table
+-- Add the post_id column to the posts table 
 ALTER TABLE polls
 ADD COLUMN post_id UUID NOT NULL; -- make NOT NULL after truncating data
 

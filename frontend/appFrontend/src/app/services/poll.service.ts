@@ -6,13 +6,13 @@ import { environment } from '../../environments/environment';
 
 // Consistent Poll Interface (matches backend casing if backend sends PascalCase)
 export interface Poll {
-  PollId: string;
+  PollId?: string;
   Question: string;
   Options: string[];
   IsGlobal: boolean;
-  UserId: string;
+  UserId?: string;
   AllowMultipleSelections: boolean;
-  Votes: { [key: number]: number }; // Assuming Votes dictionary is also sent
+  Votes?: { [key: number]: number }; // Assuming Votes dictionary is also sent
 }
 
 // Interface for the vote request body
@@ -69,6 +69,10 @@ export class PollService {
     return this.http.get<Poll[]>(`${this.apiUrl}/all`, { headers })
       .pipe(catchError(this.handleError));
   }
+
+  getPollById(pollId: string): Observable<Poll> {
+    return this.http.get<Poll>(`${this.apiUrl}/${pollId}`);
+  }  
 
   // Cast a vote (handles single or multiple based on payload)
   castVote(voteData: VotePayload): Observable<VoteResponse> {

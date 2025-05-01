@@ -13,12 +13,12 @@ namespace appBackend.Services // Ensure namespace matches registration
     public class PollService : IPollService // Implement the interface
     {
         private readonly IPollRepository _pollRepository;
-        private readonly SocialMediaDbContext _context; // Need DbContext for Vote table access
+        //private readonly SocialMediaDbContext _context; // Need DbContext for Vote table access
 
-        public PollService(IPollRepository pollRepository, SocialMediaDbContext context)
+        public PollService(IPollRepository pollRepository)
         {
             _pollRepository = pollRepository ?? throw new ArgumentNullException(nameof(pollRepository));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            //_context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task CreatePollAsync(CreatePollDTO poll)
@@ -55,39 +55,37 @@ namespace appBackend.Services // Ensure namespace matches registration
 
         public async Task CastVoteAsync(Guid pollId, VoteRequest voteRequest)
         {
-            Poll poll = await _context.Polls.FirstOrDefaultAsync(p => p.PollId == pollId);
-            if (poll == null) throw new ArgumentException($"Poll with ID {pollId} not found.");
+            Poll? poll = await _pollRepository.GetByIdAsync(pollId);
+            if (poll == null)
+                throw new ArgumentException($"Poll with ID {pollId} not found.");
 
-            Guid userId = voteRequest.UserId;
-            List<int> newVoteIndices = new List<int>();
+            List<int> newVoteIndices = new();
 
             if (poll.AllowMultipleSelections)
             {
                 if (voteRequest.OptionIndices == null || !voteRequest.OptionIndices.Any())
-                    throw new ArgumentException("At least one option must be selected for a multiple-choice poll.");
+                    throw new ArgumentException("At least one option must be selected.");
 
-                foreach (var index in voteRequest.OptionIndices.Distinct())
-                {
-                    if (index >= 0 && index < poll.Options.Count) newVoteIndices.Add(index);
-                }
+                newVoteIndices = voteRequest.OptionIndices.Distinct()
+                    .Where(i => i >= 0 && i < poll.Options.Count)
+                    .ToList();
 
-                if (!newVoteIndices.Any()) throw new ArgumentException("No valid options were selected.");
+                if (!newVoteIndices.Any())
+                    throw new ArgumentException("No valid options were selected.");
             }
             else
             {
                 if (voteRequest.OptionIndex == null)
-                    throw new ArgumentException("An option must be selected for a single-choice poll.");
+                    throw new ArgumentException("An option must be selected.");
 
-                int optionIndex = voteRequest.OptionIndex.Value;
-                if (optionIndex < 0 || optionIndex >= poll.Options.Count)
-                    throw new ArgumentException($"Invalid option index {optionIndex} for poll {pollId}.");
+                int index = voteRequest.OptionIndex.Value;
+                if (index < 0 || index >= poll.Options.Count)
+                    throw new ArgumentException($"Invalid option index {index}.");
 
-                newVoteIndices.Add(optionIndex);
+                newVoteIndices.Add(index);
             }
 
-            var existingVotes = await _context.Votes
-                .Where(v => v.PollId == pollId && v.UserId == userId)
-                .ToListAsync();
+            var existingVotes = (await _pollRepository.GetVotesByPollAndUserAsync(pollId, voteRequest.UserId)).ToList();
 
             poll.Votes ??= new Dictionary<int, int>();
 
@@ -97,47 +95,38 @@ namespace appBackend.Services // Ensure namespace matches registration
                 {
                     poll.Votes[oldVote.OptionIndex]--;
                 }
-                _context.Votes.Remove(oldVote);
+
+                await _pollRepository.RemoveVoteAsync(oldVote); // no SaveChanges inside
             }
 
             foreach (int newIndex in newVoteIndices)
             {
                 if (poll.Votes.ContainsKey(newIndex))
-                {
                     poll.Votes[newIndex]++;
-                }
                 else
-                {
                     poll.Votes[newIndex] = 1;
-                }
 
-                await _context.Votes.AddAsync(new Vote
+                await _pollRepository.AddVoteAsync(new Vote
                 {
                     VoteId = Guid.NewGuid(),
-                    UserId = userId,
                     PollId = pollId,
                     OptionIndex = newIndex,
+                    UserId = voteRequest.UserId,
                     CreatedAt = DateTime.UtcNow
-                });
+                }); // no SaveChanges inside
             }
 
-            _context.Entry(poll).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
+            await _pollRepository.UpdateAsync(poll); // Update Poll.Votes and SaveChanges here
         }
+
+
 
         public async Task RetractVoteAsync(Guid pollId, Guid userId)
         {
-            var existingVotes = await _context.Votes
-                .Where(v => v.PollId == pollId && v.UserId == userId)
-                .ToListAsync();
+            var existingVotes = (await _pollRepository.GetVotesByPollAndUserAsync(pollId, userId)).ToList();
+            if (!existingVotes.Any()) return;
 
-            if (!existingVotes.Any())
-            {
-                return;
-            }
-
-            Poll poll = await _context.Polls.FirstOrDefaultAsync(p => p.PollId == pollId);
+            Poll? poll = await _pollRepository.GetByIdAsync(pollId);
             if (poll == null) throw new ArgumentException($"Poll {pollId} not found.");
 
             poll.Votes ??= new Dictionary<int, int>();
@@ -148,12 +137,12 @@ namespace appBackend.Services // Ensure namespace matches registration
                 {
                     poll.Votes[vote.OptionIndex]--;
                 }
-                _context.Votes.Remove(vote);
+
+                await _pollRepository.RemoveVoteAsync(vote);
             }
 
-            _context.Entry(poll).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
+            await _pollRepository.UpdateAsync(poll); // save once
         }
+
     }
 }
