@@ -9,8 +9,13 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h1 class="group-name">{{ groupData.Name }}</h1>
           <div *ngIf="groupData.IsAdmin" class="admin-actions">
-            <button mat-icon-button [matTooltip]="'Edit Group'" (click)="editGroup()">
+            <button mat-raised-button color="primary" (click)="editGroup()">
               <mat-icon>edit</mat-icon>
+              Edit Group
+            </button>
+            <button mat-raised-button color="warn" (click)="openDeleteDialog()">
+              <mat-icon>delete</mat-icon>
+              Delete Group
             </button>
           </div>
         </div>

@@ -15,6 +15,7 @@ namespace appBackend.Services
         Task<Guid> CreateGroupAsync(Group group); // Get group by creds
         Task<List<UserDto>> SearchUsersNotInGroupAsync(Guid group_id, string keyword);
         Task<bool> UpdateGroupAsync(Group group);
+        Task<bool> DeleteGroupAsync(Guid groupId);
     }
 
     public class GroupRepository : IGroupRepository
@@ -136,6 +137,27 @@ namespace appBackend.Services
                 .ToListAsync();
 
             return usersNotInGroup;
+        }
+
+        public async Task<bool> DeleteGroupAsync(Guid groupId)
+        {
+            var group = await _context.Groups
+                .Include(g => g.Members)
+                .Include(g => g.Posts)
+                .FirstOrDefaultAsync(g => g.GroupId == groupId);
+
+            if (group == null)
+            {
+                return false;
+            }
+
+            // Remove all related entities
+            _context.GroupMembers.RemoveRange(group.Members);
+            _context.Posts.RemoveRange(group.Posts);
+            _context.Groups.Remove(group);
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

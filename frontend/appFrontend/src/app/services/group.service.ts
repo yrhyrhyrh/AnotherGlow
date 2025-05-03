@@ -37,4 +37,8 @@ export class GroupService {
   updateGroup(formData: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/update`, formData);
   }
+
+  deleteGroup(groupId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${groupId}`);
+  }
 }

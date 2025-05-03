@@ -174,4 +174,42 @@ public class GroupController : ControllerBase
         else
           return StatusCode(500, new { message = "Database error while updating group"});
     }
+
+    [HttpDelete("delete/{groupId}")]
+    public async Task<IActionResult> DeleteGroup(Guid groupId)
+    {
+        if (groupId == Guid.Empty)
+        {
+            return BadRequest(new { message = "Group ID is required." });
+        }
+
+        // Extract user ID from JWT token
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid currentUserId))
+        {
+            return Unauthorized(new { message = "Invalid or missing user ID in token." });
+        }
+
+        // Check if user is admin of the group
+        var group = await _groupService.GetGroupAsync(groupId, currentUserId);
+        if (group == null)
+        {
+            return NotFound(new { message = "Group not found." });
+        }
+
+        if (!group.IsAdmin)
+        {
+            return StatusCode(403, new { message = "Only group admins can delete the group." });
+        }
+
+        var deleted = await _groupService.DeleteGroupAsync(groupId);
+        if (deleted)
+        {
+            return Ok(new { message = "Group deleted successfully!" });
+        }
+        else
+        {
+            return StatusCode(500, new { message = "Failed to delete group." });
+        }
+    }
 }

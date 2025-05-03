@@ -182,6 +182,39 @@ export class GroupdetailComponent implements OnInit {
     this.router.navigate(['/group', this.groupId, 'edit']);
   }
 
+  openDeleteDialog() {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '300px',
+      data: {
+        title: 'Delete Group',
+        message: 'Are you sure you want to delete this group? This action cannot be undone.'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteGroup();
+      }
+    });
+  }
+
+  deleteGroup() {
+    this.groupService.deleteGroup(this.groupId!).subscribe({
+      next: () => {
+        this.snackBar.open('Group deleted successfully', 'Close', {
+          duration: 3000
+        });
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Error deleting group:', error);
+        this.snackBar.open('Failed to delete group', 'Close', {
+          duration: 3000
+        });
+      }
+    });
+  }
+
   makeAdmin(member: any) {
     this.groupService.makeAdmin(member.GroupMemberId).subscribe({
       next: () => {
