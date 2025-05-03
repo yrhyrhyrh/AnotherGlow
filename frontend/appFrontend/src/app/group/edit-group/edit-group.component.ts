@@ -103,7 +103,7 @@ export class EditGroupComponent implements OnInit {
     }
     formData.append('GroupId', this.groupId!);
 
-    this.groupService.updateGroup(formData).subscribe({
+    this.groupService.updateGroup(this.groupId!, formData).subscribe({
       next: () => {
         this.snackBar.open('Group updated successfully', 'Close', {
           duration: 3000

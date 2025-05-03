@@ -138,5 +138,18 @@ namespace appBackend.Services
             var users = await _groupRepository.SearchUsersNotInGroupAsync(group_id, keyword);
             return users;
         }
+
+        public async Task<bool> DeleteGroupAsync(Guid groupId)
+        {
+            // First check if the group exists
+            var group = await _groupRepository.GetGroupByIdAsync(groupId);
+            if (group == null)
+            {
+                return false;
+            }
+
+            // Delete the group and all its related data
+            return await _groupRepository.DeleteGroupAsync(groupId);
+        }
     }
 }
