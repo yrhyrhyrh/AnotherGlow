@@ -100,3 +100,18 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+
+    - name: ZAP Full Scan
+      uses: zaproxy/action-full-scan@v0.12.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        target: "http://frontend-lb-755996743.ap-southeast-1.elb.amazonaws.com/login?returnUrl=%2Fgroups%2Fgeneral%2Fposts"  # Replace this with the actual target
+        fail_action: true
+
+    - name: Snyk
+      uses: snyk/actions@0.4.0
+      with:
+        command: test  # optional: 'test' is default; you can use 'monitor' or others
+        args: --all-projects  # optional: adjust based on your project
+        json: true  # optional: outputs snyk.json
+
