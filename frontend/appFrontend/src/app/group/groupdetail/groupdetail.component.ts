@@ -144,12 +144,8 @@ export class GroupdetailComponent implements OnInit {
       return;
     }
 
-    const request: AddNewMemberRequest = {
-      GroupId: this.groupId!,
-      UserIds: [...this.usersToAdd].map((user) => user.UserId),
-    };
-
-    this.groupService.addMembers(request).subscribe({
+    const userIds = [...this.usersToAdd].map((user) => user.UserId);
+    this.groupService.addMembers(this.groupId!, userIds).subscribe({
       next: (response) => {
         this.snackBar.open('Users added successfully', 'Close', {
           duration: 3000
@@ -216,7 +212,7 @@ export class GroupdetailComponent implements OnInit {
   }
 
   makeAdmin(member: any) {
-    this.groupService.makeAdmin(member.GroupMemberId).subscribe({
+    this.groupService.makeAdmin(this.groupId!, member.GroupMemberId).subscribe({
       next: () => {
         this.snackBar.open('Member made admin successfully', 'Close', {
           duration: 3000
@@ -243,7 +239,7 @@ export class GroupdetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.groupService.removeMember(member.GroupMemberId).subscribe({
+        this.groupService.removeMember(this.groupId!, member.GroupMemberId).subscribe({
           next: () => {
             this.snackBar.open('Member removed successfully', 'Close', {
               duration: 3000

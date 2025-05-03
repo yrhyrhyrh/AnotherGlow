@@ -22,20 +22,20 @@ export class GroupService {
     return this.http.get<UserSuggestion[]>(`${this.apiUrl}/getUsersToAdd/${groupId}?keyword=${keyword}`);
   }
 
-  addMembers(request: AddNewMemberRequest): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/addMembers`, request);
+  addMembers(groupId: string, userIds: string[]): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/addMembers/${groupId}`, { UserIds: userIds });
   }
 
-  removeMember(groupMemberId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/removeMember?groupMemberId=${groupMemberId}`, {});
+  removeMember(groupId: string, groupMemberId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/removeMember/${groupId}/${groupMemberId}`, {});
   }
 
-  makeAdmin(groupMemberId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/makeAdmin?groupMemberId=${groupMemberId}`, {});
+  makeAdmin(groupId: string, groupMemberId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/makeAdmin/${groupId}/${groupMemberId}`, {});
   }
 
-  updateGroup(formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update`, formData);
+  updateGroup(groupId: string, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update/${groupId}`, formData);
   }
 
   deleteGroup(groupId: string): Observable<any> {

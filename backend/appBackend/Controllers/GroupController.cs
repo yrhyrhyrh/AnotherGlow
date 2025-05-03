@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using appBackend.Services;
 using appBackend.Dtos.Group;
+using appBackend.Adapters;
 
 namespace appBackend.Controllers;
 
@@ -79,104 +80,8 @@ public class GroupController : ControllerBase
           return StatusCode(500, new { message = "Database error while adding group members"});
     }
 
-    [HttpGet("detail/{group_id}")]
-    public async Task<IActionResult> GetGroupDetailById(Guid group_id)
-    {
-        if (group_id == Guid.Empty)
-        {
-            return BadRequest(new { message = "Group ID is required." });
-        }
-
-        // Extract user ID from JWT token
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "userId");
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid currentUserId))
-        {
-            return Unauthorized(new { message = "Invalid or missing user ID in token." });
-        }
-
-        var group = await _groupService.GetGroupAsync(group_id, currentUserId);
-
-        if (group == null)
-        {
-            return NotFound(new { message = "Group not found." });
-        }
-
-        return Ok(group);
-    }
-
-    [HttpGet("getUsersToAdd/{group_id}")]
-    public async Task<IActionResult> SearchUsersNotInGroupAsync(Guid group_id, [FromQuery] string? keyword)
-    {
-        if (group_id == Guid.Empty)
-        {
-            return BadRequest(new { message = "Group ID is required." });
-        }
-
-        var users = await _groupService.SearchUsersNotInGroupAsync(group_id, keyword ?? string.Empty);
-
-        if (!users.Any())
-        {
-            return NotFound(new { message = "No users to add." });
-        }
-
-        return Ok(users);
-    }
-
-    [HttpPost("addMembers")]
-    public async Task<IActionResult> AddNewMembers([FromBody] AddNewGroupMembersRequest request)
-    {
-        var groupMemberRequests = new List<GroupMemberRequest>();
-        foreach (var userid in request.UserIds)
-        {
-            groupMemberRequests.Add(new GroupMemberRequest{
-                GroupId = request.GroupId,
-                UserId = userid,
-                IsAdmin = false,
-            });
-        }
-        
-        var added = await _groupMemberService.AddGroupMembersAsync(groupMemberRequests);
-
-        if (added)
-          return Ok(new {message = "Member added successfully!" });
-        else
-          return StatusCode(500, new { message = "Database error while adding group members"});
-    }    
-
-    [HttpPost("removeMember")]
-    public async Task<IActionResult> RemoveMember(Guid groupMemberId)
-    {
-        var removed = await _groupMemberService.RemoveMemberAsync(groupMemberId);
-        
-        if (removed)
-          return Ok(new {message = "Member removed successfully!" });
-        else
-          return StatusCode(500, new { message = "Database error while removing group members"});
-    }
-
-    [HttpPost("makeAdmin")]
-    public async Task<IActionResult> MakeAdmin(Guid groupMemberId)
-    {
-        var madeAdmin = await _groupMemberService.MakeAdminAsync(groupMemberId);
-        
-        if (madeAdmin)
-          return Ok(new {message = "Member made admin successfully!" });
-        else
-          return StatusCode(500, new { message = "Database error while making member admin"});
-    }
-
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateGroup([FromForm] UpdateGroupRequest request)
-    {
-        var updated = await _groupService.UpdateGroupAsync(request);
-        if (updated)
-          return Ok(new {message = "Group updated successfully!" });
-        else
-          return StatusCode(500, new { message = "Database error while updating group"});
-    }
-
-    [HttpDelete("delete/{groupId}")]
-    public async Task<IActionResult> DeleteGroup(Guid groupId)
+    [HttpGet("detail/{groupId}")]
+    public async Task<IActionResult> GetGroupDetailById(Guid groupId)
     {
         if (groupId == Guid.Empty)
         {
@@ -190,18 +95,91 @@ public class GroupController : ControllerBase
             return Unauthorized(new { message = "Invalid or missing user ID in token." });
         }
 
-        // Check if user is admin of the group
         var group = await _groupService.GetGroupAsync(groupId, currentUserId);
+
         if (group == null)
         {
             return NotFound(new { message = "Group not found." });
         }
 
-        if (!group.IsAdmin)
+        return Ok(group);
+    }
+
+    [HttpGet("getUsersToAdd/{groupId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> SearchUsersNotInGroupAsync(Guid groupId, [FromQuery] string? keyword)
+    {
+        var users = await _groupService.SearchUsersNotInGroupAsync(groupId, keyword ?? string.Empty);
+
+        if (!users.Any())
         {
-            return StatusCode(403, new { message = "Only group admins can delete the group." });
+            return NotFound(new { message = "No users to add." });
         }
 
+        return Ok(users);
+    }
+
+    [HttpPost("addMembers/{groupId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> AddNewMembers(Guid groupId, [FromBody] AddNewGroupMembersRequest request)
+    {
+        var groupMemberRequests = new List<GroupMemberRequest>();
+        foreach (var userid in request.UserIds)
+        {
+            groupMemberRequests.Add(new GroupMemberRequest{
+                GroupId = groupId,
+                UserId = userid,
+                IsAdmin = false,
+            });
+        }
+        
+        var added = await _groupMemberService.AddGroupMembersAsync(groupMemberRequests);
+
+        if (added)
+          return Ok(new {message = "Member added successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while adding group members"});
+    }    
+
+    [HttpPost("removeMember/{groupId}/{groupMemberId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> RemoveMember(Guid groupId, Guid groupMemberId)
+    {
+        var removed = await _groupMemberService.RemoveMemberAsync(groupMemberId);
+        
+        if (removed)
+          return Ok(new {message = "Member removed successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while removing group members"});
+    }
+
+    [HttpPost("makeAdmin/{groupId}/{groupMemberId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> MakeAdmin(Guid groupId, Guid groupMemberId)
+    {
+        var madeAdmin = await _groupMemberService.MakeAdminAsync(groupMemberId);
+        
+        if (madeAdmin)
+          return Ok(new {message = "Member made admin successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while making member admin"});
+    }
+
+    [HttpPut("update/{groupId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> UpdateGroup(Guid groupId, [FromForm] UpdateGroupRequest request)
+    {
+        var updated = await _groupService.UpdateGroupAsync(request);
+        if (updated)
+          return Ok(new {message = "Group updated successfully!" });
+        else
+          return StatusCode(500, new { message = "Database error while updating group"});
+    }
+
+    [HttpDelete("delete/{groupId}")]
+    [AdminAuthorization]
+    public async Task<IActionResult> DeleteGroup(Guid groupId)
+    {
         var deleted = await _groupService.DeleteGroupAsync(groupId);
         if (deleted)
         {
