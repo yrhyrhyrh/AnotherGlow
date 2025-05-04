@@ -50,8 +50,7 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
     - name: Upload CodeQL Database Artifact
-      if: ${{ matrix.language == 'actions' }}  # Optional: restrict to a specific language
-      uses: actions/upload-artifact@8e2d2781d3de8cb97bc8659efc1c6ab1526b6792
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: codeql-database-${{ matrix.language }}
         path: /home/runner/work/_temp/codeql_databases/${{ matrix.language }}.zip
