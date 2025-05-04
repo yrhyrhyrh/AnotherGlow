@@ -33,7 +33,6 @@ export class PollingComponent implements OnInit {
         this.fb.control('', Validators.required),
         this.fb.control('', Validators.required)
       ], Validators.minLength(2)),
-      IsGlobal: [false],
       AllowMultipleSelections: [false]
     });
   
@@ -91,7 +90,7 @@ export class PollingComponent implements OnInit {
 
   // Reset the form
   resetForm() {
-    this.pollForm.reset({ IsGlobal: false, AllowMultipleSelections: false });
+    this.pollForm.reset({ AllowMultipleSelections: false });
     this.Options.clear();  // Clear Options array
 
     // Re-add the initial two Options

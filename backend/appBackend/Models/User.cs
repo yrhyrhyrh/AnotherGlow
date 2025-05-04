@@ -40,12 +40,6 @@ namespace appBackend.Models
         // Posts created by this user
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
-        // Users that this user is following (Join entity)
-        public virtual ICollection<Follow> Following { get; set; } = new List<Follow>();
-
-        // Users that are following this user (Join entity)
-        public virtual ICollection<Follow> Followers { get; set; } = new List<Follow>();
-
         // Likes given by this user (Join entity)
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
 

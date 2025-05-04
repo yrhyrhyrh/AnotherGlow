@@ -11,13 +11,13 @@
         <div *ngFor="let attachment of post.Attachments">
           <ng-container *ngIf="isImage(attachment.ContentType)">
             <!-- Display Image -->
-            <img [src]="post.Attachments[0].FilePath" [alt]="attachment.FileName" style="max-width: 300px; max-height: 300px; margin-bottom: 10px;">
+            <img [src]="attachment.FilePath" [alt]="attachment.FileName" style="max-width: 300px; max-height: 300px; margin-bottom: 10px;">
           </ng-container>
           <ng-container *ngIf="!isImage(attachment.ContentType)">
             <!-- Download Link for other file types -->
             <p>Attachments:</p>
             <p>
-              <a mat-button color="primary" [href]="post.Attachments[0].FilePath" [download]="attachment.FileName" target="_blank">
+              <a mat-button color="primary" [href]="attachment.FilePath" [download]="attachment.FileName" target="_blank">
                 <mat-icon>download</mat-icon> {{ attachment.FileName }}
               </a>
             </p>
