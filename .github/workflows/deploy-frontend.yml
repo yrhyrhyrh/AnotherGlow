@@ -3,7 +3,8 @@ name: Deploy Frontend to ECS
 on:
   push:
     branches: [main]
-
+permissions:
+      contents: read
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
