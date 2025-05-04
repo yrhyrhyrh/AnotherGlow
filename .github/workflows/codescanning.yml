@@ -49,6 +49,12 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+    - name: Upload CodeQL Database Artifact
+      if: ${{ matrix.language == 'actions' }}  # Optional: restrict to a specific language
+      uses: actions/upload-artifact@v3
+      with:
+        name: codeql-database-${{ matrix.language }}
+        path: /home/runner/work/_temp/codeql_databases/${{ matrix.language }}.zip
 
   zap-scan:
     name: ZAP Full Scan
