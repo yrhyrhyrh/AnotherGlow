@@ -33,7 +33,6 @@ namespace appBackend.Services // Ensure namespace matches registration
                 PostId = poll.PostId,
                 Question = poll.Question,
                 Options = poll.Options,
-                IsGlobal = poll.IsGlobal,
                 AllowMultipleSelections = poll.AllowMultipleSelections,
                 Votes = new Dictionary<int, int>(),
                 PollId = Guid.NewGuid(),

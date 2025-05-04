@@ -9,7 +9,6 @@ export interface Poll {
   PollId?: string;
   Question: string;
   Options: string[];
-  IsGlobal: boolean;
   UserId?: string;
   AllowMultipleSelections: boolean;
   Votes?: { [key: number]: number };

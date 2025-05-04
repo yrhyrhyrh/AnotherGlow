@@ -57,7 +57,6 @@ export interface PostDTO {
   export interface Poll {
     Question: string;
     Options: string[]; // Array of options
-    IsGlobal: boolean;
     AllowMultipleSelections: boolean;
   }
   

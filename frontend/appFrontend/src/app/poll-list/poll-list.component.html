@@ -7,7 +7,6 @@
         <h5 class="card-title">{{ poll.Question }}</h5>
         <p class="card-subtitle mb-2 text-muted">
           Mode: {{ poll.AllowMultipleSelections ? 'Multiple Choice' : 'Single Choice' }}
-          <span *ngIf="poll.IsGlobal" class="badge bg-info ms-2">Global</span>
           <!-- Button to toggle results display -->
           <button class="btn btn-sm btn-outline-secondary ms-3" (click)="toggleResults(poll.PollId)">
             {{ showResults[poll.PollId] ? 'Hide Results' : 'Show Results' }}

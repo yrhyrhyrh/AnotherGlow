@@ -13,7 +13,6 @@ namespace appBackend.Models
         // Stores aggregate counts, not individual votes
         public Dictionary<int, int> Votes { get; set; } = new Dictionary<int, int>();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public bool IsGlobal { get; set; }
         public bool AllowMultipleSelections { get; set; } // <-- ADDED
 
         [ForeignKey("PostId")]

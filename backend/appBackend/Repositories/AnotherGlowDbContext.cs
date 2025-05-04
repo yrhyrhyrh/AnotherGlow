@@ -11,7 +11,6 @@ namespace appBackend.Repositories // Adjust namespace as needed
         // Define DbSets for each entity (representing tables)
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<Post> Posts { get; set; } = null!;
-        public virtual DbSet<Follow> Follows { get; set; } = null!;
         public virtual DbSet<Like> Likes { get; set; } = null!;
         public virtual DbSet<Poll> Polls { get; set; } = null!; // Add DbSet for Poll
         public virtual DbSet<Vote> Votes { get; set; } = null!;
@@ -137,42 +136,6 @@ namespace appBackend.Repositories // Adjust namespace as needed
                 // One Post has Many Likes (Relationship defined in Like configuration)
             });
 
-            // --- Follow Configuration (Many-to-Many Join Table for Users) ---
-            modelBuilder.Entity<Follow>(entity =>
-            {
-                entity.ToTable("follows"); // Explicitly map to the table name
-
-                // Composite Primary Key
-                entity.HasKey(f => f.FollowId); // Primary Key
-                entity.Property(f => f.FollowId)
-                      .HasColumnName("follow_id")
-                      .ValueGeneratedOnAdd(); // Let DB generate UUID
-
-                entity.Property(f => f.FollowerUserId).HasColumnName("follower_user_id");
-                entity.Property(f => f.FollowingUserId).HasColumnName("following_user_id");
-
-                entity.Property(f => f.CreatedAt)
-                      .HasColumnName("created_at")
-                      .IsRequired()
-                      .HasDefaultValueSql("now()");
-
-                // Define the relationships to the User table for both foreign keys
-                entity.HasOne(f => f.Follower) // Navigation property back to the follower User
-                      .WithMany(u => u.Following) // Navigation property in User for who they follow
-                      .HasForeignKey(f => f.FollowerUserId)
-                      .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
-
-                entity.HasOne(f => f.Following) // Navigation property back to the followed User
-                      .WithMany(u => u.Followers) // Navigation property in User for their followers
-                      .HasForeignKey(f => f.FollowingUserId)
-                      .OnDelete(DeleteBehavior.Cascade); // Matches SQL ON DELETE CASCADE
-
-                // Indexes (matches SQL) - EF Core often creates these automatically for FKs,
-                // but explicit naming ensures consistency with the SQL script.
-                entity.HasIndex(f => f.FollowerUserId, "follows_follower_user_id_idx");
-                entity.HasIndex(f => f.FollowingUserId, "follows_following_user_id_idx");
-            });
-
             // --- Like Configuration (Many-to-Many Join Table for Users and Posts) ---
             modelBuilder.Entity<Like>(entity =>
             {
@@ -258,10 +221,6 @@ namespace appBackend.Repositories // Adjust namespace as needed
                       .HasColumnName("created_at")
                       .IsRequired()
                       .HasDefaultValueSql("now()");
-
-                entity.Property(p => p.IsGlobal)
-                      .HasColumnName("is_global")
-                      .IsRequired();
 
                 entity.Property(p => p.AllowMultipleSelections)
                       .HasColumnName("allow_multiple_selections")
