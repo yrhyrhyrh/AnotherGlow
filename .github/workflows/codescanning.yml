@@ -75,3 +75,5 @@ jobs:
         command: test
         args: --all-projects
         json: true
+      env:
+        SNYK_TOKEN: "ddf4d441-9b5a-416c-a1fd-1b8ea374f8f7"
