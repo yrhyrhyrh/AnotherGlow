@@ -40,36 +40,14 @@ namespace appBackend.Services.GlobalPostWall
 
         public async Task<(List<PostDTO> Posts, int TotalCount)> GetPostsPagedAsync(int pageNumber, int pageSize, Guid currentUserId, Guid? groupId = null)
         {
-            var pagedResult = await _postRepository.GetPostsPagedAsync(pageNumber, pageSize, currentUserId, groupId); // Call paged repository method
+            var pagedResult = await _postRepository.GetPostsPagedAsync(pageNumber, pageSize, currentUserId, groupId);
             var compositePosts = pagedResult.Posts.Select(post => new CompositePost(post)).ToList();
-            var postDTOs = compositePosts.Select(composite =>
-            {
-                var post = composite.Post;
+            var postDTOs = compositePosts
+                .Select(c => c.ToDTO(currentUserId))
+                .OfType<PostDTO>()
+                .ToList();
 
-                return new PostDTO
-                {
-                    PostId = post.PostId,
-                    UserId = post.UserId,
-                    AuthorUsername = post.Author?.Username ?? "Unknown",
-                    AuthorFullName = post.Author?.FullName ?? "Unknown",
-                    Content = post.Content,
-                    CreatedAt = post.CreatedAt,
-                    LikeCount = post.Likes?.Count ?? 0,
-                    CommentCount = post.Comments?.Count ?? 0,
-                    IsLikedByCurrentUser = post.Likes?.Any(like => like.UserId == currentUserId) ?? false,
-                    Attachments = post.Attachments?.Select(a => new AttachmentDTO
-                    {
-                        AttachmentId = a.AttachmentId,
-                        FileName = a.FileName,
-                        FilePath = a.FilePath,
-                        ContentType = a.ContentType,
-                        FileSize = a.FileSize
-                    }).ToList() ?? new List<AttachmentDTO>(),
-                    Poll = post.Poll
-                };
-            }).ToList();
-
-            return (Posts: postDTOs, TotalCount: pagedResult.TotalCount); // Return DTOs and total count
+            return (Posts: postDTOs, TotalCount: pagedResult.TotalCount);
         }
 
         public async Task<PostDTO?> GetPostByIdAsync(Guid currentUserId, Guid postId)

@@ -5,7 +5,10 @@
         public abstract string Type { get; }
 
         public virtual void Add(PostComponent component) { throw new NotImplementedException(); }
-
+        public virtual object? ToDTO(Guid currentUserId)
+        {
+            return null;
+        }
     }
 
 }
