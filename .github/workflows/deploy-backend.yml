@@ -3,7 +3,8 @@ name: Deploy Backend to ECS
 on:
   push:
     branches: [main]
-
+permissions:
+      contents: read
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
